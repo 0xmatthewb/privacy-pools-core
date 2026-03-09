@@ -18,6 +18,16 @@ The deposit operation is the entry point into the Privacy Pools protocol. It all
 For production workflow guidance, see [Integrations](/protocol/integrations) and [skills.md](https://docs.privacypools.com/skills.md).
 :::
 
+Production frontend integrations should capture the `Deposited` event into mnemonic/account-backed pool-account state. Pool-account UX keeps raw secrets out of manual note copy/paste flows.
+
+## Production Frontend Pattern
+
+- Bootstrap or load the mnemonic-backed account before deposit so the new pool account can be persisted immediately.
+- Derive deposit secrets from account state plus pool scope and sequential deposit index.
+- If you expose `Use max`, reserve gas for native-asset deposits and account for vetting-fee math before setting the final input amount.
+- Parse the confirmed `Deposited` event into local pool-account state right away.
+- Tell users that chain confirmation does not guarantee immediate indexing or ASP review visibility.
+
 ## Protocol Flow
 
 ```mermaid
@@ -53,7 +63,7 @@ sequenceDiagram
     Pool-->>User: Emit Deposited(commitment, label)
     deactivate Pool
 
-    Note over User: Store: nullifier, secret,<br/>label, value
+    Note over User: Persist: nullifier, secret,<br/>label, value into account state
 ```
 
 ### Commitment Structure

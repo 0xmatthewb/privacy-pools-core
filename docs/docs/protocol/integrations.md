@@ -1,6 +1,6 @@
 ---
 title: Integrations
-description: "Production integration guide for Privacy Pools using SDK, ASP API, and relayer flows with required safety checks."
+description: "Production integration guide for Privacy Pools with recommended account, deposit, withdrawal, and fallback patterns."
 keywords:
   - privacy pools
   - integrations
@@ -12,7 +12,7 @@ keywords:
   - developer workflow
 ---
 
-This page covers the recommended production integration path for Privacy Pools, including required safety checks and key references.
+This page covers the recommended production integration path for Privacy Pools. It is the shortest route from first integration to a website-aligned frontend.
 
 ## Key References
 
@@ -21,17 +21,56 @@ This page covers the recommended production integration path for Privacy Pools, 
 3. [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit) — protocol behavior
 4. [skills.md](https://docs.privacypools.com/skills.md) — single-document reference covering all endpoints, schemas, and edge cases
 
-## Getting Started
+## Happy Path
 
-1. Use `@0xbow/privacy-pools-core-sdk` for proof generation and contract interactions.
-2. Use ASP API endpoints (`/public/mt-roots`, `/public/mt-leaves`) for association-set data.
-3. Build proof `stateRoot` from `contracts.getStateRoot(poolAddress)`; this reads the pool's `currentRoot()`.
-4. Build proof `aspRoot` from ASP `onchainMtRoot` and require exact parity with on-chain Entrypoint `latestRoot()`.
-5. Use relayed withdrawals by default:
-   - Production: `https://fastrelay.xyz`
-   - Testnets: `https://testnet-relayer.privacypools.com`
-6. Fall back to self-relay only when the relayer service is unavailable.
-7. Use ragequit as a last-resort exit when private withdrawal cannot proceed.
+1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
+2. If wallet onboarding is supported, derive a versioned recovery seed from deterministic EIP-712 signatures, sign the same payload twice to confirm determinism, and require a backup step. Smart/contract wallets, Coinbase Wallet, and unsupported WalletConnect sessions should fall back to manual mnemonic create/load.
+3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
+4. Reconstruct balances as pool accounts, not loose notes. This gives users a safer abstraction over secret material. Refresh review state across all loaded chain/scope pairs, and treat deposits as pending until both the review status and current ASP leaves agree.
+5. Build withdrawal proofs with two roots: `contracts.getStateRoot(poolAddress)` for the pool state root and ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
+6. Default the UI to relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. This is the private withdrawal path.
+7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval.
+8. Resolve the final recipient before review, fetch relayer details plus `minWithdrawAmount`, and request the relayer quote on the review step. Discard the quote whenever amount, recipient, relayer, or optional gas-token-drop settings change.
+9. Treat self-relay and direct withdrawal as advanced non-private options rather than the default private-withdraw button.
+10. Keep ragequit separate and clearly public.
+
+## Frontend Defaults
+
+- Track each deposit and each post-withdrawal change commitment inside the same pool-account tree.
+- Refresh deposit review state across every loaded chain/scope combination after account load. If a deposit reports `APPROVED` but its label is not yet present in the current ASP leaves, continue treating it as pending until the leaf arrives.
+- Disable withdraw CTAs unless wallet is connected, account state is loaded, at least one relayer is available, and there is at least one approved non-zero pool account.
+- Filter withdraw selectors to approved non-zero accounts for the active chain/scope and pick a sensible default account automatically.
+- Parse confirmed receipts rather than asking users to store notes or receipt values. Pool-account state keeps raw secrets out of manual copy/paste UX.
+- Gate wallet-signature derivation by wallet capability; many smart/contract wallets should use manual mnemonic onboarding instead.
+- After a successful private withdrawal, insert the new change commitment back into local account state before allowing another spend.
+- Do not log recovery phrases, signatures, nullifiers, secrets, or raw note material to analytics or error tracking.
+
+## Website-Aligned UX Details
+
+### Account and Recovery
+
+- Prefer wallet-signature seed derivation only when deterministic EIP-712 signing is supported.
+- Use a versioned derivation (`v2` default for new accounts), compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing.
+- If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
+
+### Deposit UX
+
+- If you expose `Use max`, reserve gas for native-asset deposits and account for vetting-fee math before populating the amount field.
+- Parse the confirmed `Deposited` event immediately and store the resulting pool account locally rather than waiting for a later rescan.
+- Tell the user that confirmed deposits may take time to appear in activity views or become ASP-approved.
+
+### Private Withdrawal UX
+
+- Resolve ENS names to a final address before the review step. Showing reverse ENS and the resolved address is helpful, but unresolved input must block submit.
+- Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`. If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
+- `GET /{chainId}/public/deposits-larger-than` is useful for showing an anonymity-set estimate while the user edits the amount.
+- Request the relayer quote only when the review screen opens, keep a visible countdown, and if the quote refreshes because inputs changed or time elapsed, require the user to confirm again.
+- Treat `extraGas` as an optional gas-token drop for supported non-native assets, not as a generic mode switch. Quote invalidation and fee display must include it.
+
+### Ragequit UX
+
+- Keep ragequit on its own action path with explicit public-warning copy.
+- Match the website behavior: ragequit returns the full balance to the original depositor path rather than behaving like a private recipient withdrawal.
 
 ## API Hosts
 
@@ -64,10 +103,11 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, us
 - `X-Pool-Scope` must be a decimal bigint string.
 - `stateRoot` should come from `contracts.getStateRoot(poolAddress)` / pool `currentRoot()`, not from `Entrypoint.latestRoot()`.
 - `onchainMtRoot` must equal `Entrypoint.latestRoot()` exactly before proof generation/submission.
-- If you reconstruct state from events, initialize `DataService` with the deployment `startBlock`.
+- If you intentionally reconstruct state from events, initialize `DataService` with the deployment `startBlock` and use direct RPC.
 - `withdrawalAmount` must be `> 0` and `<=` commitment value.
 - Check `minimumDepositAmount` before submitting deposit transactions.
-- Relayer `feeCommitment` has a short TTL (~60s); quote and request should be near-contiguous.
+- If you intentionally use direct withdrawal, `withdrawal.processooor` must equal `msg.sender`.
+- Relayer `feeCommitment` has a short TTL (~60s); quote and request should be near-contiguous, and quote invalidation should be tied to form changes.
 - After partial withdrawals, refresh leaves before generating the next proof.
 
 ## Reference Map

@@ -1,6 +1,6 @@
 ---
 title: Withdrawal
-description: "Direct and relayed withdrawal flows, proof generation, nullifier-spend checks, fee handling, and state transition behavior."
+description: "Relayed withdrawal is the recommended production path; this page also covers advanced direct withdrawal, proof generation, nullifier-spend checks, fee handling, and state transition behavior."
 keywords:
   - privacy pools
   - withdrawal
@@ -12,10 +12,10 @@ keywords:
 ---
 
 
-Privacy Pools supports two types of withdrawals:
+Privacy Pools supports two types of withdrawals, but website-aligned production frontends should expose the relayed flow as the primary private-withdraw action:
 
-1. **Direct Withdrawals**: User directly interacts with pool contract
-2. **Relayed Withdrawals**: Withdrawal processed through a relayer for additional privacy
+1. **Relayed Withdrawals**: Withdrawal processed through a relayer. This is the privacy-preserving frontend path.
+2. **Direct Withdrawals / Self-Relay**: User submits the withdrawal transaction themselves. This is an advanced non-private path.
 
 Both methods require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership and maintain privacy.
 
@@ -25,17 +25,27 @@ For production workflow guidance, see [Integrations](/protocol/integrations) and
 
 Integration note: withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()` (via SDK `contracts.getStateRoot(poolAddress)`), while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
 
+## Production Frontend Pattern
+
+- Only offer private withdrawal from pool accounts with `balance > 0` and ASP approval.
+- Resolve ENS or other human-readable recipient input to a final address before requesting a quote or generating a proof.
+- Fetch `GET /relayer/details` and warn if a partial withdrawal would leave a non-zero remainder below `minWithdrawAmount`.
+- Request the quote on the review step, keep a visible countdown, and if amount, recipient, relayer, or `extraGas` changes, refresh the quote and require another confirm click.
+- Treat `extraGas` as an optional gas-token drop for supported non-native assets and reflect it in fee display plus quote invalidation.
+- Treat user-submitted withdrawal paths as advanced non-private options. If the frontend wants private withdrawal, it should use the relayed flow.
+- Keep ragequit separate as the explicit public fallback.
+
 ## Withdrawal Types Comparison
 
 | Aspect                   | Direct Withdrawal  | Relayed Withdrawal                      |
 | ------------------------ | ------------------ | --------------------------------------- |
-| Privacy Level            | Basic (signer pays gas, linking address to on-chain activity) | Enhanced (relayer pays gas, decoupling recipient from tx sender) |
+| Privacy Level            | Not privacy-preserving for normal frontend use (signer pays gas and submits the withdrawal transaction) | Recommended private path (relayer pays gas, decoupling recipient from tx sender) |
 | Gas Payment              | User pays directly | Relayer pays, takes fee                 |
 | Fee Structure            | No fees            | Configurable relayer fee                |
-| Complexity               | Simpler flow       | Additional fee computation              |
+| Complexity               | Simpler but privacy-reducing | Additional fee computation              |
 | Front-running Protection | Context-based      | Context-based                           |
 
-### Protocol Flow - Direct Withdrawal
+### Protocol Flow - Direct Withdrawal (Advanced)
 
 ```mermaid
 sequenceDiagram
@@ -72,7 +82,7 @@ sequenceDiagram
 
 ```
 
-### Protocol Flow - Relayed Withdrawal
+### Protocol Flow - Relayed Withdrawal (Website and production default)
 
 ```mermaid
 sequenceDiagram
@@ -137,7 +147,7 @@ struct RelayData {
 
 ## Withdrawal Steps
 
-### Direct Withdrawal
+### Direct Withdrawal (Advanced)
 
 1. **Proof Generation**
    - User constructs withdrawal parameters
@@ -149,10 +159,14 @@ struct RelayData {
    - Updates state (nullifiers, commitments)
    - Transfers assets to signer (processooor)
 
-### Relayed Withdrawal
+Do not expose this as the default frontend action if recipient privacy matters.
+
+### Relayed Withdrawal (Recommended)
 
 1. **User Steps**
    - Construct withdrawal with Entrypoint as processooor
+   - Resolve the final recipient and request the relayer quote late in the flow so proof generation and relay submission fit inside the quote TTL
+   - Validate the relayer minimum and warn if the remaining balance after a partial withdrawal would fall below it
    - Generate ZK proof
    - Submit to relayer off-chain
 2. **Relayer Steps**
