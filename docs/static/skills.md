@@ -15,13 +15,13 @@ Privacy Pools breaks the on-chain link between deposit and withdrawal addresses.
 2. **Withdraw**: Generate a ZK proof showing your commitment exists in both the state tree and the ASP-approved set, then submit it on-chain. Production frontends should use the relayed path by default. Supports partial withdrawals.
 3. **Ragequit**: Emergency public exit. Prove ownership of a commitment via a commitment proof, then call ragequit to recover funds to the original depositor. Sacrifices privacy but guarantees fund recovery.
 
-## Opinionated Frontend Defaults
+## Frontend Defaults
 
 Use these frontend defaults unless you have a specific reason not to:
 
 - Model the user as a mnemonic-backed account and keep deposits plus change commitments in pool-account state. This keeps secret-bearing notes out of copy/paste UX and gives users a safer abstraction.
 - Make relayed withdrawal the default private-withdraw UX. Self-relay and direct withdrawal are advanced non-private options.
-- Only offer wallet-signature onboarding when deterministic EIP-712 signing is supported. Sign the same typed-data payload twice, use the current derivation flow for new accounts, only expose any older restore path for existing legacy accounts, and require backup before continuing.
+- Only offer wallet-signature onboarding when deterministic EIP-712 signing is supported. Sign the same typed-data payload twice, require backup before continuing, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts.
 - If manual recovery phrase entry exists, sanitize whitespace/newlines/commas, validate checksum, and avoid clipboard-first UX.
 - Only offer private withdrawal from balances that are both positive and ASP-approved.
 - Request relayer quotes late in the flow, usually on the review step, and invalidate them when amount, recipient, relayer, or gas-drop settings change.

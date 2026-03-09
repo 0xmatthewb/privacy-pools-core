@@ -19,7 +19,7 @@ On public blockchains like Ethereum, every transaction is visible to everyone. W
 
 ## Privacy Pools offers a solution
 
-Privacy Pool enables private withdrawals through a combination of zero-knowledge proofs and commitment schemes. Users can deposit assets into Privacy Pools and later withdraw them, either partially or fully, without creating an on-chain link between their deposit and withdrawal addresses. The protocol uses an [Association Set Provider (ASP)](/layers/asp) to maintain a set of approved deposits, preventing potentially illicit funds from entering the system and enabling regulatory compliance.
+Privacy Pools enables private withdrawals through a combination of zero-knowledge proofs and commitment schemes. Users can deposit assets into Privacy Pools and later withdraw them, either partially or fully, without creating an on-chain link between their deposit and withdrawal addresses. The protocol uses an [Association Set Provider (ASP)](/layers/asp) to maintain a set of approved deposits, preventing potentially illicit funds from entering the system and enabling regulatory compliance.
 
 ## System architecture overview
 

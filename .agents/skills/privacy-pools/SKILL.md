@@ -27,7 +27,7 @@ Outside the repository, use the published docs:
 
 - Model user state as a mnemonic-backed account with pool-account tracking; this gives a better UX without pushing secret-bearing notes through copy/paste or other UI surfaces where they can be exposed, including XSS or clipboard risks.
 - Production frontend default is relayed withdrawals because that is the privacy-preserving withdrawal path. Self-relay and direct withdrawal are advanced non-private options.
-- When onboarding from a wallet, only use deterministic EIP-712 signature-based seed derivation after signing the same payload twice, use the current derivation flow for new accounts, only expose any older restore path for existing legacy accounts, and require an explicit backup step. Otherwise fall back to manual mnemonic setup/load.
+- When onboarding from a wallet, only use deterministic EIP-712 signature-based seed derivation when the wallet can reproduce the same payload signature twice, require an explicit backup step, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts. Otherwise fall back to manual mnemonic setup/load.
 - Only offer private withdrawal from pool accounts with positive balance and ASP approval.
 - Request relayer quotes on the review step, invalidate them when amount, recipient, relayer, or `extraGas` changes, and warn if a partial withdrawal would leave a remainder below the relayer minimum.
 
