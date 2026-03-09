@@ -194,7 +194,6 @@ Returns a fee quote for a withdrawal, including dynamic feeBPS adjusted for gas 
   "chainId": 11155111,
   "amount": "1000000000000000000",
   "asset": "0xTokenAddress",
-  "extraGas": false,
   "recipient": "0xRecipientAddress"
 }
 ```
@@ -208,17 +207,12 @@ Returns a fee quote for a withdrawal, including dynamic feeBPS adjusted for gas 
   "feeCommitment": {
     "expiration": 1744676669549,
     "withdrawalData": "0x...",
-    "asset": "0xTokenAddress",
-    "amount": "1000000000000000000",
-    "extraGas": false,
     "signedRelayerCommitment": "0x..."
   }
 }
 ```
 
-`extraGas` is an optional boolean for supported non-native assets that adds a native gas-token drop to the relay quote. Native-asset quotes ignore it.
-
-If `recipient` is provided, a signed relayer commitment is returned, valid for 60 seconds.
+If `recipient` is provided, a signed relayer commitment is returned, valid for 20 seconds.
 
 ---
 
@@ -231,7 +225,7 @@ Submits a full withdrawal payload for execution, optionally using a previously s
 ```json
 {
   "chainId": 11155111,
-  "scope": "123456789012345678901234567890",
+  "scope": "0x123...",
   "withdrawal": {
     "processooor": "0x...",
     "data": "0x..."
@@ -245,9 +239,6 @@ Submits a full withdrawal payload for execution, optionally using a previously s
   "feeCommitment": {
     "expiration": 1744676669549,
     "withdrawalData": "0x...",
-    "asset": "0xTokenAddress",
-    "amount": "1000000000000000000",
-    "extraGas": false,
     "signedRelayerCommitment": "0x..."
   }
 }
