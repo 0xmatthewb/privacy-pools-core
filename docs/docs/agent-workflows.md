@@ -30,7 +30,7 @@ Privacy Pools provides a single canonical deep-reference document (`skills.md`) 
 
 ## How To Use
 
-Hosted links are in the [File Map](#file-map) above. The paths below are local repo paths used in editor/agent workflows.
+Hosted links are in the [File Map](#file-map) above. For in-repo work, prefer the local paths below so branch changes are visible before publish.
 
 ### Claude Code
 
@@ -77,6 +77,6 @@ For systems that ingest a single document, use `llms-full.txt`. It includes `ski
 - `skills.md` is the canonical deep-reference doc. Update it first; keep wrappers thin.
 - Update `skills-core.md` whenever operational guidance changes.
 - Keep `skills/privacy-pools/SKILL.md` and `.agents/skills/privacy-pools/SKILL.md` in sync (`skills/privacy-pools/SKILL.md` is canonical).
-- When SDK integration semantics change, propagate the distinction between pool `currentRoot()` and entrypoint `latestRoot()` plus any `DataService` event-parsing updates into the thin wrappers.
+- When SDK integration semantics change, propagate the distinction between pool `currentRoot()` and entrypoint `latestRoot()` plus current `DataService` scanning/config guidance into the thin wrappers.
 - Avoid hardcoding addresses in wrappers — reference `deployments.md` instead.
 - Rebuild after changes: `cd docs && yarn build`.

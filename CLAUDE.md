@@ -1,6 +1,6 @@
 # Privacy Pools Claude Code Guide
 
-Route all Privacy Pools tasks through the docs below. Do not treat this file as the canonical protocol reference.
+Route all Privacy Pools tasks through the local docs below. Do not treat this file as the canonical protocol reference.
 
 ## Canonical Docs
 

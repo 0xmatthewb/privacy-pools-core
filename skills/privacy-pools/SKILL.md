@@ -9,15 +9,17 @@ Use this skill as a thin wrapper around the canonical Privacy Pools docs.
 
 ## Read Order
 
+If you are running inside the `privacy-pools-core` repository, prefer the local docs so branch changes are visible before publish:
+
+1. Read `docs/static/skills-core.md` for the short operational path.
+2. Read relevant sections of `docs/static/skills.md` for implementation depth.
+3. Read `docs/docs/deployments.md` for chain-specific contract addresses and `startBlock`.
+
+Outside the repository, use the published docs:
+
 1. Read https://docs.privacypools.com/skills-core.md for the short operational path.
 2. Read relevant sections of https://docs.privacypools.com/skills.md for implementation depth.
 3. Read https://docs.privacypools.com/deployments for chain-specific contract addresses and `startBlock`.
-
-If you are running inside the `privacy-pools-core` repository, local source files mirror these docs:
-
-- `docs/static/skills-core.md`
-- `docs/static/skills.md`
-- `docs/docs/deployments.md`
 
 ## Standard Workflow
 
