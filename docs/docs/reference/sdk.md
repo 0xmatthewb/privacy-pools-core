@@ -16,7 +16,7 @@ For production workflow guidance, see [Integrations](/protocol/integrations) and
 :::
 
 :::note Scope
-This page is an integration-focused map of the SDK surface, not an exhaustive generated API dump.
+This page covers the integration-relevant SDK surface. See the source code for the full API.
 :::
 
 

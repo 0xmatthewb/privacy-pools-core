@@ -25,9 +25,9 @@ Outside the repository, use the published docs:
 
 ## Happy Path Defaults
 
-- Model user state as a mnemonic-backed account with pool-account tracking; this gives a better UX without pushing secret-bearing notes through copy/paste or other UI surfaces where they can be exposed, including XSS or clipboard risks.
+- Model user state as a mnemonic-backed account with pool-account tracking. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI where raw secrets can be exposed.
 - Production frontend default is relayed withdrawals because that is the privacy-preserving withdrawal path. Self-relay and direct withdrawal are advanced non-private options.
-- When onboarding from a wallet, only use deterministic EIP-712 signature-based seed derivation when the wallet can reproduce the same payload signature twice, require an explicit backup step, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts. Otherwise fall back to manual mnemonic setup/load.
+- When onboarding from a wallet, only use deterministic wallet-signature seed derivation when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup step, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts. Otherwise fall back to manual mnemonic setup/load.
 - Only offer private withdrawal from pool accounts with positive balance and ASP approval.
 - Request relayer quotes on the review step, invalidate them when amount, recipient, relayer, or `extraGas` changes, and warn if a partial withdrawal would leave a remainder below the relayer minimum.
 
@@ -55,7 +55,7 @@ Outside the repository, use the published docs:
 - Fetch `minWithdrawAmount` and warn if a partial withdrawal would leave a non-zero remainder below it.
 - If an explicit state-reconstruction fallback is required, use direct RPC/DataService with deployment `startBlock`.
 - `X-Pool-Scope` must be decimal bigint string.
-- Do not confuse roots: `stateRoot` comes from `privacyPool.currentRoot()` via `getStateRoot(poolAddress)`, while `aspRoot` comes from ASP `onchainMtRoot` and must match `Entrypoint.latestRoot()`.
+- `stateRoot` comes from `privacyPool.currentRoot()` via `getStateRoot(poolAddress)`. `aspRoot` comes from ASP `onchainMtRoot` and must match `Entrypoint.latestRoot()`.
 - `onchainMtRoot` must equal `Entrypoint.latestRoot()` exactly.
 - If you reconstruct from on-chain events, initialize `DataService` with the deployment `startBlock`; do not scan from `0n`.
 - `withdrawalAmount` must be `> 0` and `<= commitment value`.
