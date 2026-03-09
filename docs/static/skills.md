@@ -11,9 +11,22 @@ Privacy Pools breaks the on-chain link between deposit and withdrawal addresses.
 
 ## Core Operations
 
-1. **Deposit**: Send assets to a Privacy Pool. The user submits a precommitment hash (derived from a nullifier and secret) on-chain. The pool contract generates a unique `label` and computes the full `commitment = poseidon(value, label, precommitment)`, which is inserted into the on-chain Merkle tree. The `label` is emitted in the `Deposited` event — the user must capture and store it along with the nullifier and secret for later withdrawal.
-2. **Withdraw**: Generate a ZK proof showing your commitment exists in both the state tree and the ASP-approved set, then submit it on-chain (directly or via a relayer). Supports partial withdrawals.
+1. **Deposit**: Send assets to a Privacy Pool. The user submits a precommitment hash (derived from a nullifier and secret) on-chain. The pool contract generates a unique `label` and computes the full `commitment = poseidon(value, label, precommitment)`, which is inserted into the on-chain Merkle tree. The `label` is emitted in the `Deposited` event — the integration should capture it and persist it in account state alongside the nullifier and secret instead of asking the user to manage notes manually.
+2. **Withdraw**: Generate a ZK proof showing your commitment exists in both the state tree and the ASP-approved set, then submit it on-chain. Production frontends should use the relayed path by default. Supports partial withdrawals.
 3. **Ragequit**: Emergency public exit. Prove ownership of a commitment via a commitment proof, then call ragequit to recover funds to the original depositor. Sacrifices privacy but guarantees fund recovery.
+
+## Opinionated Frontend Defaults
+
+Use these frontend defaults unless you have a specific reason not to:
+
+- Model the user as a mnemonic-backed account and keep deposits plus change commitments in pool-account state. This keeps secret-bearing notes out of copy/paste UX and gives users a safer abstraction.
+- Make relayed withdrawal the default private-withdraw UX. Self-relay and direct withdrawal are advanced non-private options.
+- Only offer wallet-signature onboarding when deterministic EIP-712 signing is supported. Sign the same typed-data payload twice, version the derivation (`v2` 24-word default; `v1` legacy restore only), and require backup before continuing.
+- If manual recovery phrase entry exists, sanitize whitespace/newlines/commas, validate checksum, and avoid clipboard-first UX.
+- Only offer private withdrawal from balances that are both positive and ASP-approved.
+- Request relayer quotes late in the flow, usually on the review step, and invalidate them when amount, recipient, relayer, or gas-drop settings change.
+- Resolve the final recipient before quote/proof generation, and warn if a partial withdrawal would leave a non-zero remainder below the relayer minimum.
+- Keep ragequit separate from private withdrawal and label it clearly as public fallback.
 
 ## SDK Quick Start
 
@@ -89,7 +102,43 @@ const dataService = new DataService(
 );
 ```
 
-### Deposit
+## Frontend Account Patterns
+
+### Account Bootstrap
+
+The core SDK does not currently ship a full frontend onboarding wrapper. The current website pattern is:
+
+1. Connect a wallet and determine whether deterministic EIP-712 signing is safe to use. Smart/contract wallets, Coinbase Wallet, and unsupported WalletConnect sessions should fall back to manual setup.
+2. Build a versioned typed-data payload bound to `keccak256(addressBytes)`.
+3. Sign the same payload twice and compare signatures. If the signatures differ, reject wallet-based derivation.
+4. Derive the mnemonic from the signature's `r` value using HKDF, with the wallet address bytes as salt and an app/version string as context. Default new accounts to 24-word `v2` derivation and keep 12-word `v1` only for legacy restore/sign-in.
+5. Require the user to download or otherwise back up the recovery phrase before loading the account.
+6. Never log raw signatures, recovery phrases, nullifiers, or secrets.
+
+If you support manual recovery phrase load, normalize whitespace/newlines/commas and validate word count plus checksum before initializing account state.
+
+### Pool-Account Model (Frontend Default)
+
+- `AccountService` is the recommended production model for frontend state.
+- On account load, use `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` to reconstruct deposits and withdrawal history.
+- Refresh review status across every loaded chain/scope combination, not just the currently selected pool.
+- If a deposit reports `APPROVED` but its label is not yet present in the current ASP leaves, continue treating it as pending until the leaf arrives.
+- On deposit success, parse the `Deposited` event and persist the resulting commitment metadata into local pool-account state rather than surfacing a note to the user.
+- On withdrawal success, append the new child/change commitment back to that same pool-account tree and refresh leaves before the next withdrawal.
+- Only expose privately spendable balances from accounts that have positive balance and remain ASP-approved.
+- If ragequit occurs, mark the pool account as exited.
+
+### Website-Aligned Withdrawal UX
+
+- Disable withdraw CTAs unless wallet is connected, account state is loaded, at least one relayer is available, and there is at least one approved non-zero pool account.
+- Filter pool-account selectors to the active chain/scope and to accounts with `balance > 0` plus `reviewStatus === APPROVED`.
+- Resolve ENS on mainnet before submit, display the resolved address or reverse ENS when helpful, and block unresolved or invalid recipient input.
+- Fetch `GET /relayer/details` during the form flow so you can validate `minWithdrawAmount`. If a partial withdrawal would leave a remainder `> 0` and `< minWithdrawAmount`, warn the user before review.
+- `GET /{chainId}/public/deposits-larger-than` is useful for showing an anonymity-set estimate while the user edits the amount.
+- Request the quote only when the review modal opens, keep a visible countdown, and if the quote expires or no longer matches the current form state, refresh it and require the user to confirm again.
+- `extraGas` is an optional gas-token drop for supported non-native assets. Toggling it should invalidate the quote and update fee display.
+
+## Deposit
 
 ```typescript
 // Step 0 (if needed): Generate a BIP-39 mnemonic (skip if user already has one)
@@ -140,11 +189,13 @@ const commitment = getCommitment(committedValue, label, nullifier, secret);
 // Step 7 (optional): Generate commitment proof now (needed for ragequit)
 const commitmentProof = await sdk.proveCommitment(committedValue, label, nullifier, secret);
 
-// IMPORTANT: Store commitment, masterKeys, label, nullifier, and secret locally.
-// You need them to withdraw or ragequit.
+// IMPORTANT: Store commitment, masterKeys, label, nullifier, and secret in
+// recovery-seed-backed account state. Avoid manual note copy/paste because it exposes raw secrets to the UI.
 ```
 
-### Withdrawal
+## Direct Withdrawal (advanced, same-signer recipient only, non-private)
+
+Production frontend recommendation: do not surface this as the default withdrawal path. Use the relayed flow later in this document unless the signer is intentionally also the recipient.
 
 ```typescript
 // Step 1: Generate new secrets for the change commitment
@@ -171,7 +222,8 @@ const aspMerkleProof = generateMerkleProof(aspLabels, commitmentLabel);
 // Step 3: Construct the Withdrawal object and compute context
 // IMPORTANT: For direct withdrawal, processooor MUST equal the tx signer (msg.sender).
 // The contract checks msg.sender == processooor and reverts with InvalidProcessooor otherwise.
-// This means direct withdrawals go to the signer's own address only.
+// This means direct withdrawals go to the signer's own address only, and the signer submits the
+// withdrawal transaction on-chain, so this is not the privacy-preserving frontend path.
 // To withdraw to a *different* address, use the relayed withdrawal flow instead (see below).
 import { privateKeyToAccount } from "viem/accounts";
 const signerAddress = privateKeyToAccount(privateKey).address; // derive signer address from the same key used in createContractInstance
@@ -227,11 +279,11 @@ The withdrawal flow requires several inputs sourced from on-chain state and exte
 |-------|--------|---------------|
 | `scope` | Pool contract | `contracts.getScope(privacyPoolAddress)` |
 | `stateRoot` | Pool contract | `contracts.getStateRoot(privacyPoolAddress)` → pool `currentRoot()` |
-| `allCommitmentHashes` | ASP API (preferred) or on-chain events | **Preferred:** `GET /{chainId}/public/mt-leaves` → `response.stateTreeLeaves` (pre-ordered). **Fallback:** reconstruct from `DataService` events (see below) |
+| `allCommitmentHashes` | ASP API (default) or direct RPC/DataService | **Default:** `GET /{chainId}/public/mt-leaves` → `response.stateTreeLeaves` (pre-ordered). **Advanced fallback:** reconstruct from `DataService` events (see below) |
 | `aspRoot` | ASP API | `GET /{chainId}/public/mt-roots` → `response.onchainMtRoot`. Requires `X-Pool-Scope` header. This is separate from `stateRoot`; verify it against on-chain `Entrypoint.latestRoot()` before submitting |
 | `aspLabels` | ASP API | `GET /{chainId}/public/mt-leaves` → `response.aspLeaves`. Requires `X-Pool-Scope` header. Returns `string[]` of decimal bigint labels |
 | `label` | Deposit event | Read from `Deposited` event logs after deposit tx |
-| `withdrawal` | Constructed by user | `{ processooor: signerAddress, data: "0x" }` (direct) or `{ processooor: entrypointAddress, data: relayData }` (relayed) |
+| `withdrawal` | Constructed by user | Default frontend path: `{ processooor: entrypointAddress, data: relayData }` (relayed). Advanced fallback: `{ processooor: signerAddress, data: "0x" }` (direct) |
 | `context` | Derived | `calculateContext(withdrawal, scope)` |
 
 ### Reconstructing the state tree
@@ -263,7 +315,9 @@ if (stateMerkleProof.root !== onChainRoot) {
 }
 ```
 
-**Fallback: Reconstruct from on-chain events.** If the API is unavailable, build the state tree from deposit and withdrawal event logs. Each deposit inserts a `commitment` leaf; each withdrawal inserts a `newCommitment` leaf (the change commitment). Ragequit does NOT insert a leaf — it only spends a nullifier. Leaves must be merged in **on-chain insertion order** (by block number, then log index within the block). The SDK event types don't expose `logIndex`, so the best available approach is to sort by `blockNumber` and rely on stable sort to preserve relative order. Since `DataService` returns events via `getLogs` (which preserves log ordering), each array from `getDeposits()` and `getWithdrawals()` is already internally ordered. Spread deposits before withdrawals and stable-sort by block — this is correct for the common case (a commitment must exist before it can be spent). Always validate the reconstructed root against the on-chain pool root (`contracts.getStateRoot(privacyPoolAddress)` -> `privacyPool.currentRoot()`) to catch rare same-block interleaving mismatches.
+The website path is ASP API first; if you intentionally need a fallback, use direct RPC via `DataService`.
+
+**Advanced fallback: Reconstruct from on-chain events via RPC.** If the API is unavailable, build the state tree from deposit and withdrawal event logs. Each deposit inserts a `commitment` leaf; each withdrawal inserts a `newCommitment` leaf (the change commitment). Ragequit does NOT insert a leaf — it only spends a nullifier. Leaves must be merged in **on-chain insertion order** (by block number, then log index within the block). The SDK event types don't expose `logIndex`, so the best available approach is to sort by `blockNumber` and rely on stable sort to preserve relative order. Since `DataService` returns events via `getLogs` (which preserves log ordering), each array from `getDeposits()` and `getWithdrawals()` is already internally ordered. Spread deposits before withdrawals and stable-sort by block — this is correct for the common case (a commitment must exist before it can be spent). Always validate the reconstructed root against the on-chain pool root (`contracts.getStateRoot(privacyPoolAddress)` -> `privacyPool.currentRoot()`) to catch rare same-block interleaving mismatches.
 
 ```typescript
 // Use the deployment start block for the chain (see Supported Networks table above).
@@ -478,13 +532,13 @@ interface Withdrawal {
 }
 ```
 
-Direct withdrawal:
+Direct withdrawal (advanced only):
 
 ```typescript
 const withdrawal: Withdrawal = { processooor: signerAddress, data: "0x" };
 ```
 
-Relayed withdrawal:
+Relayed withdrawal (production default):
 
 ```typescript
 import { encodeAbiParameters } from "viem";
@@ -529,6 +583,8 @@ function getRelayerHost(chainId: number): string {
 
 The public production relayer is operated by Fat Solutions. The relayer code is open-source (`packages/relayer`) — anyone can host their own. The relayer supports EVM chains and assets currently served by `fastrelay.xyz`; verify each chain/asset pair with `GET /relayer/details?chainId={chainId}&assetAddress={asset}` before use.
 
+Frontend timing pattern: request `/relayer/quote` on the review step, start a visible countdown, and discard the quote whenever amount, recipient, relayer, or `extraGas` changes.
+
 The API matches the OSS relayer contract (`packages/relayer`) exactly:
 
 - `POST /relayer/quote`
@@ -546,7 +602,7 @@ Example `POST /relayer/quote` — without `recipient` (fee estimate only, no sig
 }
 ```
 
-`extraGas`: when `true`, requests the relayer to use a higher gas limit for the relay transaction. Set to `true` if the recipient is a contract that needs additional gas to process the received funds (e.g., a smart wallet or multisig). For EOA recipients, use `false`.
+`extraGas`: when `true`, requests an additional native gas-token drop as part of the relayed withdrawal. The quote includes both the extra funding and the extra execution cost. The current website exposes this only for supported non-native assets and refreshes the quote whenever the toggle changes. Native-asset quotes force `extraGas = false`.
 
 Response (values are dynamic — vary with gas price and relayer config):
 
@@ -654,17 +710,21 @@ Example `GET /relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEe
 }
 ```
 
+Website-aligned form pattern: compare the intended post-withdrawal remainder against `minWithdrawAmount`. If the remainder would be non-zero but below the minimum, warn before review and offer alternatives such as withdrawing less, withdrawing max, or leaving the remainder for a later public exit.
+
 ### End-to-end relayed withdrawal
 
-This is the most common privacy-preserving flow: withdraw to a **different address** via the relayer. The steps are: (1) get a relayer fee quote with a signed commitment, (2) construct the relay Withdrawal object, (3) generate the ZK proof, (4) submit to the relayer. The entire flow must complete within 60 seconds (the feeCommitment TTL).
+This is the website-aligned privacy-preserving flow: withdraw to a **different address** via the relayer. The steps are: (1) get a relayer fee quote with a signed commitment, (2) construct the relay Withdrawal object, (3) generate the ZK proof, (4) submit to the relayer. The entire flow must complete within 60 seconds (the feeCommitment TTL).
 
-**Recommended default:** use the hosted relayer (`https://fastrelay.xyz`) for production agent and human+agent workflows. Treat self-relay as an advanced fallback path.
+**Recommended default:** use the hosted relayer (`https://fastrelay.xyz`) for production agent and human+agent workflows. Self-relay and direct withdrawal should be treated as advanced non-private options.
 
 ```typescript
 // Prerequisites: you have commitment, masterKeys, label from your deposit,
 // and aspRoot/aspLabels/allCommitmentHashes from the ASP API (see Data Sourcing above).
+// Resolve ENS or other human-readable recipient input to a final address before this flow.
 
 // Step 1: Get a relayer fee quote WITH recipient (returns signed feeCommitment)
+// Production UX pattern: do this on the review step, not earlier in the form flow.
 const relayerHost = getRelayerHost(1); // mainnet; helper handles testnets too
 const nativeAsset = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 const quoteRes = await fetch(`${relayerHost}/relayer/quote`, {
@@ -691,6 +751,13 @@ const details = await detailsRes.json();
 if (withdrawalAmount < BigInt(details.minWithdrawAmount)) {
   throw new Error(
     `Withdrawal amount ${withdrawalAmount} is below relayer minimum ${details.minWithdrawAmount}`
+  );
+}
+const committedValue = "preimage" in commitment ? commitment.preimage.value : commitment.value;
+const remainingBalance = committedValue - withdrawalAmount;
+if (remainingBalance > 0n && remainingBalance < BigInt(details.minWithdrawAmount)) {
+  throw new Error(
+    `Remaining balance ${remainingBalance} is below relayer minimum ${details.minWithdrawAmount}`
   );
 }
 
@@ -772,10 +839,9 @@ const receipt = await publicClient.waitForTransactionReceipt({ hash: result.txHa
 if (receipt.status !== "success") {
   throw new Error(`Relay transaction reverted: ${result.txHash}`);
 }
-// Fallback: if the relayer is unreachable after proof generation, you can self-relay
-// by calling contracts.relay(withdrawal, withdrawalProof, scope) directly, paying gas
-// yourself. The proof is still valid — the contract only checks processooor == entrypointAddress,
-// not who submits the tx.
+// After success, persist the new change commitment in your local pool-account tree.
+// If the quote expired or the user changed amount/recipient/extraGas during review,
+// refresh the quote and require another confirm click before proving/submitting.
 ```
 
 ### Reading the label and committed value from deposit events
@@ -904,7 +970,7 @@ for (const dep of myDeposits) {
 
 ### AccountService (production account tracking)
 
-`AccountService` manages deposit/withdrawal state automatically. It is the recommended way to track `withdrawalIndex`, spendable commitments, and change commitments in production.
+`AccountService` manages deposit/withdrawal state automatically. It is the recommended way to track `withdrawalIndex`, spendable commitments, and change commitments in production. This should be the core of a pool-account UI, not an optional helper beside manual notes.
 
 ```typescript
 import { AccountService, DataService } from "@0xbow/privacy-pools-core-sdk";
@@ -974,7 +1040,7 @@ const accountService = new AccountService(dataService, { mnemonic });
 | `depositERC20(tokenAddress, amount, precommitment)` | `Address, bigint, bigint` | Deposit ERC20 tokens |
 | `approveERC20(spenderAddress, tokenAddress, amount)` | `Address, Address, bigint` | Approve ERC20 spending (call before depositERC20) |
 | `withdraw(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Direct withdrawal. Internally resolves `scope` → pool address via `getScopeData()` and calls the **pool** contract's `withdraw()`. |
-| `relay(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Relayed withdrawal. Calls `relay()` on the **entrypoint** contract (not the pool). **Default path:** use the HTTP relayer flow (`fastrelay.xyz`) in this guide. Can be called by **anyone** — the contract only checks that `processooor == entrypointAddress`, not who `msg.sender` is. Self-relay (paying gas yourself) is supported, but should be treated as an advanced/fallback path. |
+| `relay(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Relayed withdrawal. Calls `relay()` on the **entrypoint** contract (not the pool). **Default path:** use the HTTP relayer flow (`fastrelay.xyz`) in this guide. Can be called by **anyone** — the contract only checks that `processooor == entrypointAddress`, not who `msg.sender` is. Self-relay (paying gas yourself) is supported, but should be treated as an advanced non-private path. |
 | `ragequit(commitmentProof, poolAddress)` | `CommitmentProof, Address` | Emergency public exit |
 
 All write methods return `Promise<{ hash: string; wait: () => Promise<void> }>`. The `hash` is a hex tx hash string (e.g. `"0xabc..."`).

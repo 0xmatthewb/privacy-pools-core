@@ -20,7 +20,7 @@ Privacy Pools documents agent integrations through `skills-core.md`, `skills.md`
 |---|---|---|---|
 | [skills-core.md](https://docs.privacypools.com/skills-core.md) | Operational quickstart | Agents, human+agent sessions | Start here; covers all flows with minimal context |
 | [skills.md](https://docs.privacypools.com/skills.md) | Deep reference | Agents + engineers | Primary docs reference for SDK, API schemas, types, and error handling |
-| [integrations.md](/protocol/integrations) | Human-facing production integration path | Engineers, human+agent sessions | Concise onboarding + safety checks + deep-reference links |
+| [integrations.md](/protocol/integrations) | Human-facing production integration path | Engineers, human+agent sessions | Concise onboarding + frontend happy path + safety checks + deep-reference links |
 | [deployments.md](/deployments) | Contract addresses and start blocks | All | Authoritative chain-specific deployment data |
 | [CLAUDE.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/CLAUDE.md) | Claude Code config | Claude Code | Auto-loaded at repo root; routes to canonical docs |
 | [AGENTS.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/AGENTS.md) | Repo-level guidance | Codex and similar coding agents | Build/test commands, security constraints, repo structure |
@@ -36,17 +36,19 @@ Hosted links are in the [File Map](#file-map) above. The paths below are local r
 
 Claude Code auto-discovers `CLAUDE.md` at the repository root — no setup needed. It routes the agent to:
 
-1. `docs/static/skills-core.md` — read first for operational flows and safety rules.
-2. `docs/static/skills.md` — read relevant sections for SDK details, API schemas, or edge cases.
-3. `docs/docs/deployments.md` — pull chain addresses and `startBlock` values.
+1. `docs/docs/protocol/integrations.md` — read first for the integration happy path.
+2. `docs/static/skills-core.md` — read for operational flows and safety rules.
+3. `docs/static/skills.md` — read relevant sections for SDK details, API schemas, or edge cases.
+4. `docs/docs/deployments.md` — pull chain addresses and `startBlock` values.
 
 ### Codex
 
 Codex reads `AGENTS.md` at the repository root for build commands, repo structure, and security constraints. For protocol integration work:
 
-1. Start with `docs/static/skills-core.md` for the operational path.
-2. Refer to `docs/static/skills.md` for advanced implementation details.
-3. Use `docs/docs/deployments.md` for authoritative addresses and start blocks.
+1. Start with `docs/docs/protocol/integrations.md` for the integration happy path.
+2. Refer to `docs/static/skills-core.md` for the operational path.
+3. Refer to `docs/static/skills.md` for advanced implementation details.
+4. Use `docs/docs/deployments.md` for authoritative addresses and start blocks.
 
 In this repository, Codex can also read `.agents/skills/privacy-pools/SKILL.md`.
 

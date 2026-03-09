@@ -4,7 +4,7 @@ Route all Privacy Pools tasks through the docs below.
 
 ## Key Docs
 
-- Integrator-friendly onboarding: `docs/docs/protocol/integrations.md`
+- Integrator-friendly onboarding + frontend patterns: `docs/docs/protocol/integrations.md`
 - Primary operational quickstart: `docs/static/skills-core.md`
 - Deep reference: `docs/static/skills.md`
 - Deployments and start blocks: `docs/docs/deployments.md`
@@ -26,8 +26,11 @@ Route all Privacy Pools tasks through the docs below.
 
 ## Workflow Rules
 
-- Prefer relayed withdrawals via `fastrelay.xyz` for production flows.
-- Treat self-relay as advanced fallback.
+- Use relayed withdrawals via `fastrelay.xyz` as the default frontend path because that is the privacy-preserving withdrawal path. Treat self-relay and direct withdrawal as advanced non-private options.
+- Frontends should use mnemonic-backed pool accounts reconstructed from on-chain events rather than secret-bearing note copy/paste flows.
+- Only expose private withdrawal from approved non-zero pool accounts, and resolve plus validate the recipient before quote or proof generation.
+- Request relayer quotes on the review step. If amount, recipient, relayer, or optional gas-token drop changes, or the quote expires, re-quote and require reconfirmation.
+- Prefer wallet-signature seed derivation only when the wallet can produce deterministic EIP-712 signatures; require a backup step before relying on it. Otherwise fall back to manual mnemonic create/load and sanitize recovery phrase input.
 - Always verify ASP root parity before withdrawal proof submission.
 - For `DataService` event scans, always use the deployment `startBlock` from `docs/docs/deployments.md`; do not scan from genesis.
 - Always use decimal `X-Pool-Scope` header values.
