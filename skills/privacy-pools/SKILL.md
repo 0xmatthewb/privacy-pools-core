@@ -27,7 +27,7 @@ Outside the repository, use the published docs:
 
 - Model user state as a mnemonic-backed account with pool-account tracking; this gives a better UX without pushing secret-bearing notes through copy/paste or other UI surfaces where they can be exposed, including XSS or clipboard risks.
 - Production frontend default is relayed withdrawals because that is the privacy-preserving withdrawal path. Self-relay and direct withdrawal are advanced non-private options.
-- When onboarding from a wallet, use deterministic EIP-712 signature-based seed derivation with an explicit backup step; otherwise fall back to manual mnemonic setup/load.
+- When onboarding from a wallet, only use deterministic EIP-712 signature-based seed derivation after signing the same payload twice, default new accounts to `v2`, keep `v1` for legacy restore only, and require an explicit backup step. Otherwise fall back to manual mnemonic setup/load.
 - Only offer private withdrawal from pool accounts with positive balance and ASP approval.
 - Request relayer quotes on the review step, invalidate them when amount, recipient, relayer, or `extraGas` changes, and warn if a partial withdrawal would leave a remainder below the relayer minimum.
 
@@ -48,7 +48,7 @@ Outside the repository, use the published docs:
 
 - Use mnemonic/account-backed pool-account state plus on-chain events; do not design around secret-bearing note copy/paste workflows.
 - Offer relayed withdrawals by default. If self-relay or direct withdrawal is exposed, present it as advanced and non-private.
-- Wallet-signature seed derivation requires deterministic EIP-712 signing. Sign the same payload twice, version the derivation, require a backup step, and fall back to manual mnemonic setup/load when unsupported.
+- Wallet-signature seed derivation requires deterministic EIP-712 signing. Sign the same payload twice, use versioned derivation (`v2` for new accounts, `v1` only for legacy restore/sign-in), require a backup step, and fall back to manual mnemonic setup/load when unsupported.
 - Manual recovery phrase entry must be sanitized before use.
 - Only privately withdraw from balances with `balance > 0` and `reviewStatus === APPROVED`.
 - Resolve and validate the recipient before requesting a quote or generating a proof.

@@ -106,14 +106,16 @@ const dataService = new DataService(
 
 ### Account Bootstrap
 
-The core SDK does not currently ship a full frontend onboarding wrapper. The current website pattern is:
+The core SDK does not currently ship a full frontend onboarding wrapper. The current reference-implementation pattern is:
 
-1. Connect a wallet and determine whether deterministic EIP-712 signing is safe to use. Smart/contract wallets, Coinbase Wallet, and unsupported WalletConnect sessions should fall back to manual setup.
+1. Connect a wallet and determine whether it can reproduce the same EIP-712 signature for the same payload. If not, or if the signer path is abstracted in a way that breaks deterministic signing, fall back to manual setup.
 2. Build a versioned typed-data payload bound to `keccak256(addressBytes)`.
 3. Sign the same payload twice and compare signatures. If the signatures differ, reject wallet-based derivation.
 4. Derive the mnemonic from the signature's `r` value using HKDF, with the wallet address bytes as salt and an app/version string as context. Default new accounts to 24-word `v2` derivation and keep 12-word `v1` only for legacy restore/sign-in.
 5. Require the user to download or otherwise back up the recovery phrase before loading the account.
 6. Never log raw signatures, recovery phrases, nullifiers, or secrets.
+
+Feature-detect this at runtime rather than relying on wallet branding alone.
 
 If you support manual recovery phrase load, normalize whitespace/newlines/commas and validate word count plus checksum before initializing account state.
 
@@ -128,7 +130,7 @@ If you support manual recovery phrase load, normalize whitespace/newlines/commas
 - Only expose privately spendable balances from accounts that have positive balance and remain ASP-approved.
 - If ragequit occurs, mark the pool account as exited.
 
-### Website-Aligned Withdrawal UX
+### Recommended Frontend Withdrawal UX
 
 - Disable withdraw CTAs unless wallet is connected, account state is loaded, at least one relayer is available, and there is at least one approved non-zero pool account.
 - Filter pool-account selectors to the active chain/scope and to accounts with `balance > 0` plus `reviewStatus === APPROVED`.
@@ -137,6 +139,7 @@ If you support manual recovery phrase load, normalize whitespace/newlines/commas
 - `GET /{chainId}/public/deposits-larger-than` is useful for showing an anonymity-set estimate while the user edits the amount.
 - Request the quote only when the review modal opens, keep a visible countdown, and if the quote expires or no longer matches the current form state, refresh it and require the user to confirm again.
 - `extraGas` is an optional gas-token drop for supported non-native assets. Toggling it should invalidate the quote and update fee display.
+- If proof generation takes noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof`.
 
 ## Deposit
 
@@ -193,6 +196,8 @@ const commitmentProof = await sdk.proveCommitment(committedValue, label, nullifi
 // recovery-seed-backed account state. Avoid manual note copy/paste because it exposes raw secrets to the UI,
 // including clipboard and XSS-prone surfaces.
 ```
+
+Frontend note: if the wallet supports batching, approval + deposit can be collapsed into one user action. The same pattern can extend to stake-then-deposit flows for alternative input tokens, as long as the review UI makes the final deposited asset and expected amount explicit.
 
 ## Direct Withdrawal (advanced, same-signer recipient only, non-private)
 
@@ -711,11 +716,11 @@ Example `GET /relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEe
 }
 ```
 
-Website-aligned form pattern: compare the intended post-withdrawal remainder against `minWithdrawAmount`. If the remainder would be non-zero but below the minimum, warn before review and offer alternatives such as withdrawing less, withdrawing max, or leaving the remainder for a later public exit.
+Recommended form pattern: compare the intended post-withdrawal remainder against `minWithdrawAmount`. If the remainder would be non-zero but below the minimum, warn before review and offer alternatives such as withdrawing less, withdrawing max, or leaving the remainder for a later public exit.
 
 ### End-to-end relayed withdrawal
 
-This is the website-aligned privacy-preserving flow: withdraw to a **different address** via the relayer. The steps are: (1) get a relayer fee quote with a signed commitment, (2) construct the relay Withdrawal object, (3) generate the ZK proof, (4) submit to the relayer. The entire flow must complete within 60 seconds (the feeCommitment TTL).
+This is the recommended privacy-preserving flow: withdraw to a **different address** via the relayer. The steps are: (1) get a relayer fee quote with a signed commitment, (2) construct the relay Withdrawal object, (3) generate the ZK proof, (4) submit to the relayer. The entire flow must complete within 60 seconds (the feeCommitment TTL).
 
 **Recommended default:** use the hosted relayer (`https://fastrelay.xyz`) for production agent and human+agent workflows. Self-relay and direct withdrawal should be treated as advanced non-private options.
 

@@ -18,13 +18,13 @@ Privacy Pools documents agent integrations through `skills-core.md`, `skills.md`
 
 | File | Purpose | Audience | Notes |
 |---|---|---|---|
-| [skills-core.md](https://docs.privacypools.com/skills-core.md) | Operational quickstart | Agents, human+agent sessions | Start here; covers all flows with minimal context |
+| [skills-core.md](https://docs.privacypools.com/skills-core.md) | Operational quickstart | Agents, human+agent sessions | Minimal operational rules; pair with `integrations.md` for the happy path |
 | [skills.md](https://docs.privacypools.com/skills.md) | Deep reference | Agents + engineers | Primary docs reference for SDK, API schemas, types, and error handling |
 | [integrations.md](/protocol/integrations) | Human-facing production integration path | Engineers, human+agent sessions | Concise onboarding + frontend happy path + safety checks + deep-reference links |
 | [deployments.md](/deployments) | Contract addresses and start blocks | All | Authoritative chain-specific deployment data |
-| [CLAUDE.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/CLAUDE.md) | Claude Code config | Claude Code | Auto-loaded at repo root; routes to canonical docs |
-| [AGENTS.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/AGENTS.md) | Repo-level guidance | Codex and similar coding agents | Build/test commands, security constraints, repo structure |
-| [SKILL.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/skills/privacy-pools/SKILL.md) | Installable Codex skill | Codex skill users | Source file: `skills/privacy-pools/SKILL.md`; repo mirror: `.agents/skills/privacy-pools/SKILL.md` |
+| `CLAUDE.md` | Claude Code config | Claude Code | Repo-root file; auto-loaded locally and routes to the canonical docs |
+| `AGENTS.md` | Repo-level guidance | Codex and similar coding agents | Repo-root file covering build commands, security constraints, and repo structure |
+| `skills/privacy-pools/SKILL.md` | Installable Codex skill | Codex skill users | Source file; repo mirror: `.agents/skills/privacy-pools/SKILL.md` |
 | [llms.txt](https://docs.privacypools.com/llms.txt) | Lightweight site index | Crawlers, retrieval systems | Auto-generated at build; discovery and routing |
 | [llms-full.txt](https://docs.privacypools.com/llms-full.txt) | Complete LLM corpus | Retrieval systems | Prepends `skills-core.md` + `skills.md`; fully self-contained |
 

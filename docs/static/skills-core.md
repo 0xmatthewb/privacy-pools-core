@@ -6,7 +6,7 @@
 
 ## Read Order
 
-1. Read this file first for flow and safety-critical rules.
+1. Use this file for the operational flow and safety-critical rules.
 2. Read `https://docs.privacypools.com/deployments` for chain addresses and start blocks.
 3. Read `https://docs.privacypools.com/skills.md` only for advanced implementation details and edge cases.
 
@@ -22,23 +22,34 @@ This guide keeps the production integration path small:
 
 ## Non-Negotiable Rules
 
+### Account and Recovery
+
 - Frontends should use mnemonic-backed pool-account state. It gives users a better UX without pushing secret-bearing notes through copy/paste or other UI surfaces where they can be exposed, including XSS or clipboard risks.
-- Production frontend default is relayed withdrawal because it is the privacy-preserving path. Self-relay and direct withdrawal are advanced non-private options.
-- Wallet-signature onboarding is only safe when the wallet produces deterministic EIP-712 signatures. Smart/contract wallets, Coinbase Wallet, and unsupported WalletConnect sessions should fall back to manual 12- or 24-word mnemonic setup/load. Sign the same payload twice, version the derivation, and require a backup/download step before proceeding.
+- Wallet-signature onboarding is only safe when the wallet can reproduce the same EIP-712 signature for the same payload twice. Use versioned derivation (`v2` for new accounts, `v1` only for legacy restore/sign-in), require a backup/download step, and fall back to manual 12- or 24-word mnemonic setup/load when that deterministic signer path is unavailable.
 - Manual recovery phrase entry must be sanitized before use, and clipboard-first UX should be avoided.
+
+### Private Withdrawal
+
+- Production frontend default is relayed withdrawal because it is the privacy-preserving path. Self-relay and direct withdrawal are advanced non-private options.
 - Only offer private withdrawal from pool accounts with `balance > 0` and `reviewStatus === APPROVED`.
 - Resolve and validate the final recipient before requesting a quote or generating a proof. Unresolved ENS or invalid address input must block the withdrawal flow.
 - Request relayer quotes only when the user enters the review step. If amount, recipient, relayer, or `extraGas` changes, or if the quote expires, discard it, re-quote, and require the user to confirm again.
 - Fetch `minWithdrawAmount` from `GET /relayer/details` and warn if a partial withdrawal would leave a non-zero remainder below that minimum.
 - If you expose `extraGas`, treat it as an optional gas-token drop for supported non-native assets and include it in quote invalidation plus review-step fee display.
+- `feeCommitment` from relayer quote expires in ~60 seconds; request quotes as late as possible and ensure quote -> proof -> request fits inside this window.
+
+### Roots and State
+
 - `X-Pool-Scope` header must be a decimal bigint string (`scope.toString()`), not hex.
 - Use `onchainMtRoot` from ASP `mt-roots` as proof `aspRoot`.
 - Require exact equality: `BigInt(onchainMtRoot) === Entrypoint.latestRoot()`.
 - Use `contracts.getStateRoot(poolAddress)` for `stateRoot`; it reads the pool's `currentRoot()`, not `Entrypoint.latestRoot()`.
 - If you need an explicit RPC fallback for state reconstruction, use `DataService` with the deployment `startBlock`; never scan from `0n`.
+
+### Transaction Validation
+
 - Validate `withdrawalAmount > 0n && withdrawalAmount <= committedValue` before proof generation.
 - Validate `amount >= minimumDepositAmount` before any deposit.
-- `feeCommitment` from relayer quote expires in ~60 seconds; request quotes as late as possible and ensure quote -> proof -> request fits inside this window.
 - Ragequit and private withdrawal are mutually exclusive on the same commitment (`NullifierAlreadySpent`).
 - After partial withdrawal, refresh tree data before next proof (new change commitment leaf is inserted).
 
@@ -52,16 +63,11 @@ ASP host helper:
 
 ```typescript
 function getAspApiHost(chainId: number): string {
-  const hosts: Record<number, string> = {
-    1: "https://api.0xbow.io",        // Ethereum mainnet
-    42161: "https://api.0xbow.io",    // Arbitrum
-    10: "https://api.0xbow.io",       // OP mainnet
-    11155111: "https://dw.0xbow.io",  // Sepolia
-    11155420: "https://dw.0xbow.io",  // OP Sepolia
-  };
-  const host = hosts[chainId];
-  if (!host) throw new Error(`No ASP API host configured for chainId ${chainId}`);
-  return host;
+  const productionChainIds = new Set([1, 10, 42161]);
+  const testnetChainIds = new Set([11155111, 11155420]);
+  if (productionChainIds.has(chainId)) return "https://api.0xbow.io";
+  if (testnetChainIds.has(chainId)) return "https://dw.0xbow.io";
+  throw new Error(`No ASP API host configured for chainId ${chainId}`);
 }
 ```
 
@@ -69,16 +75,11 @@ Relayer host helper:
 
 ```typescript
 function getRelayerHost(chainId: number): string {
-  const hosts: Record<number, string> = {
-    1: "https://fastrelay.xyz",
-    42161: "https://fastrelay.xyz",
-    10: "https://fastrelay.xyz",
-    11155111: "https://testnet-relayer.privacypools.com",
-    11155420: "https://testnet-relayer.privacypools.com",
-  };
-  const host = hosts[chainId];
-  if (!host) throw new Error(`No relayer host configured for chainId ${chainId}`);
-  return host;
+  const productionChainIds = new Set([1, 10, 42161]);
+  const testnetChainIds = new Set([11155111, 11155420]);
+  if (productionChainIds.has(chainId)) return "https://fastrelay.xyz";
+  if (testnetChainIds.has(chainId)) return "https://testnet-relayer.privacypools.com";
+  throw new Error(`No relayer host configured for chainId ${chainId}`);
 }
 ```
 
@@ -89,7 +90,7 @@ Production default: use `fastrelay.xyz` for relayed withdrawals. Self-relay and 
 ### Account Bootstrap (Frontend Default)
 
 1. Create or load a mnemonic-backed account before the user can deposit or withdraw.
-2. If you offer wallet-based onboarding, gate it by wallet capability, derive a versioned recovery seed from deterministic EIP-712 signatures, and require a backup step before proceeding.
+2. If you offer wallet-based onboarding, gate it by wallet capability, derive a versioned recovery seed from deterministic EIP-712 signatures (`v2` for new accounts, `v1` only for legacy restore/sign-in), and require a backup step before proceeding.
 3. If the wallet cannot produce deterministic signatures, fall back to manual mnemonic creation/load.
 4. Use the mnemonic/account state to reconstruct pool accounts across sessions; do not ask users to manually carry notes.
 
@@ -149,6 +150,13 @@ Use when private withdrawal is unavailable (e.g., ASP not approved or label remo
 3. Clearly warn the user that ragequit is public and returns funds to the original depositor path.
 
 Ragequit is public and irreversible for that commitment (nullifier is spent).
+
+## Helpful UX Patterns
+
+- `GET /{chainId}/public/deposits-larger-than` can show an anonymity-set estimate while the user edits the withdrawal amount.
+- ENS resolution should use mainnet (`chainId = 1`) even when the active pool is on another EVM chain.
+- If proof generation can take noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof` instead of a blind spinner.
+- If the wallet supports batching, combining approval + deposit into one user action is a good upgrade. The same pattern can extend to stake-then-deposit flows as long as the final deposited asset and expected amount are explicit in review UI.
 
 ## Required Runtime Validations
 
