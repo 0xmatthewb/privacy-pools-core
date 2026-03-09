@@ -25,7 +25,7 @@ This guide keeps the production integration path small:
 ### Account and Recovery
 
 - Frontends should use mnemonic-backed pool-account state. It gives users a better UX without pushing secret-bearing notes through copy/paste or other UI surfaces where they can be exposed, including XSS or clipboard risks.
-- Wallet-signature onboarding is only safe when the wallet can reproduce the same EIP-712 signature for the same payload twice. Use the current derivation flow for new accounts, only expose any older restore path for existing legacy accounts, require a backup/download step, and fall back to manual 12- or 24-word mnemonic setup/load when that deterministic signer path is unavailable.
+- Wallet-signature onboarding is only safe when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup/download step, use the current derivation flow for new accounts, only expose any older restore path for existing legacy accounts, and fall back to manual 12- or 24-word mnemonic setup/load when that deterministic signer path is unavailable.
 - Manual recovery phrase entry must be sanitized before use, and clipboard-first UX should be avoided.
 
 ### Private Withdrawal
@@ -151,12 +151,14 @@ Use when private withdrawal is unavailable (e.g., ASP not approved or label remo
 
 Ragequit is public and irreversible for that commitment (nullifier is spent).
 
-## Helpful UX Patterns
+## UX Patterns
 
 - `GET /{chainId}/public/deposits-larger-than` can show an anonymity-set estimate while the user edits the withdrawal amount.
+- `POST /relayer/quote` without `recipient` can be used earlier in the form for a fee estimate. Request the signed `feeCommitment` only after the final recipient is known on review.
 - ENS resolution should use mainnet (`chainId = 1`) even when the active pool is on another EVM chain.
 - If proof generation can take noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof` instead of a blind spinner.
 - If the wallet supports batching, combining approval + deposit into one user action is a good upgrade. The same pattern can extend to stake-then-deposit flows as long as the final deposited asset and expected amount are explicit in review UI.
+- Treat wallet rejections and user cancellations as expected user actions, not product failures.
 
 ## Required Runtime Validations
 

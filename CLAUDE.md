@@ -30,7 +30,7 @@ Route all Privacy Pools tasks through the docs below.
 - Frontends should use mnemonic-backed pool accounts reconstructed from on-chain events rather than secret-bearing note copy/paste flows that expose secrets in clipboard or XSS-prone UI surfaces.
 - Only expose private withdrawal from approved non-zero pool accounts, and resolve plus validate the recipient before quote or proof generation.
 - Request relayer quotes on the review step. If amount, recipient, relayer, or optional gas-token drop changes, or the quote expires, re-quote and require reconfirmation.
-- Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload, and require a backup step before relying on it. Only expose any older restore path when restoring an existing legacy account. Otherwise fall back to manual mnemonic create/load and sanitize recovery phrase input.
+- Prefer wallet-signature seed derivation only when the wallet can reproduce the same payload signature twice. Require a backup step before relying on it, use the current derivation flow for new accounts, and only expose any older restore path when restoring an existing legacy account. Otherwise fall back to manual mnemonic create/load and sanitize recovery phrase input.
 - Always verify ASP root parity before withdrawal proof submission.
 - For `DataService` event scans, always use the deployment `startBlock` from `docs/docs/deployments.md`; do not scan from genesis.
 - Always use decimal `X-Pool-Scope` header values.
