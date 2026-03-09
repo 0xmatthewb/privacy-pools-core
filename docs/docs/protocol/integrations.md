@@ -24,7 +24,7 @@ This page covers the recommended production integration path for Privacy Pools. 
 ## Happy Path
 
 1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
-2. If wallet onboarding is supported, derive a versioned recovery seed from deterministic EIP-712 signatures, sign the same payload twice to confirm determinism, default new accounts to `v2`, keep `v1` only for legacy restore/sign-in, and require a backup step. If the wallet path cannot guarantee deterministic signing, fall back to manual mnemonic create/load.
+2. If wallet onboarding is supported, derive the recovery seed from deterministic EIP-712 signatures, sign the same payload twice to confirm determinism, and require a backup step. Only expose any older restore path when restoring an existing legacy account. If the wallet path cannot guarantee deterministic signing, fall back to manual mnemonic create/load.
 3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts, not loose notes. This gives users a safer abstraction over secret material. Refresh review state across all loaded chain/scope pairs, and treat deposits as pending until both the review status and current ASP leaves agree.
 5. Build withdrawal proofs with two roots: `contracts.getStateRoot(poolAddress)` for the pool state root and ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
@@ -50,7 +50,7 @@ This page covers the recommended production integration path for Privacy Pools. 
 ### Account and Recovery
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. Feature-detect this at runtime rather than keying the decision off wallet branding alone.
-- Use a versioned derivation (`v2` default for new accounts; `v1` only for legacy restore/sign-in), compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing.
+- Use the current derivation flow for new accounts, compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing. Only expose any older restore path when restoring an existing legacy account.
 - If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
 
 ### Deposit UX
