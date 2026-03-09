@@ -1,12 +1,12 @@
 # Privacy Pools Claude Code Guide
 
-Route all Privacy Pools tasks through the local docs below. Do not treat this file as the canonical protocol reference.
+Route all Privacy Pools tasks through the docs below.
 
-## Canonical Docs
+## Key Docs
 
 - Integrator-friendly onboarding: `docs/docs/protocol/integrations.md`
 - Primary operational quickstart: `docs/static/skills-core.md`
-- Canonical deep reference: `docs/static/skills.md`
+- Deep reference: `docs/static/skills.md`
 - Deployments and start blocks: `docs/docs/deployments.md`
 - Agent file map and usage: `docs/docs/agent-workflows.md`
 

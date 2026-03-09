@@ -6,8 +6,8 @@
  * included automatically.
  *
  * This script prepends both so llms-full.txt is fully self-contained:
- *   1. skills-core.md — concise operational quickstart (high-signal, low-context)
- *   2. skills.md — canonical deep reference (SDK, API schemas, ABIs, error handling)
+ *   1. skills-core.md — concise operational quickstart
+ *   2. skills.md — deep reference for SDK, API schemas, ABIs, and errors
  *   3. Original docusaurus-generated docs pages
  *
  * Agents that receive llms-full.txt can execute end-to-end without following
@@ -50,7 +50,7 @@ const coreHeader = [
   "Agent quickstart (skills-core.md)",
   "",
   "This is the concise operational guide for autonomous and human+agent workflows.",
-  "The canonical deep reference (skills.md) follows immediately after this section.",
+  "The deep reference (skills.md) follows immediately after this section.",
   "",
 ].join("\n");
 
@@ -61,7 +61,7 @@ if (existsSync(skillsDeepPath)) {
     "",
     "---",
     "",
-    "Canonical deep reference (skills.md)",
+    "Deep reference (skills.md)",
     "",
     "Complete SDK, API, and protocol integration reference.",
     "This is the primary deep-reference document for Privacy Pools agent workflows.",

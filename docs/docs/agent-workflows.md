@@ -12,25 +12,25 @@ keywords:
 
 # Agent Workflows
 
-Privacy Pools provides a single canonical deep-reference document (`skills.md`) with lightweight entry files for each AI coding tool.
+Privacy Pools documents agent integrations through `skills-core.md`, `skills.md`, and tool-specific entry files.
 
 ## File Map
 
 | File | Purpose | Audience | Notes |
 |---|---|---|---|
 | [skills-core.md](https://docs.privacypools.com/skills-core.md) | Operational quickstart | Agents, human+agent sessions | Start here; covers all flows with minimal context |
-| [skills.md](https://docs.privacypools.com/skills.md) | Canonical deep reference | Agents + engineers | Primary docs reference for SDK, API schemas, types, and error handling |
+| [skills.md](https://docs.privacypools.com/skills.md) | Deep reference | Agents + engineers | Primary docs reference for SDK, API schemas, types, and error handling |
 | [integrations.md](/protocol/integrations) | Human-facing production integration path | Engineers, human+agent sessions | Concise onboarding + safety checks + deep-reference links |
 | [deployments.md](/deployments) | Contract addresses and start blocks | All | Authoritative chain-specific deployment data |
 | [CLAUDE.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/CLAUDE.md) | Claude Code config | Claude Code | Auto-loaded at repo root; routes to canonical docs |
 | [AGENTS.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/AGENTS.md) | Repo-level guidance | Codex and similar coding agents | Build/test commands, security constraints, repo structure |
-| [SKILL.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/skills/privacy-pools/SKILL.md) | Installable skill wrapper | Codex skill users | Frontmatter-driven; thin wrapper around canonical docs (canonical source: `skills/privacy-pools/SKILL.md`, repo-scoped mirror: `.agents/skills/privacy-pools/SKILL.md`) |
+| [SKILL.md](https://github.com/0xbow-io/privacy-pools-core/blob/main/skills/privacy-pools/SKILL.md) | Installable Codex skill | Codex skill users | Source file: `skills/privacy-pools/SKILL.md`; repo mirror: `.agents/skills/privacy-pools/SKILL.md` |
 | [llms.txt](https://docs.privacypools.com/llms.txt) | Lightweight site index | Crawlers, retrieval systems | Auto-generated at build; discovery and routing |
 | [llms-full.txt](https://docs.privacypools.com/llms-full.txt) | Complete LLM corpus | Retrieval systems | Prepends `skills-core.md` + `skills.md`; fully self-contained |
 
 ## How To Use
 
-Hosted links are in the [File Map](#file-map) above. For in-repo work, prefer the local paths below so branch changes are visible before publish.
+Hosted links are in the [File Map](#file-map) above. The paths below are local repo paths used in editor and agent workflows.
 
 ### Claude Code
 
@@ -48,7 +48,7 @@ Codex reads `AGENTS.md` at the repository root for build commands, repo structur
 2. Refer to `docs/static/skills.md` for advanced implementation details.
 3. Use `docs/docs/deployments.md` for authoritative addresses and start blocks.
 
-For repo-scoped Codex auto-discovery, use `.agents/skills/privacy-pools/SKILL.md`.
+In this repository, Codex can also read `.agents/skills/privacy-pools/SKILL.md`.
 
 For user-scoped installation, Codex discovers skills under `$CODEX_HOME/skills` (default: `~/.codex/skills`):
 
@@ -66,17 +66,8 @@ For systems that ingest a single document, use `llms-full.txt`. It includes `ski
 | Resource | URL |
 |---|---|
 | Agent quickstart | https://docs.privacypools.com/skills-core.md |
-| Canonical deep reference | https://docs.privacypools.com/skills.md |
-| Human integration path | https://docs.privacypools.com/protocol/integrations |
+| Deep reference | https://docs.privacypools.com/skills.md |
+| Integration guide | https://docs.privacypools.com/protocol/integrations |
 | Deployments | https://docs.privacypools.com/deployments |
 | Full LLM corpus | https://docs.privacypools.com/llms-full.txt |
 | Site index | https://docs.privacypools.com/llms.txt |
-
-## Maintenance
-
-- `skills.md` is the canonical deep-reference doc. Update it first; keep wrappers thin.
-- Update `skills-core.md` whenever operational guidance changes.
-- Keep `skills/privacy-pools/SKILL.md` and `.agents/skills/privacy-pools/SKILL.md` in sync (`skills/privacy-pools/SKILL.md` is canonical).
-- When SDK integration semantics change, propagate the distinction between pool `currentRoot()` and entrypoint `latestRoot()` plus current `DataService` scanning/config guidance into the thin wrappers.
-- Avoid hardcoding addresses in wrappers — reference `deployments.md` instead.
-- Rebuild after changes: `cd docs && yarn build`.

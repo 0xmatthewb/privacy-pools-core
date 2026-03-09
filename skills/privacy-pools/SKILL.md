@@ -5,11 +5,11 @@ description: Integrate with Privacy Pools for deposits, private withdrawals (dir
 
 # Privacy Pools Integration Skill
 
-Use this skill as a thin wrapper around the canonical Privacy Pools docs.
+Use this skill to route Privacy Pools work through the docs below.
 
 ## Read Order
 
-If you are running inside the `privacy-pools-core` repository, prefer the local docs so branch changes are visible before publish:
+If you are running inside the `privacy-pools-core` repository, start with the local docs:
 
 1. Read `docs/static/skills-core.md` for the short operational path.
 2. Read relevant sections of `docs/static/skills.md` for implementation depth.

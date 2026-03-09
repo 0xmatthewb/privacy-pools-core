@@ -15,11 +15,11 @@ Yarn workspaces monorepo (Node.js >= 20, Yarn 1.x):
 - `docs/` - Docusaurus docs site
 - `audit/` - Security audit reports (read-only)
 
-**Protocol integration docs (agent-first layering):**
+**Protocol integration docs:**
 - `docs/static/skills-core.md` — quick operational guide for autonomous agents and human+agent workflows (start here).
-- `docs/static/skills.md` — canonical deep-reference doc for SDK, API, and integration behavior.
-- `CLAUDE.md` — thin Claude Code router for this repo.
-- `.agents/skills/privacy-pools/SKILL.md` — repo-scoped Codex skill (official Codex discovery path); canonical source: `skills/privacy-pools/SKILL.md`.
+- `docs/static/skills.md` — primary deep-reference doc for SDK, API, and integration behavior.
+- `CLAUDE.md` — Claude Code entry file for this repo.
+- `.agents/skills/privacy-pools/SKILL.md` — Codex skill file; kept in sync with `skills/privacy-pools/SKILL.md`.
 
 ## Key Domain Concepts
 
@@ -76,6 +76,5 @@ cd docs && yarn build
 - LLM artifacts (`llms.txt`, `llms-full.txt`, markdown exports) are generated at build.
 - Keep `title`, `description`, and `keywords` frontmatter on all docs pages.
 - Agent workflow overview page: `docs/docs/agent-workflows.md`.
-- For in-repo agent work, prefer local docs paths over hosted copies so branch changes are visible before publish.
 - Use deployment `startBlock` values for `DataService` event scans; the SDK now fetches logs in chunked, rate-limited ranges, but agents should still avoid `0n` scans.
 - In SDK integration docs, distinguish pool state root from ASP root: `contracts.getStateRoot(poolAddress)` reads the pool's `currentRoot()`, while ASP proof root comes from `onchainMtRoot` and must match `Entrypoint.latestRoot()`.

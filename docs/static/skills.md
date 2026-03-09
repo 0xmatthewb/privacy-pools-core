@@ -316,12 +316,12 @@ const stateMerkleProof = generateMerkleProof(allCommitmentHashes, commitment.has
 
 The `aspRoot` and `aspLabels` come from the Association Set Provider (ASP), operated by 0xbow. The ASP screens deposits for compliance and publishes a Merkle tree of approved **labels** (not commitment hashes). The ZK circuit verifies that the deposit's `label` is a leaf in the ASP tree. Since the `label` stays the same across partial withdrawals, a single ASP approval covers the original deposit and all its subsequent change commitments. Most deposits are approved within 1 hour, though some may take up to 7 days. The ASP can also retroactively remove a label from the approved set — if removed, private withdrawal fails (the label will be absent from `aspLeaves`) but ragequit (public exit) always remains available. **Pre-withdrawal safety check:** Always verify your deposit's label is still present in `aspLeaves` before generating a withdrawal proof. If the label has been removed since your last check, the ASP Merkle proof won't include your label. Even if the label is removed AFTER you generate a proof but BEFORE you submit, the proof may still succeed if the on-chain ASP root hasn't been updated yet — but if the root has changed, you'll get `IncorrectASPRoot` and must regenerate with fresh ASP data.
 
-**Canonical source (engineering-confirmed): ASP HTTP API backed by database data.**
+ASP data is available through the public HTTP API below.
 
 Base URLs:
 - Mainnet: `https://api.0xbow.io`
 - Testnet: `https://dw.0xbow.io`
-- Swagger docs: `https://api.0xbow.io/api-docs` (⚠️ **Swagger schemas are inaccurate across multiple endpoints** — e.g., `mt-roots` advertises `{ root }` but returns `{ mtRoot, createdAt, onchainMtRoot }`; deposit/withdrawal endpoints return `depositEvents`/`withdrawalEvents` keys where Swagger says `events`; `pool-info` returns a completely different shape than the DTO. **Do not trust Swagger DTOs for response parsing.** Use the response shapes documented in this file as the maintained integration reference until the OpenAPI schemas are corrected.)
+- Swagger docs: `https://api.0xbow.io/api-docs` (live responses differ from the published schema on some endpoints, including `mt-roots`, event listings, and `pool-info`, so use the concrete response shapes documented here when parsing responses)
 
 > **Note:** `request.0xbow.io` is a partner-only host (API-key gated) and does **not** serve the public `mt-roots` / `mt-leaves` endpoints documented below. Only use `api.0xbow.io` (mainnet) or `dw.0xbow.io` (testnet) for ASP data.
 
@@ -502,7 +502,7 @@ const relayData = encodeAbiParameters(
 const withdrawal: Withdrawal = { processooor: entrypointAddress, data: relayData };
 ```
 
-### Relayer API (engineering-confirmed)
+### Relayer API
 
 The relayer is a **separate service** from the ASP API — it is NOT hosted on `api.0xbow.io` or `dw.0xbow.io`.
 
@@ -527,7 +527,7 @@ function getRelayerHost(chainId: number): string {
 }
 ```
 
-The canonical production relayer is operated by Fat Solutions. The relayer code is open-source (`packages/relayer`) — anyone can host their own. The relayer supports EVM chains and assets currently served by `fastrelay.xyz`; verify each chain/asset pair with `GET /relayer/details?chainId={chainId}&assetAddress={asset}` before use.
+The public production relayer is operated by Fat Solutions. The relayer code is open-source (`packages/relayer`) — anyone can host their own. The relayer supports EVM chains and assets currently served by `fastrelay.xyz`; verify each chain/asset pair with `GET /relayer/details?chainId={chainId}&assetAddress={asset}` before use.
 
 The API matches the OSS relayer contract (`packages/relayer`) exactly:
 
