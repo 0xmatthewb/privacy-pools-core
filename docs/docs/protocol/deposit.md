@@ -25,6 +25,7 @@ Production frontend integrations should capture the `Deposited` event into mnemo
 - Bootstrap or load the mnemonic-backed account before deposit so the new pool account can be persisted immediately.
 - Derive deposit secrets from account state plus pool scope and sequential deposit index.
 - If you expose `Use max`, reserve gas for native-asset deposits and account for vetting-fee math before setting the final input amount.
+- If the wallet supports batching, approval + deposit can be presented as one action. The same pattern can extend to stake-then-deposit flows as long as the final deposited asset and expected amount are explicit in the review UI.
 - Parse the confirmed `Deposited` event into local pool-account state right away.
 - Tell users that chain confirmation does not guarantee immediate indexing or ASP review visibility.
 

@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-Privacy Pools supports two types of withdrawals, but website-aligned production frontends should expose the relayed flow as the primary private-withdraw action:
+Privacy Pools supports two types of withdrawals, but recommended production frontends should expose the relayed flow as the primary private-withdraw action:
 
 1. **Relayed Withdrawals**: Withdrawal processed through a relayer. This is the privacy-preserving frontend path.
 2. **Direct Withdrawals / Self-Relay**: User submits the withdrawal transaction themselves. This is an advanced non-private path.
@@ -28,10 +28,11 @@ Integration note: withdrawal proofs carry two separate roots. The state-tree roo
 ## Production Frontend Pattern
 
 - Only offer private withdrawal from pool accounts with `balance > 0` and ASP approval.
-- Resolve ENS or other human-readable recipient input to a final address before requesting a quote or generating a proof.
+- Resolve ENS on mainnet, or resolve any other human-readable recipient input to a final address, before requesting a quote or generating a proof.
 - Fetch `GET /relayer/details` and warn if a partial withdrawal would leave a non-zero remainder below `minWithdrawAmount`.
 - Request the quote on the review step, keep a visible countdown, and if amount, recipient, relayer, or `extraGas` changes, refresh the quote and require another confirm click.
 - Treat `extraGas` as an optional gas-token drop for supported non-native assets and reflect it in fee display plus quote invalidation.
+- If proof generation takes noticeable time, surface progress states such as circuit loading, proof generation, and proof verification.
 - Treat user-submitted withdrawal paths as advanced non-private options. If the frontend wants private withdrawal, it should use the relayed flow.
 - Keep ragequit separate as the explicit public fallback.
 
@@ -82,7 +83,7 @@ sequenceDiagram
 
 ```
 
-### Protocol Flow - Relayed Withdrawal (Website and production default)
+### Protocol Flow - Relayed Withdrawal (Recommended production default)
 
 ```mermaid
 sequenceDiagram

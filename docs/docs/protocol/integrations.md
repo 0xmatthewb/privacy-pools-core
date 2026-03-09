@@ -12,7 +12,7 @@ keywords:
   - developer workflow
 ---
 
-This page covers the recommended production integration path for Privacy Pools. It is the shortest route from first integration to a website-aligned frontend.
+This page covers the recommended production integration path for Privacy Pools. It is the shortest route from first integration to a recommended production frontend.
 
 ## Key References
 
@@ -24,7 +24,7 @@ This page covers the recommended production integration path for Privacy Pools. 
 ## Happy Path
 
 1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
-2. If wallet onboarding is supported, derive a versioned recovery seed from deterministic EIP-712 signatures, sign the same payload twice to confirm determinism, and require a backup step. Smart/contract wallets, Coinbase Wallet, and unsupported WalletConnect sessions should fall back to manual mnemonic create/load.
+2. If wallet onboarding is supported, derive a versioned recovery seed from deterministic EIP-712 signatures, sign the same payload twice to confirm determinism, default new accounts to `v2`, keep `v1` only for legacy restore/sign-in, and require a backup step. If the wallet path cannot guarantee deterministic signing, fall back to manual mnemonic create/load.
 3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts, not loose notes. This gives users a safer abstraction over secret material. Refresh review state across all loaded chain/scope pairs, and treat deposits as pending until both the review status and current ASP leaves agree.
 5. Build withdrawal proofs with two roots: `contracts.getStateRoot(poolAddress)` for the pool state root and ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
@@ -45,27 +45,29 @@ This page covers the recommended production integration path for Privacy Pools. 
 - After a successful private withdrawal, insert the new change commitment back into local account state before allowing another spend.
 - Do not log recovery phrases, signatures, nullifiers, secrets, or raw note material to analytics or error tracking.
 
-## Website-Aligned UX Details
+## Recommended UX Details
 
 ### Account and Recovery
 
-- Prefer wallet-signature seed derivation only when deterministic EIP-712 signing is supported.
-- Use a versioned derivation (`v2` default for new accounts), compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing.
+- Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. Feature-detect this at runtime rather than keying the decision off wallet branding alone.
+- Use a versioned derivation (`v2` default for new accounts; `v1` only for legacy restore/sign-in), compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing.
 - If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
 
 ### Deposit UX
 
 - If you expose `Use max`, reserve gas for native-asset deposits and account for vetting-fee math before populating the amount field.
+- If the wallet supports batching, collapsing approval + deposit into one action is a good upgrade. The same pattern can extend to stake-then-deposit flows for alternative input tokens as long as the final deposited asset and expected amount are explicit in the review UI.
 - Parse the confirmed `Deposited` event immediately and store the resulting pool account locally rather than waiting for a later rescan.
 - Tell the user that confirmed deposits may take time to appear in activity views or become ASP-approved.
 
 ### Private Withdrawal UX
 
-- Resolve ENS names to a final address before the review step. Showing reverse ENS and the resolved address is helpful, but unresolved input must block submit.
+- Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution. Showing reverse ENS and the resolved address is helpful, but unresolved input must block submit.
 - Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`. If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
 - `GET /{chainId}/public/deposits-larger-than` is useful for showing an anonymity-set estimate while the user edits the amount.
 - Request the relayer quote only when the review screen opens, keep a visible countdown, and if the quote refreshes because inputs changed or time elapsed, require the user to confirm again.
 - Treat `extraGas` as an optional gas-token drop for supported non-native assets, not as a generic mode switch. Quote invalidation and fee display must include it.
+- If proof generation takes noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof`.
 
 ### Ragequit UX
 
@@ -76,10 +78,10 @@ This page covers the recommended production integration path for Privacy Pools. 
 
 | Service | Network scope | Base URL |
 |---|---|---|
-| ASP API | Mainnet chains (`1`, `42161`, `10`) | `https://api.0xbow.io` |
-| ASP API | Testnet chains (`11155111`, `11155420`) | `https://dw.0xbow.io` |
-| Relayer API | Production chains | `https://fastrelay.xyz` |
-| Relayer API | Sepolia testnets | `https://testnet-relayer.privacypools.com` |
+| ASP API | Production EVM chains | `https://api.0xbow.io` |
+| ASP API | Published testnets | `https://dw.0xbow.io` |
+| Relayer API | Production EVM chains | `https://fastrelay.xyz` |
+| Relayer API | Published testnets | `https://testnet-relayer.privacypools.com` |
 
 ASP API docs: `https://api.0xbow.io/api-docs`
 
