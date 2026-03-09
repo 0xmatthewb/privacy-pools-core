@@ -132,7 +132,7 @@ class DataService {
 }
 ```
 
-`DataService` fetches logs in chunked, rate-limited ranges. Initialize it with the deployment `startBlock` rather than `0n`, and use the optional second constructor argument only when you need per-chain fetch overrides.
+`DataService` fetches logs in chunked, rate-limited ranges. Initialize it with the deployment `startBlock` rather than `0n`, and use the optional second constructor argument only when you need per-chain fetch overrides. It also preserves zero-value withdrawal events so account reconstruction stays correct for full-withdrawal chains, even though zero-value change commitments are not spendable.
 
 ## Crypto Utilities
 
