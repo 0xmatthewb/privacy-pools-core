@@ -11,7 +11,7 @@ Privacy Pools breaks the on-chain link between deposit and withdrawal addresses.
 
 ## Core Operations
 
-1. **Deposit**: Send assets to a Privacy Pool. The user submits a precommitment hash (derived from a nullifier and secret) on-chain. The pool contract generates a unique `label` and computes the full `commitment = poseidon(value, label, precommitment)`, which is inserted into the on-chain Merkle tree. The `label` is emitted in the `Deposited` event — the integration should capture it and persist it in account state alongside the nullifier and secret instead of asking the user to manage notes manually.
+1. **Deposit**: Send assets to a Privacy Pool. The user submits a precommitment hash (derived from a nullifier and secret) on-chain. The pool contract generates a unique `label` and computes the full `commitment = poseidon(value, label, precommitment)`, which is inserted into the on-chain Merkle tree. The `label` is emitted in the `Deposited` event. The integration should capture it and persist it in pool-account state alongside the nullifier and secret rather than surfacing raw secret-bearing notes to the user.
 2. **Withdraw**: Generate a ZK proof showing your commitment exists in both the state tree and the ASP-approved set, then submit it on-chain. Production frontends should use the relayed path by default. Supports partial withdrawals.
 3. **Ragequit**: Emergency public exit. Prove ownership of a commitment via a commitment proof, then call ragequit to recover funds to the original depositor. Sacrifices privacy but guarantees fund recovery.
 
@@ -30,7 +30,7 @@ Use these frontend defaults unless you have a specific reason not to:
 
 ## SDK Quick Start
 
-The SDK is built on [viem](https://viem.sh) — it uses viem's `Chain` objects, `Address`/`Hex` types, and `PublicClient` internally. If your project uses ethers.js, you can still use the SDK's standalone crypto functions (`generateMasterKeys`, `hashPrecommitment`, etc.) but `ContractInteractionsService` requires viem types.
+The SDK is built on [viem](https://viem.sh) and uses viem's `Chain` objects, `Address`/`Hex` types, and `PublicClient` internally. If your project uses ethers.js, you can still use the SDK's standalone crypto functions (`generateMasterKeys`, `hashPrecommitment`, etc.) but `ContractInteractionsService` requires viem types.
 
 ```bash
 npm install @0xbow/privacy-pools-core-sdk
@@ -87,9 +87,9 @@ const contracts = sdk.createContractInstance(rpcUrl, mainnet, entrypointAddress,
 // This avoids needing ContractInteractionsService for read-only workflows.
 ```
 
-Integration note: `contracts.getStateRoot(privacyPoolAddress)` reads the pool's `currentRoot()` and should be used for `WithdrawalProofInput.stateRoot`. This is distinct from ASP `onchainMtRoot`, which must match `Entrypoint.latestRoot()` and should be used for `aspRoot`.
+`contracts.getStateRoot(privacyPoolAddress)` reads the pool's `currentRoot()` and should be used for `WithdrawalProofInput.stateRoot`. This is distinct from ASP `onchainMtRoot`, which must match `Entrypoint.latestRoot()` and should be used for `aspRoot`.
 
-`DataService` now fetches logs in chunked, rate-limited ranges by default. Always initialize it with the deployment `startBlock` for the chain you are scanning. If your RPC provider is strict, you can override per-chain log fetch settings (chunk size, concurrency, delay, retries) with the optional second constructor argument:
+`DataService` fetches logs in chunked, rate-limited ranges by default. Always initialize it with the deployment `startBlock` for the chain you are scanning. If your RPC provider is strict, you can override per-chain log fetch settings (chunk size, concurrency, delay, retries) with the optional second constructor argument:
 
 ```typescript
 const logFetchConfig = new Map([
@@ -106,7 +106,7 @@ const dataService = new DataService(
 
 ### Account Bootstrap
 
-The core SDK does not currently ship a full frontend onboarding wrapper. The current reference-implementation pattern is:
+The core SDK does not ship a frontend onboarding wrapper. The reference pattern is:
 
 1. Connect a wallet and determine whether it can reproduce the same EIP-712 signature for the same payload. If not, or if the signer path is abstracted in a way that breaks deterministic signing, fall back to manual setup.
 2. Build a versioned typed-data payload bound to `keccak256(addressBytes)`.
@@ -119,7 +119,7 @@ Feature-detect this at runtime rather than relying on wallet branding alone.
 
 If you support manual recovery phrase load, normalize whitespace/newlines/commas and validate word count plus checksum before initializing account state.
 
-### Pool-Account Model (Frontend Default)
+### Pool-Account Model
 
 - `AccountService` is the recommended production model for frontend state.
 - On account load, use `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` to reconstruct deposits and withdrawal history.
@@ -197,11 +197,11 @@ const commitmentProof = await sdk.proveCommitment(committedValue, label, nullifi
 // including clipboard and XSS-prone surfaces.
 ```
 
-Frontend note: if the wallet supports batching, approval + deposit can be collapsed into one user action. The same pattern can extend to stake-then-deposit flows for alternative input tokens, as long as the review UI makes the final deposited asset and expected amount explicit.
+If the wallet supports batching, approval + deposit can be collapsed into one user action. The same pattern can extend to stake-then-deposit flows for alternative input tokens, as long as the review UI makes the final deposited asset and expected amount explicit.
 
 ## Direct Withdrawal (advanced, same-signer recipient only, non-private)
 
-Production frontend recommendation: do not surface this as the default withdrawal path. Use the relayed flow later in this document unless the signer is intentionally also the recipient.
+Do not surface this as the default withdrawal path. Use the relayed flow (documented below) unless the signer is also the recipient.
 
 ```typescript
 // Step 1: Generate new secrets for the change commitment
@@ -294,7 +294,7 @@ The withdrawal flow requires several inputs sourced from on-chain state and exte
 
 ### Reconstructing the state tree
 
-**Preferred: Use the ASP API.** The `GET /{chainId}/public/mt-leaves` endpoint returns `stateTreeLeaves` — the complete, pre-ordered list of commitment hashes for the pool. This is the simplest and most reliable way to build the state Merkle proof:
+**Preferred: Use the ASP API.** The `GET /{chainId}/public/mt-leaves` endpoint returns `stateTreeLeaves`, the complete, pre-ordered list of commitment hashes for the pool. This is the simplest and most reliable way to build the state Merkle proof:
 
 ```typescript
 // Fetch state tree leaves and ASP labels in one call
@@ -321,7 +321,7 @@ if (stateMerkleProof.root !== onChainRoot) {
 }
 ```
 
-The website path is ASP API first; if you intentionally need a fallback, use direct RPC via `DataService`.
+The default path is ASP API. If you need a fallback, use direct RPC via `DataService`.
 
 **Advanced fallback: Reconstruct from on-chain events via RPC.** If the API is unavailable, build the state tree from deposit and withdrawal event logs. Each deposit inserts a `commitment` leaf; each withdrawal inserts a `newCommitment` leaf (the change commitment). Ragequit does NOT insert a leaf — it only spends a nullifier. Leaves must be merged in **on-chain insertion order** (by block number, then log index within the block). The SDK event types don't expose `logIndex`, so the best available approach is to sort by `blockNumber` and rely on stable sort to preserve relative order. Since `DataService` returns events via `getLogs` (which preserves log ordering), each array from `getDeposits()` and `getWithdrawals()` is already internally ordered. Spread deposits before withdrawals and stable-sort by block — this is correct for the common case (a commitment must exist before it can be spent). Always validate the reconstructed root against the on-chain pool root (`contracts.getStateRoot(privacyPoolAddress)` -> `privacyPool.currentRoot()`) to catch rare same-block interleaving mismatches.
 
@@ -402,7 +402,7 @@ function getAspApiHost(chainId: number): string {
 }
 ```
 
-#### `GET /{chainId}/public/mt-roots` — ASP Merkle root
+#### `GET /{chainId}/public/mt-roots`: ASP Merkle root
 
 Returns the current ASP tree root for a pool. **Required header:** `X-Pool-Scope` (scope as decimal string).
 
@@ -425,7 +425,7 @@ const { mtRoot, createdAt, onchainMtRoot } = await res.json();
 const aspRoot = BigInt(onchainMtRoot) as unknown as Hash;
 ```
 
-#### `GET /{chainId}/public/mt-leaves` — ASP labels + state tree leaves
+#### `GET /{chainId}/public/mt-leaves`: ASP labels + state tree leaves
 
 Returns both the ASP-approved labels and the state tree commitment hashes for a pool. **Required header:** `X-Pool-Scope` (scope as decimal string).
 
@@ -444,9 +444,9 @@ const allCommitmentHashes: bigint[] = stateTreeLeaves.map((s: string) => BigInt(
 **Important notes:**
 - The `X-Pool-Scope` value must be a **decimal string**. Hex or other non-decimal values will not match any pool (the API treats the header as a literal string lookup, so a hex-encoded scope returns 404, not a validation error).
 - Both endpoints are unauthenticated (no API key required) on the mainnet and testnet hosts.
-- No pagination — the full leaf arrays are returned in a single response.
-- The ASP root submitted in the proof **must exactly match** the on-chain `Entrypoint.latestRoot()`. Any difference will cause the withdrawal to revert with `IncorrectASPRoot`. Use `onchainMtRoot` from the `mt-roots` response (not `mtRoot`) as your proof's `aspRoot`. Always verify `BigInt(onchainMtRoot) === Entrypoint.latestRoot()` before submitting. If `mtRoot !== onchainMtRoot`, the leaves may not yet reflect the on-chain state — wait and re-fetch until they converge.
-- If `X-Pool-Scope` is missing, the API currently returns HTTP 400 with a message like `"Pool scope is required in X-Pool-Scope header"`. If the header is present but does not match a known decimal scope value (including hex-encoded scope), the API returns 404. Do not hardcode the full error body — match on status code and handle gracefully.
+- No pagination. The full leaf arrays are returned in a single response.
+- The ASP root submitted in the proof **must exactly match** the on-chain `Entrypoint.latestRoot()`. Any difference will cause the withdrawal to revert with `IncorrectASPRoot`. Use `onchainMtRoot` from the `mt-roots` response (not `mtRoot`) as your proof's `aspRoot`. Always verify `BigInt(onchainMtRoot) === Entrypoint.latestRoot()` before submitting. If `mtRoot !== onchainMtRoot`, the leaves may not yet reflect the on-chain state. Wait and re-fetch until they converge.
+- If `X-Pool-Scope` is missing, the API currently returns HTTP 400 with a message like `"Pool scope is required in X-Pool-Scope header"`. If the header is present but does not match a known decimal scope value (including hex-encoded scope), the API returns 404. Do not hardcode the full error body. Match on status code and handle gracefully.
 - Rate-limit details are not published. Treat HTTP 403, 429, or any equivalent throttle response as a backoff signal and retry with exponential delay.
 
 **Checking if a deposit is ASP-approved:**
@@ -468,7 +468,7 @@ const isApproved = aspLeaves.includes(labelStr);
 // and generateMerkleProof will throw MERKLE_ERROR.
 ```
 
-#### `GET /{chainId}/health/liveness` — ASP availability check
+#### `GET /{chainId}/health/liveness`: ASP availability check
 
 Returns the current health status of the ASP API for a given chain. Use this before making ASP data calls to verify the service is reachable.
 
@@ -480,7 +480,7 @@ const { status } = await res.json();
 if (status !== "ok") throw new Error(`ASP API unhealthy for chain ${chainId}`);
 ```
 
-#### `GET /{chainId}/health/asp` — ASP pool leaf counts
+#### `GET /{chainId}/health/asp`: ASP pool leaf counts
 
 Returns pool-level leaf counts, useful for sanity-checking whether the ASP is indexing a given pool.
 
@@ -491,7 +491,7 @@ const { status, currentLeaves } = await res.json();
 // Example: [{ poolId: 1, totalLeaves: 6229 }, { poolId: 6, totalLeaves: 749 }]
 ```
 
-#### `GET /global/public/entrypoints` — Programmatic chain discovery
+#### `GET /global/public/entrypoints`: Programmatic chain discovery
 
 Returns all chains with their entrypoint contract addresses and deployment start blocks. Useful for dynamically determining which chains are supported.
 
@@ -502,9 +502,9 @@ const { chains } = await res.json();
 // Example: { ethereum: { entrypoint: "0x6818...", fromBlock: 22167294, chainId: "1" }, ... }
 ```
 
-> **Note:** Treat `GET /global/public/entrypoints` as discovery data, not an automatic allowlist. For this SDK workflow, filter to the chains listed in the **Supported Networks** table below (Ethereum, Arbitrum, OP Mainnet, Sepolia, OP Sepolia) unless you have separately validated additional chains. **Important:** The `fromBlock` in this response is the entrypoint deployment block, which may be later than the optimal `startBlock` for event scanning. Always use the `startBlock` values from the **Supported Networks** table for `DataService` — using the entrypoints `fromBlock` could miss early deposit events.
+> **Note:** Treat `GET /global/public/entrypoints` as discovery data. Validate chains against the **Supported Networks** table before using them. For this SDK workflow, filter to the chains listed in the **Supported Networks** table below (Ethereum, Arbitrum, OP Mainnet, Sepolia, OP Sepolia) unless you have separately validated additional chains. **Important:** The `fromBlock` in this response is the entrypoint deployment block, which may be later than the optimal `startBlock` for event scanning. Always use the `startBlock` values from the **Supported Networks** table for `DataService` — using the entrypoints `fromBlock` could miss early deposit events.
 
-#### `GET /{chainId}/public/deposits-larger-than` — Anonymity set size
+#### `GET /{chainId}/public/deposits-larger-than`: Anonymity set size
 
 Returns the number of deposits above a given amount threshold for a pool. **Required header:** `X-Pool-Scope` (scope as decimal string). **Required query:** `amount` (decimal bigint string in wei, e.g. `"1000000000000000000"`). Useful for agents assessing anonymity set quality before initiating a withdrawal.
 
@@ -527,7 +527,7 @@ const { eligibleDeposits, totalDeposits, percentage, rank, uniqueAmountsAbove } 
 
 - Latest root: `Entrypoint.latestRoot()` (selector: `0xd7b0fef1`).
 - Historical root access: admin-only.
-- CID source: `associationSets(index).ipfsCID` — returns IPFS CID containing the label set for a given root index.
+- CID source: `associationSets(index).ipfsCID` returns the IPFS CID containing the label set for a given root index.
 
 ### Constructing the Withdrawal object
 
@@ -564,7 +564,7 @@ const withdrawal: Withdrawal = { processooor: entrypointAddress, data: relayData
 
 ### Relayer API
 
-The relayer is a **separate service** from the ASP API — it is NOT hosted on `api.0xbow.io` or `dw.0xbow.io`.
+The relayer is a **separate service** from the ASP API and is not hosted on `api.0xbow.io` or `dw.0xbow.io`.
 
 Base URLs:
 - Mainnet: `https://fastrelay.xyz`
@@ -587,9 +587,9 @@ function getRelayerHost(chainId: number): string {
 }
 ```
 
-The public production relayer is operated by Fat Solutions. The relayer code is open-source (`packages/relayer`) — anyone can host their own. The relayer supports EVM chains and assets currently served by `fastrelay.xyz`; verify each chain/asset pair with `GET /relayer/details?chainId={chainId}&assetAddress={asset}` before use.
+The public production relayer is operated by Fat Solutions. The relayer code is open-source (`packages/relayer`) and anyone can host their own. The relayer supports EVM chains and assets currently served by `fastrelay.xyz`; verify each chain/asset pair with `GET /relayer/details?chainId={chainId}&assetAddress={asset}` before use.
 
-Frontend timing pattern: request `/relayer/quote` on the review step, start a visible countdown, and discard the quote whenever amount, recipient, relayer, or `extraGas` changes.
+Request `/relayer/quote` on the review step, start a visible countdown, and discard the quote whenever amount, recipient, relayer, or `extraGas` changes.
 
 The API matches the OSS relayer contract (`packages/relayer`) exactly:
 
@@ -597,7 +597,7 @@ The API matches the OSS relayer contract (`packages/relayer`) exactly:
 - `POST /relayer/request`
 - `GET /relayer/details`
 
-Example `POST /relayer/quote` — without `recipient` (fee estimate only, no signed commitment):
+Example `POST /relayer/quote` without `recipient` (fee estimate only, no signed commitment):
 
 ```json
 {
@@ -610,7 +610,7 @@ Example `POST /relayer/quote` — without `recipient` (fee estimate only, no sig
 
 `extraGas`: when `true`, requests an additional native gas-token drop as part of the relayed withdrawal. The quote includes both the extra funding and the extra execution cost. The current website exposes this only for supported non-native assets and refreshes the quote whenever the toggle changes. Native-asset quotes force `extraGas = false`.
 
-Response (values are dynamic — vary with gas price and relayer config):
+Response (values are dynamic and vary with gas price and relayer config):
 
 ```json
 {
@@ -626,7 +626,7 @@ Response (values are dynamic — vary with gas price and relayer config):
 }
 ```
 
-Example `POST /relayer/quote` — with `recipient` (returns a signed `feeCommitment` to pass through to `/relayer/request`):
+Example `POST /relayer/quote` with `recipient` (returns a signed `feeCommitment` to pass through to `/relayer/request`):
 
 ```json
 {
@@ -687,10 +687,10 @@ Example `POST /relayer/request` (schema: `zRelayRequest` in `packages/relayer/sr
 **Schema notes:**
 - `scope`: decimal bigint string (not hex)
 - `publicSignals`: must be exactly 8 elements (string array)
-- `proof.pi_a` / `pi_c`: 3-element string tuples; `proof.pi_b`: 3×2-element string tuples. The relayer only requires `pi_a`, `pi_b`, `pi_c` — extra fields like `protocol` and `curve` from the `Groth16Proof` type are accepted and ignored (not rejected)
+- `proof.pi_a` / `pi_c`: 3-element string tuples; `proof.pi_b`: 3×2-element string tuples. The relayer only requires `pi_a`, `pi_b`, `pi_c`. Extra fields like `protocol` and `curve` from the `Groth16Proof` type are accepted and ignored
 - `feeCommitment` is optional at schema level, but for production relayed withdrawals it should be included from `/relayer/quote` to lock a signed fee. When present, ALL 6 fields are required: `expiration`, `withdrawalData`, `asset`, `extraGas`, `amount`, `signedRelayerCommitment`
-- The `feeCommitment` expires **60 seconds** after the quote response. The full quote → proof generation → request submission flow must complete within this window. Proof generation typically takes 5–15 seconds in Node.js (varies by machine). If the commitment has expired, re-fetch a new quote before retrying. The relayer API does not support cancellation — if expired, simply re-quote.
-- The `feeCommitment` fields come directly from the `/relayer/quote` response — pass them through unchanged
+- The `feeCommitment` expires **60 seconds** after the quote response. The full quote → proof generation → request submission flow must complete within this window. Proof generation typically takes 5-15 seconds in Node.js (varies by machine). If the commitment has expired, re-fetch a new quote before retrying. The relayer API does not support cancellation. If the commitment has expired, re-quote.
+- The `feeCommitment` fields come directly from the `/relayer/quote` response. Pass them through unchanged
 
 Example response:
 
@@ -976,7 +976,7 @@ for (const dep of myDeposits) {
 
 ### AccountService (production account tracking)
 
-`AccountService` manages deposit/withdrawal state automatically. It is the recommended way to track `withdrawalIndex`, spendable commitments, and change commitments in production. This should be the core of a pool-account UI, not an optional helper beside manual notes.
+`AccountService` manages deposit/withdrawal state automatically. It is the recommended way to track `withdrawalIndex`, spendable commitments, and change commitments in production.
 
 ```typescript
 import { AccountService, DataService } from "@0xbow/privacy-pools-core-sdk";
@@ -1046,7 +1046,7 @@ const accountService = new AccountService(dataService, { mnemonic });
 | `depositERC20(tokenAddress, amount, precommitment)` | `Address, bigint, bigint` | Deposit ERC20 tokens |
 | `approveERC20(spenderAddress, tokenAddress, amount)` | `Address, Address, bigint` | Approve ERC20 spending (call before depositERC20) |
 | `withdraw(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Direct withdrawal. Internally resolves `scope` → pool address via `getScopeData()` and calls the **pool** contract's `withdraw()`. |
-| `relay(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Relayed withdrawal. Calls `relay()` on the **entrypoint** contract (not the pool). **Default path:** use the HTTP relayer flow (`fastrelay.xyz`) in this guide. Can be called by **anyone** — the contract only checks that `processooor == entrypointAddress`, not who `msg.sender` is. Self-relay (paying gas yourself) is supported, but should be treated as an advanced non-private path. |
+| `relay(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Relayed withdrawal. Calls `relay()` on the **entrypoint** contract (not the pool). **Default path:** use the HTTP relayer flow (`fastrelay.xyz`) in this guide. Can be called by anyone; the contract only checks that `processooor == entrypointAddress`, not who `msg.sender` is. Self-relay (paying gas yourself) is supported but should be treated as an advanced non-private path. |
 | `ragequit(commitmentProof, poolAddress)` | `CommitmentProof, Address` | Emergency public exit |
 
 All write methods return `Promise<{ hash: string; wait: () => Promise<void> }>`. The `hash` is a hex tx hash string (e.g. `"0xabc..."`).
@@ -1171,8 +1171,8 @@ interface RagequitEvent {
 ```
 
 **Linking deposits to withdrawals:** These three values are related but **not identical**:
-- `DepositEvent.precommitment` = `Commitment.nullifierHash` = `Poseidon(nullifier, secret)` — the precommitment hash submitted on-chain during deposit.
-- `WithdrawalEvent.spentNullifier` = `Poseidon(nullifier)` — the circuit's nullifier hash (single input, NOT the precommitment).
+- `DepositEvent.precommitment` = `Commitment.nullifierHash` = `Poseidon(nullifier, secret)`: the precommitment hash submitted on-chain during deposit.
+- `WithdrawalEvent.spentNullifier` = `Poseidon(nullifier)`: the circuit's nullifier hash (single input, not the precommitment).
 
 To match a withdrawal to its source deposit, compute `Poseidon(nullifier)` from the deposit's nullifier and compare against `withdrawalEvent.spentNullifier`. You cannot match directly against `depositEvent.precommitment` because they are different hashes. **Note:** The SDK does not export Poseidon. To compute this hash, install `circomlibjs` (or `maci-crypto`, which the SDK uses internally) and call `poseidon([nullifier])`:
 
@@ -1199,24 +1199,24 @@ The SDK uses typed errors for proof and data operations, but contract write meth
 | `SDKError` | Base class; DataService failures | `NETWORK_ERROR`, `INVALID_INPUT` |
 | `PrivacyPoolError` | Merkle proof and crypto operations | `MERKLE_ERROR` |
 | `ContractError` | Contract read methods when data is invalid | `CONTRACT_ERROR` (helper constructors include `assetNotFound`, `scopeNotFound`) |
-| `Error` (generic) | Contract write methods (`deposit`, `withdraw`, `ragequit`, etc.) | N/A — wraps the underlying viem/RPC error message |
+| `Error` (generic) | Contract write methods (`deposit`, `withdraw`, `ragequit`, etc.) | Wraps the underlying viem/RPC error message |
 
 **Important:** `PrivacyPoolError` extends `Error` directly (NOT `SDKError`). It is thrown by `generateMerkleProof` and other crypto functions, but it is **not exported** from the SDK's public API. You cannot use `instanceof PrivacyPoolError`. Instead, check for the `code` property:
 
 Common failure modes:
-- **`MERKLE_ERROR`**: Leaf not found in tree — your commitment isn't in the provided leaf set (wrong pool, stale data, or commitment not yet indexed). Thrown as `PrivacyPoolError` (has `.code === "MERKLE_ERROR"`).
-- **`PROOF_GENERATION_FAILED`**: Circuit inputs are invalid — check that value, label, nullifier, and secret match the original deposit.
-- **Contract reverts**: On-chain tx revert — typically a spent nullifier (double-withdraw attempt) or invalid proof. Contract write methods throw generic `Error` with a message like `"Failed to Withdraw: ..."`.
+- **`MERKLE_ERROR`**: Leaf not found in tree. The commitment is not in the provided leaf set (wrong pool, stale data, or commitment not yet indexed). Thrown as `PrivacyPoolError` (has `.code === "MERKLE_ERROR"`).
+- **`PROOF_GENERATION_FAILED`**: Circuit inputs are invalid. Check that value, label, nullifier, and secret match the original deposit.
+- **Contract reverts**: On-chain tx revert, typically a spent nullifier (double-withdraw attempt) or invalid proof. Contract write methods throw generic `Error` with a message like `"Failed to Withdraw: ..."`.
 - **`PrecommitmentAlreadyUsed`**: On-chain revert when attempting to deposit with a precommitment hash that was already used by a previous deposit. Generate a fresh precommitment (new `depositIndex`) before retrying.
 
 **Common contract revert reasons** (appear inside the generic `Error` message from contract write methods):
-- `NullifierAlreadySpent` — Double-withdraw attempt. The commitment was already spent.
-- `IncorrectASPRoot` — The proof's ASP root doesn't match `Entrypoint.latestRoot()`. Re-fetch leaves and root from the ASP API, rebuild Merkle proofs, and **re-generate the ZK proof** — the ASP root is baked into the proof, so you cannot simply re-submit the old proof with a new root.
-- `InvalidProcessooor` — For direct withdrawal: `processooor` doesn't match `msg.sender`. For relay: `processooor` doesn't match the entrypoint address.
-- `InvalidProof` — The ZK proof failed on-chain verification. Check circuit inputs.
-- `PrecommitmentAlreadyUsed` — Duplicate precommitment hash on deposit.
-- `OnlyOriginalDepositor` — Ragequit called from a different address than the original depositor.
-- `NoRootsAvailable` — `Entrypoint.latestRoot()` called before any ASP root has been pushed on-chain.
+- `NullifierAlreadySpent`: Double-withdraw attempt. The commitment was already spent.
+- `IncorrectASPRoot`: The proof's ASP root does not match `Entrypoint.latestRoot()`. Re-fetch leaves and root from the ASP API, rebuild Merkle proofs, and **re-generate the ZK proof**. The ASP root is baked into the proof, so you cannot re-submit the old proof with a new root.
+- `InvalidProcessooor`: For direct withdrawal, `processooor` does not match `msg.sender`. For relay, `processooor` does not match the entrypoint address.
+- `InvalidProof`: The ZK proof failed on-chain verification. Check circuit inputs.
+- `PrecommitmentAlreadyUsed`: Duplicate precommitment hash on deposit.
+- `OnlyOriginalDepositor`: Ragequit called from a different address than the original depositor.
+- `NoRootsAvailable`: `Entrypoint.latestRoot()` called before any ASP root has been pushed on-chain.
 
 ```typescript
 try {
@@ -1243,15 +1243,15 @@ try {
 ## Key Constraints
 
 - Withdrawals require inclusion in the ASP-approved set. Most deposits are approved within 1 hour; some may take up to 7 days. Until approved, the only exit path is ragequit.
-- **Root freshness**: The contract accepts any of the last 64 state roots (historical buffer), so a slight delay between building your state tree and submitting is fine. For deterministic agent execution, prefer targeting the latest pool root (`stateMerkleProof.root === contracts.getStateRoot(poolAddress)` -> `privacyPool.currentRoot()`) before submit. However, the ASP root **must exactly match** the on-chain `Entrypoint.latestRoot()` — any difference will cause the withdrawal to revert with `IncorrectASPRoot`. There is no tolerance window for ASP root mismatch. Use `onchainMtRoot` (not `mtRoot`) from the `mt-roots` response as your proof's `aspRoot`, and always verify `BigInt(onchainMtRoot) === Entrypoint.latestRoot()` before submitting. If `mtRoot !== onchainMtRoot`, wait and re-fetch until they converge.
-- Ragequit is always available as a public fallback path. It works on both original deposits and change commitments (from partial withdrawals), but can only be called by the original depositor address (`OnlyOriginalDepositor` revert otherwise). **After ragequit, the commitment's nullifier is spent on-chain.** Attempting a private withdrawal of the same commitment will revert with `NullifierAlreadySpent`. These are mutually exclusive exit paths — use one or the other, never both.
-- Partial withdrawals are supported — `withdrawalAmount` can be less than the committed value. After a partial withdrawal, the old commitment is spent and a new "change commitment" is inserted into the state tree with the remaining balance. To continue withdrawing from the change commitment, reconstruct it: `const changeCommitment = getCommitment(existingValue - withdrawalAmount, label, newNullifier, newSecret)`. The `label` stays the same as the original deposit. **Critically:** `newNullifier` and `newSecret` here are the values generated by the `generateWithdrawalSecrets(masterKeys, label, withdrawalIndex)` call for the withdrawal that **created** this change commitment. If you lose them, re-derive with the same `withdrawalIndex` used in that withdrawal. **Important:** `withdrawalIndex` is a global counter across all withdrawals sharing the same label — it does NOT reset for each change commitment. If your first withdrawal used index 0n, the next withdrawal (from the resulting change commitment) must use index 1n, then 2n, etc. **Also important:** After each withdrawal, the state tree has a new leaf (the change commitment). You must re-fetch `stateTreeLeaves` from the ASP API (or re-scan events) before building a proof against the change commitment — the old leaf set is stale.
+- **Root freshness**: The contract accepts any of the last 64 state roots (historical buffer), so a slight delay between building your state tree and submitting is fine. For deterministic agent execution, prefer targeting the latest pool root (`stateMerkleProof.root === contracts.getStateRoot(poolAddress)` -> `privacyPool.currentRoot()`) before submit. However, the ASP root **must exactly match** the on-chain `Entrypoint.latestRoot()`. Any difference will cause the withdrawal to revert with `IncorrectASPRoot`. There is no tolerance window for ASP root mismatch. Use `onchainMtRoot` (not `mtRoot`) from the `mt-roots` response as your proof's `aspRoot`, and always verify `BigInt(onchainMtRoot) === Entrypoint.latestRoot()` before submitting. If `mtRoot !== onchainMtRoot`, wait and re-fetch until they converge.
+- Ragequit is always available as a public fallback path. It works on both original deposits and change commitments (from partial withdrawals), but can only be called by the original depositor address (`OnlyOriginalDepositor` revert otherwise). **After ragequit, the commitment's nullifier is spent on-chain.** Attempting a private withdrawal of the same commitment will revert with `NullifierAlreadySpent`. These are mutually exclusive exit paths. Use one or the other, never both.
+- Partial withdrawals are supported. `withdrawalAmount` can be less than the committed value. After a partial withdrawal, the old commitment is spent and a new "change commitment" is inserted into the state tree with the remaining balance. To continue withdrawing from the change commitment, reconstruct it: `const changeCommitment = getCommitment(existingValue - withdrawalAmount, label, newNullifier, newSecret)`. The `label` stays the same as the original deposit. **Critically:** `newNullifier` and `newSecret` here are the values generated by the `generateWithdrawalSecrets(masterKeys, label, withdrawalIndex)` call for the withdrawal that **created** this change commitment. If you lose them, re-derive with the same `withdrawalIndex` used in that withdrawal. **Important:** `withdrawalIndex` is a global counter across all withdrawals sharing the same label. It does not reset for each change commitment. If your first withdrawal used index 0n, the next withdrawal (from the resulting change commitment) must use index 1n, then 2n, etc. **Also important:** After each withdrawal, the state tree has a new leaf (the change commitment). You must re-fetch `stateTreeLeaves` from the ASP API (or re-scan events) before building a proof against the change commitment — the old leaf set is stale.
 - There is no protocol-enforced limit on the number of partial withdrawals from a single deposit chain, as long as the remaining balance is > 0.
 - Batch withdrawals are not supported by the protocol contracts or SDK APIs. Each transaction can process exactly one commitment spend (one `withdraw`/`relay` call with one proof).
 - Full withdrawals (entire balance) still create a zero-value change commitment on-chain (it is inserted into the state tree), but it is not spendable. The SDK's account tracking automatically filters out zero-value commitments.
 - Both ETH and ERC20 pools are supported (use different deposit methods).
-- Protocol is non-custodial: users must store commitment secrets, labels, and master keys safely. Never log `Commitment` objects or `MasterKeys` — they contain nullifier and secret values that control fund access. The same mnemonic can safely be used across different chains/pools because `generateDepositSecrets` incorporates the pool's unique `scope`, producing different secrets per pool.
-- The `label` is generated on-chain during deposit — it is NOT a user-provided input.
+- Protocol is non-custodial: users must store commitment secrets, labels, and master keys safely. Never log `Commitment` objects or `MasterKeys`. They contain nullifier and secret values that control fund access. The same mnemonic can safely be used across different chains/pools because `generateDepositSecrets` incorporates the pool's unique `scope`, producing different secrets per pool.
+- The `label` is generated on-chain during deposit. It is not a user-provided input.
 
 ## Repository
 
@@ -1259,11 +1259,11 @@ https://github.com/0xbow-io/privacy-pools-core
 
 Monorepo packages:
 
-- `packages/circuits` — ZK circuits (commitment + withdrawal)
-- `packages/contracts` — Solidity smart contracts (Entrypoint, PrivacyPool, State, verifiers)
-- `packages/relayer` — Withdrawal relayer service
-- `packages/sdk` — TypeScript SDK (`@0xbow/privacy-pools-core-sdk`)
-- `docs` — Docusaurus documentation site
+- `packages/circuits`: ZK circuits (commitment + withdrawal)
+- `packages/contracts`: Solidity smart contracts (Entrypoint, PrivacyPool, State, verifiers)
+- `packages/relayer`: Withdrawal relayer service
+- `packages/sdk`: TypeScript SDK (`@0xbow/privacy-pools-core-sdk`)
+- `docs`: Docusaurus documentation site
 
 ## Further Reading
 

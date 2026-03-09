@@ -34,12 +34,12 @@ Hosted links are in the [File Map](#file-map) above. The paths below are local r
 
 ### Claude Code
 
-Claude Code auto-discovers `CLAUDE.md` at the repository root — no setup needed. It routes the agent to:
+Claude Code auto-discovers `CLAUDE.md` at the repository root. It routes the agent to:
 
-1. `docs/docs/protocol/integrations.md` — read first for the integration happy path.
-2. `docs/static/skills-core.md` — read for operational flows and safety rules.
-3. `docs/static/skills.md` — read relevant sections for SDK details, API schemas, or edge cases.
-4. `docs/docs/deployments.md` — pull chain addresses and `startBlock` values.
+1. `docs/docs/protocol/integrations.md` for the integration happy path.
+2. `docs/static/skills-core.md` for operational flows and safety rules.
+3. `docs/static/skills.md` for SDK details, API schemas, or edge cases.
+4. `docs/docs/deployments.md` for chain addresses and `startBlock` values.
 
 ### Codex
 

@@ -102,4 +102,4 @@ interface IEntrypoint {
 
 ```
 
-Integration note: `IPrivacyPool.currentRoot()` is the state-tree root used in withdrawal proofs and SDK `getStateRoot(poolAddress)`. `IEntrypoint.latestRoot()` is a different root: the latest ASP-approved root that must match ASP `onchainMtRoot`.
+`IPrivacyPool.currentRoot()` is the state-tree root used in withdrawal proofs and SDK `getStateRoot(poolAddress)`. `IEntrypoint.latestRoot()` is separate: the latest ASP-approved root that must match ASP `onchainMtRoot`.

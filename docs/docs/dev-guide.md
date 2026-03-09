@@ -13,7 +13,7 @@ keywords:
 
 For production protocol integration, start with [Integrations](/protocol/integrations), then use [SDK Utilities](/reference/sdk) and [Deployments](/deployments).
 
-Two SDK details matter in current integrations: `contracts.getStateRoot(poolAddress)` reads the pool's `currentRoot()` for the state tree, while ASP proof root still comes from `onchainMtRoot` / `Entrypoint.latestRoot()`. Event reconstruction through `DataService` is an advanced direct-RPC fallback, not the default frontend path; if used, initialize it with deployment `startBlock`.
+Two SDK details matter for integrations: `contracts.getStateRoot(poolAddress)` reads the pool's `currentRoot()` for the state tree, while the ASP proof root comes from `onchainMtRoot` / `Entrypoint.latestRoot()`. Event reconstruction through `DataService` is an advanced direct-RPC fallback; if used, initialize it with deployment `startBlock`.
 
 
 ## Prerequisites

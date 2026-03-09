@@ -24,7 +24,7 @@ This guide keeps the production integration path small:
 
 ### Account and Recovery
 
-- Frontends should use mnemonic-backed pool-account state. It gives users a better UX without pushing secret-bearing notes through copy/paste or other UI surfaces where they can be exposed, including XSS or clipboard risks.
+- Frontends should use mnemonic-backed pool-account state. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI where raw secrets can be exposed.
 - Wallet-signature onboarding is only safe when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup/download step, use the current derivation flow for new accounts, only expose any older restore path for existing legacy accounts, and fall back to manual 12- or 24-word mnemonic setup/load when that deterministic signer path is unavailable.
 - Manual recovery phrase entry must be sanitized before use, and clipboard-first UX should be avoided.
 
@@ -83,7 +83,7 @@ function getRelayerHost(chainId: number): string {
 }
 ```
 
-Production default: use `fastrelay.xyz` for relayed withdrawals. Self-relay and direct withdrawal are supported for deliberate cases, but they are not the privacy-preserving frontend path.
+Production default: use `fastrelay.xyz` for relayed withdrawals. Self-relay and direct withdrawal are supported but are advanced non-private options.
 
 ## Happy Path Flows
 
@@ -94,7 +94,7 @@ Production default: use `fastrelay.xyz` for relayed withdrawals. Self-relay and 
 3. If the wallet cannot produce deterministic signatures, fall back to manual mnemonic creation/load.
 4. Use the mnemonic/account state to reconstruct pool accounts across sessions; do not ask users to manually carry notes.
 
-For copy-paste SDK setup and relay payload construction, use `SDK Quick Start` and `Constructing the Withdrawal object` in `https://docs.privacypools.com/skills.md`.
+For ready-to-use SDK setup and relay payload construction, see `SDK Quick Start` and `Constructing the Withdrawal object` in `https://docs.privacypools.com/skills.md`.
 
 ### Deposit (ETH)
 
@@ -131,11 +131,11 @@ For copy-paste SDK setup and relay payload construction, use `SDK Quick Start` a
    - `POST /relayer/request`
 12. Wait for receipt, verify success, then insert the change commitment back into the same pool-account tree.
 
-Advanced self-relay and direct-withdrawal flows are documented in `https://docs.privacypools.com/skills.md`. Treat them as non-private options rather than the default frontend path.
+Advanced self-relay and direct-withdrawal flows are documented in `https://docs.privacypools.com/skills.md`. These are non-private options and should not be the default frontend path.
 
 ### Direct Withdrawal (Rare / Advanced)
 
-Use direct withdrawal only when recipient should be the tx signer and the loss of privacy is explicitly accepted:
+Use direct withdrawal only when the recipient is the tx signer and the loss of privacy is explicitly accepted:
 
 - set `withdrawal.processooor` to signer address (`msg.sender`)
 - call `contracts.withdraw(withdrawal, proof, scope)`
@@ -156,9 +156,9 @@ Ragequit is public and irreversible for that commitment (nullifier is spent).
 - `GET /{chainId}/public/deposits-larger-than` can show an anonymity-set estimate while the user edits the withdrawal amount.
 - `POST /relayer/quote` without `recipient` can be used earlier in the form for a fee estimate. Request the signed `feeCommitment` only after the final recipient is known on review.
 - ENS resolution should use mainnet (`chainId = 1`) even when the active pool is on another EVM chain.
-- If proof generation can take noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof` instead of a blind spinner.
+- If proof generation can take noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof`.
 - If the wallet supports batching, combining approval + deposit into one user action is a good upgrade. The same pattern can extend to stake-then-deposit flows as long as the final deposited asset and expected amount are explicit in review UI.
-- Treat wallet rejections and user cancellations as expected user actions, not product failures.
+- Handle wallet rejections and user cancellations gracefully.
 
 ## Required Runtime Validations
 
