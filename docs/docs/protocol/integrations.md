@@ -40,7 +40,7 @@ This page covers the recommended production integration path for Privacy Pools. 
 - Refresh deposit review state across every loaded chain/scope combination after account load. If a deposit reports `APPROVED` but its label is not yet present in the current ASP leaves, continue treating it as pending until the leaf arrives.
 - Disable withdraw CTAs unless wallet is connected, account state is loaded, at least one relayer is available, and there is at least one approved non-zero pool account.
 - Filter withdraw selectors to approved non-zero accounts for the active chain/scope and pick a sensible default account automatically.
-- Parse confirmed receipts rather than asking users to store notes or receipt values. Pool-account state keeps raw secrets out of manual copy/paste UX.
+- Parse confirmed receipts rather than asking users to store notes or receipt values. Pool-account state keeps raw secrets out of manual copy/paste UX and other UI surfaces where they can be exposed, including XSS or clipboard risks.
 - Gate wallet-signature derivation by wallet capability; many smart/contract wallets should use manual mnemonic onboarding instead.
 - After a successful private withdrawal, insert the new change commitment back into local account state before allowing another spend.
 - Do not log recovery phrases, signatures, nullifiers, secrets, or raw note material to analytics or error tracking.

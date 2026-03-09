@@ -123,7 +123,7 @@ If you support manual recovery phrase load, normalize whitespace/newlines/commas
 - On account load, use `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` to reconstruct deposits and withdrawal history.
 - Refresh review status across every loaded chain/scope combination, not just the currently selected pool.
 - If a deposit reports `APPROVED` but its label is not yet present in the current ASP leaves, continue treating it as pending until the leaf arrives.
-- On deposit success, parse the `Deposited` event and persist the resulting commitment metadata into local pool-account state rather than surfacing a note to the user.
+- On deposit success, parse the `Deposited` event and persist the resulting commitment metadata into local pool-account state rather than surfacing secret-bearing notes to the user.
 - On withdrawal success, append the new child/change commitment back to that same pool-account tree and refresh leaves before the next withdrawal.
 - Only expose privately spendable balances from accounts that have positive balance and remain ASP-approved.
 - If ragequit occurs, mark the pool account as exited.
@@ -190,7 +190,8 @@ const commitment = getCommitment(committedValue, label, nullifier, secret);
 const commitmentProof = await sdk.proveCommitment(committedValue, label, nullifier, secret);
 
 // IMPORTANT: Store commitment, masterKeys, label, nullifier, and secret in
-// recovery-seed-backed account state. Avoid manual note copy/paste because it exposes raw secrets to the UI.
+// recovery-seed-backed account state. Avoid manual note copy/paste because it exposes raw secrets to the UI,
+// including clipboard and XSS-prone surfaces.
 ```
 
 ## Direct Withdrawal (advanced, same-signer recipient only, non-private)

@@ -22,7 +22,7 @@ This guide keeps the production integration path small:
 
 ## Non-Negotiable Rules
 
-- Frontends should use mnemonic-backed pool-account state. It gives users a better UX without pushing secret-bearing notes through copy/paste flows.
+- Frontends should use mnemonic-backed pool-account state. It gives users a better UX without pushing secret-bearing notes through copy/paste or other UI surfaces where they can be exposed, including XSS or clipboard risks.
 - Production frontend default is relayed withdrawal because it is the privacy-preserving path. Self-relay and direct withdrawal are advanced non-private options.
 - Wallet-signature onboarding is only safe when the wallet produces deterministic EIP-712 signatures. Smart/contract wallets, Coinbase Wallet, and unsupported WalletConnect sessions should fall back to manual 12- or 24-word mnemonic setup/load. Sign the same payload twice, version the derivation, and require a backup/download step before proceeding.
 - Manual recovery phrase entry must be sanitized before use, and clipboard-first UX should be avoided.

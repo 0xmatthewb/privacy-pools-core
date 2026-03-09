@@ -18,7 +18,7 @@ The deposit operation is the entry point into the Privacy Pools protocol. It all
 For production workflow guidance, see [Integrations](/protocol/integrations) and [skills.md](https://docs.privacypools.com/skills.md).
 :::
 
-Production frontend integrations should capture the `Deposited` event into mnemonic/account-backed pool-account state. Pool-account UX keeps raw secrets out of manual note copy/paste flows.
+Production frontend integrations should capture the `Deposited` event into mnemonic/account-backed pool-account state. Pool-account UX keeps raw secrets out of manual note copy/paste flows and other UI surfaces where they can be exposed, including XSS or clipboard risks.
 
 ## Production Frontend Pattern
 

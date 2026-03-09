@@ -25,7 +25,7 @@ Outside the repository, use the published docs:
 
 ## Happy Path Defaults
 
-- Model user state as a mnemonic-backed account with pool-account tracking; this gives a better UX without pushing secret-bearing notes through copy/paste flows.
+- Model user state as a mnemonic-backed account with pool-account tracking; this gives a better UX without pushing secret-bearing notes through copy/paste or other UI surfaces where they can be exposed, including XSS or clipboard risks.
 - Production frontend default is relayed withdrawals because that is the privacy-preserving withdrawal path. Self-relay and direct withdrawal are advanced non-private options.
 - When onboarding from a wallet, use deterministic EIP-712 signature-based seed derivation with an explicit backup step; otherwise fall back to manual mnemonic setup/load.
 - Only offer private withdrawal from pool accounts with positive balance and ASP approval.

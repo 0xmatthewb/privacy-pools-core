@@ -27,7 +27,7 @@ Route all Privacy Pools tasks through the docs below.
 ## Workflow Rules
 
 - Use relayed withdrawals via `fastrelay.xyz` as the default frontend path because that is the privacy-preserving withdrawal path. Treat self-relay and direct withdrawal as advanced non-private options.
-- Frontends should use mnemonic-backed pool accounts reconstructed from on-chain events rather than secret-bearing note copy/paste flows.
+- Frontends should use mnemonic-backed pool accounts reconstructed from on-chain events rather than secret-bearing note copy/paste flows that expose secrets in clipboard or XSS-prone UI surfaces.
 - Only expose private withdrawal from approved non-zero pool accounts, and resolve plus validate the recipient before quote or proof generation.
 - Request relayer quotes on the review step. If amount, recipient, relayer, or optional gas-token drop changes, or the quote expires, re-quote and require reconfirmation.
 - Prefer wallet-signature seed derivation only when the wallet can produce deterministic EIP-712 signatures; require a backup step before relying on it. Otherwise fall back to manual mnemonic create/load and sanitize recovery phrase input.
