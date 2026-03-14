@@ -15,19 +15,8 @@ keywords:
 The deposit operation is the entry point into the Privacy Pools protocol. It allows users to publicly deposit assets (ETH or ERC20 tokens) into a pool, creating a private commitment that can later be used for [private withdrawals](/protocol/withdrawal) or public [ragequit](/protocol/ragequit) operations.
 
 :::info Integration
-For production workflow guidance, see [Integrations](/protocol/integrations) and [skills.md](https://docs.privacypools.com/skills.md).
+For production integration guidance, see [Integrations](/protocol/integrations).
 :::
-
-Production frontend integrations should capture the `Deposited` event into mnemonic/account-backed pool-account state. Pool-account UX keeps raw secrets out of manual note copy/paste flows and other UI surfaces where they can be exposed, including XSS or clipboard risks.
-
-## Production Frontend Pattern
-
-- Bootstrap or load the mnemonic-backed account before deposit so the new pool account can be persisted immediately.
-- Derive deposit secrets from account state plus pool scope and sequential deposit index.
-- If you expose `Use max`, reserve gas for native-asset deposits and account for vetting-fee math before setting the final input amount.
-- If the wallet supports batching, approval + deposit can be presented as one action. The same pattern can extend to stake-then-deposit flows as long as the final deposited asset and expected amount are explicit in the review UI.
-- Parse the confirmed `Deposited` event into local pool-account state right away.
-- Tell users that chain confirmation does not guarantee immediate indexing or ASP review visibility.
 
 ## Protocol Flow
 
