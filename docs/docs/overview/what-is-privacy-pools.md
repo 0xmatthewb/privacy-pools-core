@@ -78,8 +78,6 @@ flowchart TD
 
 These layers work together to create a secure privacy-preserving system: the contract layer manages assets and state, the zero-knowledge layer ensures privacy, and the ASP layer provides compliance capabilities.
 
-Privacy Pools also supports relayed withdrawals via Entrypoint. Recommended frontends use the relayed path for recipient privacy from the transaction sender, while direct pool withdrawals remain an advanced non-private option. For details, see [Withdrawal](/protocol/withdrawal). To start integrating, see [Integrations](/protocol/integrations).
-
 ## Key features and capabilities
 
 - **Partial Withdrawals**: Users can withdraw portions of their deposits while maintaining privacy.

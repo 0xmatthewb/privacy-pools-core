@@ -20,7 +20,7 @@ Privacy Pools breaks the on-chain link between deposit and withdrawal addresses.
 Use these frontend defaults unless you have a specific reason not to:
 
 - Model the user as a mnemonic-backed account and keep deposits plus change commitments in pool-account state. This keeps secret-bearing notes out of copy/paste UX and gives users a safer abstraction.
-- Make relayed withdrawal the default private-withdraw UX. Direct withdrawal is an advanced non-private option.
+- Build app withdrawal UX around relayed withdrawal. It is the privacy-preserving path. Direct withdrawal is a signer-only non-private protocol path and should stay out of normal app flows.
 - Only offer wallet-signature onboarding when deterministic EIP-712 signing is supported. Sign the same typed-data payload twice, require backup before continuing, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts.
 - If manual recovery phrase entry exists, sanitize whitespace/newlines/commas, validate checksum, and avoid clipboard-first UX.
 - Only offer private withdrawal from balances that are both positive and ASP-approved.

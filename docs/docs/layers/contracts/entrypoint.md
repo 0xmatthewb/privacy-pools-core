@@ -75,8 +75,6 @@ Handles relayed withdrawals by:
 3. Distributing funds between recipient and relayer (if used)
 4. Enforcing security checks on pool state
 
-Recommended frontends use this path through a relayer rather than exposing direct withdrawal as the standard action.
-
 ### 3. Pool Management
 
 Provides functions for pool lifecycle management:

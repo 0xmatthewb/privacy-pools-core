@@ -15,7 +15,7 @@ keywords:
 Ragequit is a safety mechanism that allows the original depositor to publicly withdraw their funds without needing [ASP](/layers/asp) approval. This operation serves as a critical backup [withdrawal](/protocol/withdrawal) method, ensuring fund recovery when a deposit's label has not been approved or has been removed from the approved set.
 
 :::info Integration
-For production workflow guidance, see [Integrations](/protocol/integrations) and [skills.md](https://docs.privacypools.com/skills.md).
+For production integration guidance, see [Integrations](/protocol/integrations).
 :::
 
 ## Protocol Flow

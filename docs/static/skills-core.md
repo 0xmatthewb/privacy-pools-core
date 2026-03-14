@@ -30,8 +30,8 @@ This guide keeps the production integration path small:
 
 ### Private Withdrawal
 
-- Production frontend default is relayed withdrawal because it is the privacy-preserving path. Direct withdrawal is an advanced non-private option.
-- Direct `PrivacyPool.withdraw()` requires `processooor == msg.sender`, so funds go to the signer. The relay path instead uses `Entrypoint.relay()` with `processooor = entrypointAddress` and recipient routing encoded in `withdrawal.data`.
+- Build the app's withdrawal UX around relayed withdrawal. It is the privacy-preserving path. Do not make direct withdrawal part of normal app flows.
+- If a task explicitly implements the advanced direct path, `PrivacyPool.withdraw()` requires `processooor == msg.sender`, so funds go to the signer. The relay path instead uses `Entrypoint.relay()` with `processooor = entrypointAddress` and recipient routing encoded in `withdrawal.data`.
 - Only offer private withdrawal from pool accounts with `balance > 0` and `reviewStatus === APPROVED`.
 - Resolve and validate the final recipient before requesting a quote or generating a proof. Unresolved ENS or invalid address input must block the withdrawal flow.
 - Request relayer quotes only when the user enters the review step. If amount, recipient, relayer, or `extraGas` changes, or if the quote expires, discard it, re-quote, and require the user to confirm again.
@@ -84,7 +84,7 @@ function getRelayerHost(chainId: number): string {
 }
 ```
 
-Production default: use `fastrelay.xyz` for relayed withdrawals. Direct withdrawal is supported but is an advanced non-private option.
+Production default: use `fastrelay.xyz` for relayed withdrawals. Do not build normal frontend withdrawal UX around direct withdrawal.
 
 ## Happy Path Flows
 
@@ -132,15 +132,7 @@ For ready-to-use SDK setup and relay payload construction, see `SDK Quick Start`
    - `POST /relayer/request`
 12. Wait for receipt, verify success, then insert the change commitment back into the same pool-account tree.
 
-Advanced direct-withdrawal details are documented in `https://docs.privacypools.com/skills.md`. Direct withdrawal is non-private and should not be the default frontend path.
-
-### Direct Withdrawal (Rare / Advanced)
-
-Use direct withdrawal only when the recipient is the tx signer and the loss of privacy is explicitly accepted:
-
-- set `withdrawal.processooor` to signer address (`msg.sender`)
-- call `contracts.withdraw(withdrawal, proof, scope)`
-- do not expose this as the default frontend action
+If a task explicitly requires the advanced direct-withdrawal path, consult `https://docs.privacypools.com/skills.md`. It is signer-only, non-private, and should stay out of normal app UX.
 
 ### Ragequit (Public Fallback)
 

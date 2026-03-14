@@ -11,12 +11,12 @@ keywords:
   - integration
 ---
 
-:::info Integration
-For production workflow guidance, see [Integrations](/protocol/integrations) and [skills.md](https://docs.privacypools.com/skills.md).
-:::
-
 :::note Scope
 This page covers the integration-relevant SDK surface. See the source code for the full API.
+:::
+
+:::info Integration
+For production integration guidance, see [Integrations](/protocol/integrations).
 :::
 
 

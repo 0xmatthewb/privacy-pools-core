@@ -12,29 +12,18 @@ keywords:
 ---
 
 
-Privacy Pools supports two withdrawal paths, but recommended production frontends should expose the relayed flow as the primary private-withdraw action:
+Privacy Pools supports two withdrawal paths, but frontend integrations should build their normal withdrawal UX around the relayed flow:
 
 1. **Relayed Withdrawal**: A relayer submits `Entrypoint.relay()` for the user. This is the privacy-preserving frontend path.
 2. **Direct Withdrawal**: The user submits `PrivacyPool.withdraw()` directly. This is an advanced non-private signer-only path.
 
-Both paths require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership. Recommended frontends should use the relayed path when recipient privacy matters.
+Both paths require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership. This page documents both paths, but frontend integrations should treat relayed withdrawal as the standard app flow.
 
 :::info Integration
-For production workflow guidance, see [Integrations](/protocol/integrations) and [skills.md](https://docs.privacypools.com/skills.md).
+For production integration guidance, see [Integrations](/protocol/integrations).
 :::
 
-Integration note: withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()` (via SDK `contracts.getStateRoot(poolAddress)`), while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
-
-## Production Frontend Pattern
-
-- Only offer private withdrawal from pool accounts with `balance > 0` and ASP approval.
-- Resolve ENS on mainnet, or resolve any other human-readable recipient input to a final address, before requesting a quote or generating a proof.
-- Fetch `GET /relayer/details` and warn if a partial withdrawal would leave a non-zero remainder below `minWithdrawAmount`.
-- Request the quote on the review step, keep a visible countdown, and if amount, recipient, relayer, or `extraGas` changes, refresh the quote and require another confirm click.
-- Treat `extraGas` as an optional gas-token drop for supported non-native assets and reflect it in fee display plus quote invalidation.
-- If proof generation takes noticeable time, surface progress states such as circuit loading, proof generation, and proof verification.
-- Treat direct withdrawal as an advanced non-private option. If the frontend wants private withdrawal, it should use the relayed path.
-- Keep ragequit separate as the explicit public fallback.
+Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()` (via SDK `contracts.getStateRoot(poolAddress)`), while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
 
 ## Withdrawal Types Comparison
 
@@ -44,7 +33,7 @@ Integration note: withdrawal proofs carry two separate roots. The state-tree roo
 | Who receives pool payout | `processooor` (the signer) | Entrypoint |
 | Recipient Rules | `processooor` must equal `msg.sender`, so funds go to the signer | Final recipient comes from `RelayData`; Entrypoint routes funds after pool withdrawal |
 | Privacy Outcome | Non-private | Privacy-preserving frontend path |
-| Frontend Guidance | Advanced only | Recommended default |
+| Frontend Use | Not a normal app flow | Standard app withdrawal flow |
 
 ### Protocol Flow - Direct Withdrawal (Advanced)
 
