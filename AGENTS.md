@@ -78,3 +78,4 @@ cd docs && yarn build
 - Agent workflow overview page: `docs/docs/agent-workflows.md`.
 - Use deployment `startBlock` values for `DataService` event scans; the SDK fetches logs in chunked, rate-limited ranges, but agents should still avoid `0n` scans.
 - In SDK integration docs, distinguish pool state root from ASP root: `contracts.getStateRoot(poolAddress)` reads the pool's `currentRoot()`, while ASP proof root comes from `onchainMtRoot` and must match `Entrypoint.latestRoot()`.
+- In integration docs and reviews, distinguish withdrawal modes clearly: relayed withdrawals through `Entrypoint.relay()` are the privacy-preserving frontend default, while direct `PrivacyPool.withdraw()` is the advanced non-private path because the pool pays `processooor` and requires `msg.sender == processooor`.
