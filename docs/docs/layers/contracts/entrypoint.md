@@ -68,12 +68,14 @@ The deposit process:
 function relay(IPrivacyPool.Withdrawal calldata _withdrawal, ProofLib.WithdrawProof calldata _proof, uint256 _scope) external nonReentrant
 ```
 
-Handles private withdrawals by:
+Handles relayed withdrawals by:
 
 1. Verifying withdrawal proofs
 2. Processing withdrawals through privacy pools
 3. Distributing funds between recipient and relayer (if used)
 4. Enforcing security checks on pool state
+
+Recommended frontends use this path through a relayer rather than exposing direct withdrawal as the standard action.
 
 ### 3. Pool Management
 

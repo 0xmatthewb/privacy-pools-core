@@ -12,12 +12,12 @@ keywords:
 ---
 
 
-Privacy Pools supports two types of withdrawals, but recommended production frontends should expose the relayed flow as the primary private-withdraw action:
+Privacy Pools supports two withdrawal paths, but recommended production frontends should expose the relayed flow as the primary private-withdraw action:
 
-1. **Relayed Withdrawals**: Withdrawal processed through a relayer. This is the privacy-preserving frontend path.
-2. **Direct Withdrawals / Self-Relay**: User submits the withdrawal transaction themselves. This is an advanced non-private path.
+1. **Relayed Withdrawal**: A relayer submits `Entrypoint.relay()` for the user. This is the privacy-preserving frontend path.
+2. **Direct Withdrawal**: The user submits `PrivacyPool.withdraw()` directly. This is an advanced non-private signer-only path.
 
-Both methods require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership and maintain privacy.
+Both paths require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership. Recommended frontends should use the relayed path when recipient privacy matters.
 
 :::info Integration
 For production workflow guidance, see [Integrations](/protocol/integrations) and [skills.md](https://docs.privacypools.com/skills.md).
@@ -33,18 +33,18 @@ Integration note: withdrawal proofs carry two separate roots. The state-tree roo
 - Request the quote on the review step, keep a visible countdown, and if amount, recipient, relayer, or `extraGas` changes, refresh the quote and require another confirm click.
 - Treat `extraGas` as an optional gas-token drop for supported non-native assets and reflect it in fee display plus quote invalidation.
 - If proof generation takes noticeable time, surface progress states such as circuit loading, proof generation, and proof verification.
-- Treat user-submitted withdrawal paths as advanced non-private options. If the frontend wants private withdrawal, it should use the relayed flow.
+- Treat direct withdrawal as an advanced non-private option. If the frontend wants private withdrawal, it should use the relayed path.
 - Keep ragequit separate as the explicit public fallback.
 
 ## Withdrawal Types Comparison
 
-| Aspect                   | Direct Withdrawal  | Relayed Withdrawal                      |
-| ------------------------ | ------------------ | --------------------------------------- |
-| Privacy Level            | Not privacy-preserving for normal frontend use (signer pays gas and submits the withdrawal transaction) | Recommended private path (relayer pays gas, decoupling recipient from tx sender) |
-| Gas Payment              | User pays directly | Relayer pays, takes fee                 |
-| Fee Structure            | No fees            | Configurable relayer fee                |
-| Complexity               | Simpler but privacy-reducing | Additional fee computation              |
-| Front-running Protection | Context-based      | Context-based                           |
+| Aspect | Direct Withdrawal | Relayed Withdrawal |
+| --- | --- | --- |
+| Contract Call | `PrivacyPool.withdraw()` | `Entrypoint.relay()` |
+| Who receives pool payout | `processooor` (the signer) | Entrypoint |
+| Recipient Rules | `processooor` must equal `msg.sender`, so funds go to the signer | Final recipient comes from `RelayData`; Entrypoint routes funds after pool withdrawal |
+| Privacy Outcome | Non-private | Privacy-preserving frontend path |
+| Frontend Guidance | Advanced only | Recommended default |
 
 ### Protocol Flow - Direct Withdrawal (Advanced)
 
