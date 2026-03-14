@@ -20,7 +20,7 @@ Privacy Pools breaks the on-chain link between deposit and withdrawal addresses.
 Use these frontend defaults unless you have a specific reason not to:
 
 - Model the user as a mnemonic-backed account and keep deposits plus change commitments in pool-account state. This keeps secret-bearing notes out of copy/paste UX and gives users a safer abstraction.
-- Make relayed withdrawal the default private-withdraw UX. Self-relay and direct withdrawal are advanced non-private options.
+- Make relayed withdrawal the default private-withdraw UX. Direct withdrawal is an advanced non-private option.
 - Only offer wallet-signature onboarding when deterministic EIP-712 signing is supported. Sign the same typed-data payload twice, require backup before continuing, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts.
 - If manual recovery phrase entry exists, sanitize whitespace/newlines/commas, validate checksum, and avoid clipboard-first UX.
 - Only offer private withdrawal from balances that are both positive and ASP-approved.
@@ -230,7 +230,8 @@ const aspMerkleProof = generateMerkleProof(aspLabels, commitmentLabel);
 // The contract checks msg.sender == processooor and reverts with InvalidProcessooor otherwise.
 // This means direct withdrawals go to the signer's own address only, and the signer submits the
 // withdrawal transaction on-chain, so this is not the privacy-preserving frontend path.
-// To withdraw to a *different* address, use the relayed withdrawal flow instead (see below).
+// To use the relayed path instead, build the relay-shaped withdrawal object shown below.
+// Recommended frontends should send that object to a relayer rather than surfacing direct withdrawal.
 import { privateKeyToAccount } from "viem/accounts";
 const signerAddress = privateKeyToAccount(privateKey).address; // derive signer address from the same key used in createContractInstance
 const withdrawal: Withdrawal = { processooor: signerAddress, data: "0x" };
@@ -289,7 +290,7 @@ The withdrawal flow requires several inputs sourced from on-chain state and exte
 | `aspRoot` | ASP API | `GET /{chainId}/public/mt-roots` → `response.onchainMtRoot`. Requires `X-Pool-Scope` header. This is separate from `stateRoot`; verify it against on-chain `Entrypoint.latestRoot()` before submitting |
 | `aspLabels` | ASP API | `GET /{chainId}/public/mt-leaves` → `response.aspLeaves`. Requires `X-Pool-Scope` header. Returns `string[]` of decimal bigint labels |
 | `label` | Deposit event | Read from `Deposited` event logs after deposit tx |
-| `withdrawal` | Constructed by user | Default frontend path: `{ processooor: entrypointAddress, data: relayData }` (relayed). Advanced fallback: `{ processooor: signerAddress, data: "0x" }` (direct) |
+| `withdrawal` | Constructed by user | Default private path: `{ processooor: entrypointAddress, data: relayData }` submitted through a relayer. Advanced non-private path: `{ processooor: signerAddress, data: "0x" }` passed to `contracts.withdraw(...)` (direct) |
 | `context` | Derived | `calculateContext(withdrawal, scope)` |
 
 ### Reconstructing the state tree
@@ -534,7 +535,7 @@ const { eligibleDeposits, totalDeposits, percentage, rank, uniqueAmountsAbove } 
 ```typescript
 interface Withdrawal {
   processooor: Address;  // Direct: signer's own address (msg.sender). Relayed: MUST be the Entrypoint address.
-  data: Hex;             // "0x" for direct withdrawals; ABI-encoded RelayData for relayed
+  data: Hex;             // "0x" for direct withdrawals; ABI-encoded RelayData for relayed withdrawals
 }
 ```
 
@@ -720,9 +721,9 @@ Recommended form pattern: compare the intended post-withdrawal remainder against
 
 ### End-to-end relayed withdrawal
 
-This is the recommended privacy-preserving flow: withdraw to a **different address** via the relayer. The steps are: (1) get a relayer fee quote with a signed commitment, (2) construct the relay Withdrawal object, (3) generate the ZK proof, (4) submit to the relayer. The entire flow must complete within 60 seconds (the feeCommitment TTL).
+This is the recommended privacy-preserving flow: have a relayer submit `Entrypoint.relay()` for you. The steps are: (1) get a relayer fee quote with a signed commitment, (2) construct the relay Withdrawal object, (3) generate the ZK proof, (4) submit to the relayer. The entire flow must complete within 60 seconds (the feeCommitment TTL).
 
-**Recommended default:** use the hosted relayer (`https://fastrelay.xyz`) for production agent and human+agent workflows. Self-relay and direct withdrawal should be treated as advanced non-private options.
+**Recommended default:** use the hosted relayer (`https://fastrelay.xyz`) for production agent and human+agent workflows. Direct withdrawal should be treated as an advanced non-private option and not surfaced as the standard frontend action.
 
 ```typescript
 // Prerequisites: you have commitment, masterKeys, label from your deposit,
@@ -1045,8 +1046,8 @@ const accountService = new AccountService(dataService, { mnemonic });
 | `depositETH(amount, precommitment)` | `bigint, bigint` | Deposit ETH into the pool |
 | `depositERC20(tokenAddress, amount, precommitment)` | `Address, bigint, bigint` | Deposit ERC20 tokens |
 | `approveERC20(spenderAddress, tokenAddress, amount)` | `Address, Address, bigint` | Approve ERC20 spending (call before depositERC20) |
-| `withdraw(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Direct withdrawal. Internally resolves `scope` → pool address via `getScopeData()` and calls the **pool** contract's `withdraw()`. |
-| `relay(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Relayed withdrawal. Calls `relay()` on the **entrypoint** contract (not the pool). **Default path:** use the HTTP relayer flow (`fastrelay.xyz`) in this guide. Can be called by anyone; the contract only checks that `processooor == entrypointAddress`, not who `msg.sender` is. Self-relay (paying gas yourself) is supported but should be treated as an advanced non-private path. |
+| `withdraw(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Direct pool withdrawal. Internally resolves `scope` → pool address via `getScopeData()` and calls the **pool** contract's `withdraw()`. Caller must equal `withdrawal.processooor`, so funds go to the signer. Advanced non-private path. |
+| `relay(withdrawal, proof, scope)` | `Withdrawal, WithdrawalProof, Hash` | Relayed withdrawal. Calls `relay()` on the **entrypoint** contract (not the pool). **Default path:** use the HTTP relayer flow (`fastrelay.xyz`) in this guide. Can be called by anyone; the contract only checks that `processooor == entrypointAddress`, not who `msg.sender` is. Recommended frontend integrations should use a relayer rather than surfacing direct withdrawal. |
 | `ragequit(commitmentProof, poolAddress)` | `CommitmentProof, Address` | Emergency public exit |
 
 All write methods return `Promise<{ hash: string; wait: () => Promise<void> }>`. The `hash` is a hex tx hash string (e.g. `"0xabc..."`).

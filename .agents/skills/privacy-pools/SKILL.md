@@ -26,7 +26,8 @@ Outside the repository, use the published docs:
 ## Happy Path Defaults
 
 - Model user state as a mnemonic-backed account with pool-account tracking. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI where raw secrets can be exposed.
-- Production frontend default is relayed withdrawals because that is the privacy-preserving withdrawal path. Self-relay and direct withdrawal are advanced non-private options.
+- Production frontend default is relayed withdrawals because that is the privacy-preserving withdrawal path. Direct withdrawal is an advanced non-private option.
+- Direct `PrivacyPool.withdraw()` requires `processooor == msg.sender`, so funds go to the signer. The relay path instead uses `Entrypoint.relay()` with `processooor = entrypointAddress` and recipient routing encoded in `withdrawal.data`.
 - When onboarding from a wallet, only use deterministic wallet-signature seed derivation when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup step, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts. Otherwise fall back to manual mnemonic setup/load.
 - Only offer private withdrawal from pool accounts with positive balance and ASP approval.
 - Request relayer quotes on the review step, invalidate them when amount, recipient, relayer, or `extraGas` changes, and warn if a partial withdrawal would leave a remainder below the relayer minimum.
@@ -42,12 +43,12 @@ Outside the repository, use the published docs:
 7. Resolve and validate the recipient, fetch relayer details plus `minWithdrawAmount`, and build Merkle proofs for a spendable approved pool account.
 8. Use the relayer flow by default (`fastrelay.xyz` on production chains), requesting the quote on the review step and persisting the change commitment back into pool-account state after success.
 9. Use ragequit as public fallback if private withdrawal cannot proceed.
-10. If the task explicitly needs self-relay or direct withdrawal, consult the deep reference rather than turning them into the default UI path.
+10. If the task explicitly needs direct withdrawal, consult the deep reference rather than turning it into the default UI path.
 
 ## Required Guards
 
 - Use mnemonic/account-backed pool-account state plus on-chain events; do not design around secret-bearing note copy/paste workflows.
-- Offer relayed withdrawals by default. If self-relay or direct withdrawal is exposed, present it as advanced and non-private.
+- Offer relayed withdrawals by default. If direct withdrawal is exposed, present it as advanced and non-private.
 - Wallet-signature seed derivation requires deterministic EIP-712 signing. Sign the same payload twice, use the current derivation flow for new accounts, only expose any older restore path for existing legacy accounts, require a backup step, and fall back to manual mnemonic setup/load when unsupported.
 - Manual recovery phrase entry must be sanitized before use.
 - Only privately withdraw from balances with `balance > 0` and `reviewStatus === APPROVED`.
