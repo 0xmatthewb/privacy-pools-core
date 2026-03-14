@@ -51,7 +51,7 @@ address public immutable ASSET;
 ```solidity
 struct Withdrawal {
     address processooor;  // Allowed address to process withdrawal
-    bytes data;           // Encoded arbitrary data used by Entrypoint
+    bytes data;           // Direct: empty. Relayed: RelayData consumed by Entrypoint
 }
 ```
 
@@ -91,7 +91,9 @@ Handles withdrawals by:
 2. Verifying state root and ASP root
 3. Spending nullifier hash
 4. Inserting new commitment
-5. Transferring funds to processor
+5. Transferring funds to `processooor`
+
+For direct withdrawals, `processooor` must equal `msg.sender`, so the pool pays the signer directly. For relayed withdrawals, `processooor` is the Entrypoint, which receives the pool payout and then routes funds to the final recipient.
 
 ### 3. Ragequit Functionality
 

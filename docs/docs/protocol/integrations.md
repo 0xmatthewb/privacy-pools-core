@@ -31,7 +31,7 @@ This page covers the production integration path for Privacy Pools. It is the sh
 6. Default the UI to relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. This is the private withdrawal path.
 7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval.
 8. Resolve the final recipient before review, fetch relayer details plus `minWithdrawAmount`, and request the relayer quote on the review step. Discard the quote whenever amount, recipient, relayer, or optional gas-token-drop settings change.
-9. Treat self-relay and direct withdrawal as advanced non-private options rather than the default private-withdraw button.
+9. Treat direct withdrawal as an advanced non-private option rather than the default private-withdraw button. Direct `PrivacyPool.withdraw()` requires `processooor = msg.sender`, while the relayed path uses `Entrypoint.relay()` with `processooor = entrypointAddress`.
 10. Keep ragequit separate and clearly public.
 
 ## Frontend Defaults
@@ -110,7 +110,8 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, us
 - When reconstructing state from events, initialize `DataService` with the deployment `startBlock` and use direct RPC.
 - `withdrawalAmount` must be `> 0` and `<=` commitment value.
 - Check `minimumDepositAmount` before submitting deposit transactions.
-- For direct withdrawal, `withdrawal.processooor` must equal `msg.sender`.
+- For direct withdrawal, `withdrawal.processooor` must equal `msg.sender`, so the pool pays the signer.
+- For relayed withdrawal, `withdrawal.processooor` must equal the Entrypoint address, and recipient plus fee routing comes from `withdrawal.data`.
 - Relayer `feeCommitment` has a short TTL (~60s); quote and request should be near-contiguous, and quote invalidation should be tied to form changes.
 - After partial withdrawals, refresh leaves before generating the next proof.
 

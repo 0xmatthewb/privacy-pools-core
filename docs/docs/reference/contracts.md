@@ -103,3 +103,5 @@ interface IEntrypoint {
 ```
 
 `IPrivacyPool.currentRoot()` is the state-tree root used in withdrawal proofs and SDK `getStateRoot(poolAddress)`. `IEntrypoint.latestRoot()` is separate: the latest ASP-approved root that must match ASP `onchainMtRoot`.
+
+`IPrivacyPool.withdraw()` is the direct pool path: caller must equal `Withdrawal.processooor`, so funds go to that signer. `IEntrypoint.relay()` is the relayed path: `Withdrawal.processooor` must be the Entrypoint, and recipient plus fee routing comes from `RelayData`.
