@@ -1,6 +1,6 @@
 ---
 title: What is Privacy Pools?
-slug: /
+slug: /overview/what-is-privacy-pools
 description: "High-level overview of Privacy Pools, explaining compliant private withdrawals on Ethereum using zero-knowledge proofs and Association Set Providers (ASPs)."
 keywords:
   - privacy pools

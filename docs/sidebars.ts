@@ -1,22 +1,11 @@
 import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
-/**
- * Creating a sidebar enables you to:
- - create an ordered group of docs
- - render a sidebar for each doc of that group
- - provide next/previous navigation
-
- The sidebars can be generated from the filesystem, or explicitly defined here.
-
- Create as many sidebars as you want.
- */
 const sidebars: SidebarsConfig = {
   docs: [
     {
       type: "category",
       label: "Overview",
+      collapsible: false,
       link: {
         type: "generated-index",
         slug: "/overview",
@@ -35,6 +24,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Protocol Components",
+      collapsible: false,
       link: {
         type: "generated-index",
         slug: "/layers",
@@ -54,6 +44,9 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Smart Contracts Layer",
+          collapsible: false,
+          description:
+            "Architecture of the smart contract layer, covering Entrypoint, asset-specific pools, verifiers, and protocol state.",
           link: {
             type: "doc",
             id: "layers/contracts",
@@ -66,6 +59,9 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Zero Knowledge Layer",
+          collapsible: false,
+          description:
+            "Circom zero-knowledge circuits for commitment hashing, LeanIMT inclusion proofs, and withdrawal proof composition.",
           link: {
             type: "doc",
             id: "layers/zk",
@@ -76,21 +72,26 @@ const sidebars: SidebarsConfig = {
             "layers/zk/withdrawal",
           ],
         },
-        "layers/asp",
+        {
+          type: "doc",
+          id: "layers/asp",
+          label: "ASP Layer",
+          className: "sidebar-layer-label",
+        },
       ],
     },
     {
       type: "category",
       label: "Using Privacy Pools",
+      collapsible: false,
       link: {
         type: "generated-index",
         slug: "/protocol",
         title: "Using Privacy Pools",
         description:
-          "Integration, deposit, withdrawal, and ragequit guidance for Privacy Pools.",
+          "Deposit, withdrawal, and ragequit guidance for Privacy Pools.",
         keywords: [
           "privacy pools",
-          "integration",
           "deposit",
           "withdrawal",
           "ragequit",
@@ -98,7 +99,6 @@ const sidebars: SidebarsConfig = {
         ],
       },
       items: [
-        "protocol/integrations",
         "protocol/deposit",
         "protocol/withdrawal",
         "protocol/ragequit",
@@ -107,12 +107,13 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Technical Reference",
+      collapsible: false,
       link: {
         type: "generated-index",
         slug: "/reference",
         title: "Technical Reference",
         description:
-          "SDK, contract, and circuit reference material for Privacy Pools.",
+          "Integration guide, SDK, contract, and circuit reference material for Privacy Pools.",
         keywords: [
           "privacy pools",
           "sdk",
@@ -120,9 +121,15 @@ const sidebars: SidebarsConfig = {
           "circuits",
           "reference",
           "api",
+          "integration",
         ],
       },
-      items: ["reference/contracts", "reference/circuits", "reference/sdk"],
+      items: [
+        "protocol/integrations",
+        "reference/contracts",
+        "reference/circuits",
+        "reference/sdk",
+      ],
     },
     {
       type: "ref",

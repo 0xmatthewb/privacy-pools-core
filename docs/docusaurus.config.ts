@@ -5,7 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Privacy Pools Documentation",
   tagline: "Technical documentation for Privacy Pools protocol",
-  favicon: "img/favicon.ico",
+  favicon: "img/favicon.svg",
 
   url: "https://docs.privacypools.com",
   baseUrl: "/",
@@ -23,7 +23,7 @@ const config: Config = {
       rel: "preconnect",
       crossorigin: "anonymous",
     },
-    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
   ],
   headTags: [
     {
@@ -63,6 +63,41 @@ const config: Config = {
     {
       tagName: "meta",
       attributes: { name: "robots", content: "index, follow" },
+    },
+    /* ── Structured Data (JSON-LD) ── */
+    {
+      tagName: "script",
+      attributes: { type: "application/ld+json" },
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            name: "0xbow",
+            url: "https://0xbow.io",
+            logo: "https://docs.privacypools.com/img/logo.svg",
+            sameAs: [
+              "https://github.com/0xbow-io",
+              "https://twitter.com/0xbowio",
+            ],
+          },
+          {
+            "@type": "WebSite",
+            name: "Privacy Pools Documentation",
+            url: "https://docs.privacypools.com",
+            publisher: { "@type": "Organization", name: "0xbow" },
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate:
+                  "https://docs.privacypools.com/?q={search_term_string}",
+              },
+              "query-input": "required name=search_term_string",
+            },
+          },
+        ],
+      }),
     },
   ],
 
@@ -146,18 +181,44 @@ const config: Config = {
     image: "img/privacy-pools-banner.png",
     mermaid: {
       theme: {
-        light: "neutral",
+        light: "default",
         dark: "dark",
+      },
+      options: {
+        fontFamily:
+          '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        fontSize: 13,
       },
     },
     navbar: {
-      title: "Privacy Pools Documentation",
+      title: "Privacy Pools",
       logo: {
         alt: "Privacy Pools Logo",
         src: "img/logo.svg",
         srcDark: "img/logo-dark.svg",
       },
       items: [
+        {
+          type: "doc",
+          docId: "overview/what-is-privacy-pools",
+          label: "Docs",
+          position: "left",
+        },
+        {
+          to: "/protocol/integrations",
+          label: "Integrations",
+          position: "left",
+        },
+        {
+          to: "/reference/sdk",
+          label: "SDK",
+          position: "left",
+        },
+        {
+          to: "/deployments",
+          label: "Deployments",
+          position: "left",
+        },
         {
           href: "https://github.com/0xbow-io/privacy-pools-core",
           position: "right",
