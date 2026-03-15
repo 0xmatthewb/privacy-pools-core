@@ -3,8 +3,9 @@
   align-items: baseline;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
 }
 
 /* Keep button right-aligned even when flex-wrap pushes it to a new line */
@@ -16,10 +17,9 @@
   margin: 0;
 }
 
-/* On mobile, reduce button visual weight so it doesn't dominate */
 @media (max-width: 996px) {
   .headerRow {
-    gap: 6px;
-    margin-bottom: 8px;
+    gap: 8px;
+    margin-bottom: 1rem;
   }
 }
