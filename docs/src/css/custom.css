@@ -967,12 +967,6 @@ div[class*="colorModeToggle"] {
   display: flex !important;
 }
 
-@media (max-width: 996px) {
-  div[class*="colorModeToggle"] {
-    margin-right: 140px;
-  }
-}
-
 /* "Edit this page" link */
 .theme-edit-this-page {
   margin-top: 2.5rem;
@@ -1320,8 +1314,11 @@ html[data-theme="dark"] .aa-DetachedFormContainer .aa-Form:focus-within {
   padding-top: 0.75rem;
 }
 
-[class*="docMainContainer"] {
-  padding-left: 1rem;
+/* Spacing between sidebar and content — desktop only */
+@media (min-width: 997px) {
+  [class*="docMainContainer"] {
+    padding-left: 1rem;
+  }
 }
 
 /* Breadcrumb to content gap */
