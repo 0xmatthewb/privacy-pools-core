@@ -1,29 +1,25 @@
 .headerRow {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Keep button right-aligned even when flex-wrap pushes it to a new line */
+.headerRow > :last-child {
+  margin-left: auto;
 }
 
 .title {
   margin: 0;
 }
 
-.actionsOnlyRow {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.85rem;
-}
-
+/* On mobile, reduce button visual weight so it doesn't dominate */
 @media (max-width: 996px) {
   .headerRow {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  .actionsOnlyRow {
-    justify-content: flex-start;
+    gap: 6px;
+    margin-bottom: 8px;
   }
 }

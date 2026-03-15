@@ -9,23 +9,19 @@
 .trigger {
   display: inline-flex;
   align-items: center;
-  gap: 0;
   padding: 0;
   border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: var(--ifm-pagination-nav-border-radius);
   background: var(--ifm-background-color);
   color: var(--ifm-font-color-base);
-  font-family: var(--ifm-font-family-base);
-  font-size: 1.34rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 13px;
   line-height: 1;
   cursor: pointer;
   transition: border-color var(--ifm-transition-fast) var(--ifm-transition-timing-default);
 }
 
-.trigger:hover {
-  border-color: var(--ifm-pagination-nav-color-hover);
-}
-
+.trigger:hover,
 .trigger[aria-expanded="true"] {
   border-color: var(--ifm-pagination-nav-color-hover);
 }
@@ -36,15 +32,15 @@
 }
 
 .chevron {
-  margin: 0 0.78rem;
+  margin: 0 8px;
   opacity: 0.8;
 }
 
 .triggerLabel {
   display: inline-flex;
   align-items: center;
-  gap: 0.62rem;
-  padding: 0.68rem 0.98rem;
+  gap: 6px;
+  padding: 7px 10px;
 }
 
 .copyIcon {
@@ -60,10 +56,10 @@
 
 .menu {
   position: absolute;
-  top: calc(100% + 0.45rem);
+  top: calc(100% + 5px);
   right: 0;
-  min-width: 20.5rem;
-  padding: 0.42rem;
+  min-width: 205px;
+  padding: 4px;
   border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: var(--ifm-pagination-nav-border-radius);
   background: var(--ifm-background-color);
@@ -77,20 +73,20 @@
 .menuItem {
   display: block;
   width: 100%;
-  padding: 0.7rem 0.84rem;
+  padding: 7px 8px;
   border: 0;
   border-radius: var(--ifm-pagination-nav-border-radius);
   background: transparent;
   color: var(--ifm-font-color-base);
   text-align: left;
-  font-family: var(--ifm-font-family-base);
-  font-size: 1.31rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 13px;
   line-height: 1.28;
   cursor: pointer;
 }
 
 .menuItem + .menuItem {
-  margin-top: 0.08rem;
+  margin-top: 1px;
 }
 
 .menuItemExternal {
@@ -101,7 +97,7 @@
 
 .menuItemExternal::after {
   content: "↗";
-  margin-left: 0.52rem;
+  margin-left: 5px;
   opacity: 0.72;
   font-size: 1.18em;
   line-height: 1;
@@ -116,21 +112,21 @@
 
 .toast {
   position: absolute;
-  top: calc(100% + 0.66rem);
+  top: calc(100% + 7px);
   left: 50%;
   right: auto;
   transform: translateX(-50%);
   margin-top: 0;
-  padding: 0.48rem 0.78rem;
+  padding: 5px 8px;
   border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: var(--ifm-pagination-nav-border-radius);
-  font-size: 1.02rem;
+  font-size: 10px;
   line-height: 1.15;
   color: var(--ifm-font-color-base);
   background: var(--ifm-background-surface-color);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   white-space: nowrap;
-  max-width: min(86vw, 18rem);
+  max-width: min(86vw, 180px);
   overflow: hidden;
   text-overflow: ellipsis;
   pointer-events: none;
@@ -175,23 +171,23 @@
 
 @media (max-width: 996px) {
   .trigger {
-    font-size: 1.2rem;
+    font-size: 12px;
   }
 
   .triggerLabel {
-    gap: 0.54rem;
-    padding: 0.55rem 0.82rem;
+    gap: 5px;
+    padding: 6px 8px;
   }
 
   .chevron {
-    margin: 0 0.66rem;
+    margin: 0 7px;
   }
 
   .menu {
-    min-width: min(92vw, 20.5rem);
+    min-width: min(92vw, 205px);
   }
 
   .toast {
-    max-width: min(92vw, 16.5rem);
+    max-width: min(92vw, 165px);
   }
 }

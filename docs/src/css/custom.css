@@ -1,12 +1,22 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Privacy Pools docs — design system overrides
+ *
+ * IBM Plex Mono throughout. Monochrome color system, sharp corners.
+ * Only overrides what Infima can't provide via defaults.
+ *
+ * Type scale (1rem = 14px):
+ *   Chrome (sidebar, nav, breadcrumbs): 14px (1rem base)
+ *   Body content:  15px (1.07rem)
+ *   H3:            17.5px (1.25rem)
+ *   H2:            19.5px (1.393rem)
+ *   H1:            24px (1.714rem)
+ *   TOC:           12px (0.857rem)
  */
 
-/* You can override the default Infima variables here. */
+/* ── Design tokens ── */
+
 :root {
-  /* Colors from the theme */
+  /* Primary color scale (monochrome) */
   --ifm-color-primary: #000000;
   --ifm-color-primary-dark: #262626;
   --ifm-color-primary-darker: #1a1a1a;
@@ -15,51 +25,53 @@
   --ifm-color-primary-lighter: #737373;
   --ifm-color-primary-lightest: #999999;
 
-  /* Background and text colors */
+  /* Background and text */
   --ifm-background-color: #ffffff;
-  --ifm-background-surface-color: #ffffff;
   --ifm-font-color-base: #000000;
 
-  /* Code block colors */
+  /* Typography — IBM Plex Mono throughout.
+     Mono glyphs are wider than proportional at the same size, so we
+     scale the base down to 14px. Infima applies this to <html>, making
+     1rem = 14px site-wide; all heading ratios scale proportionally. */
+  --ifm-font-family-base: "IBM Plex Mono", SFMono-Regular, Menlo, monospace;
+  --ifm-font-family-monospace: "IBM Plex Mono", SFMono-Regular, Menlo, monospace;
+  --ifm-font-size-base: 0.875rem; /* 14px */
+
+  /* Tighter heading spacing — compact docs, not a blog */
+  --ifm-heading-margin-bottom: 0.5rem;
+
+  /* Sharp corners — brand signature */
+  --ifm-global-radius: 0;
+
+  /* Code */
   --ifm-code-background: rgba(175, 184, 193, 0.2);
-  --ifm-code-font-size: 90%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
-  /* Font settings */
-  --ifm-font-family-base: "ibm_plex_mono", monospace;
-  --ifm-font-family-monospace: "ibm_plex_mono", monospace;
-
-  /* Typography scale */
-  --ifm-font-size-base: 1.4rem; /* 14px */
-  --ifm-font-size-tiny: 1rem; /* 10px */
-  --ifm-font-size-small: 1.2rem; /* 12px */
-  --ifm-font-size-medium: 1.4rem; /* 14px */
-  --ifm-font-size-large: 1.6rem; /* 16px */
-  --ifm-font-size-xl: 1.8rem; /* 18px */
-  --ifm-font-size-xxl: 2rem; /* 20px */
-
-  /* Heading sizes */
-  --ifm-h1-font-size: 2.4rem; /* 24px */
-  --ifm-h2-font-size: 2rem; /* 20px */
-  --ifm-h3-font-size: 1.8rem; /* 18px */
-  --ifm-h4-font-size: 1.6rem; /* 16px */
-  --ifm-h5-font-size: 1.4rem; /* 14px */
-  --ifm-h6-font-size: 1.2rem; /* 12px */
-
-  /* Border radius */
-  --ifm-code-border-radius: 4px;
-  --ifm-button-border-radius: 4px;
-  --ifm-card-border-radius: 0;
-
-  /* Border colors */
-  --ifm-color-emphasis-300: #b8bbbf;
-  --ifm-border-color: #000000;
+  /* Footer divider */
   --pp-footer-divider: rgba(0, 0, 0, 0.14);
 
+  /* Search (@cmfcmf/docusaurus-search-local via autocomplete-theme-classic) */
+  --aa-primary-color-rgb: 0, 0, 0;
+  --aa-primary-color-alpha: 1;
+  --aa-text-color-rgb: 0, 0, 0;
+  --aa-muted-color-rgb: 100, 100, 100;
+  --aa-background-color-rgb: 255, 255, 255;
+  --aa-input-background-color-rgb: 255, 255, 255;
+  --aa-selected-color-rgb: 175, 184, 193;
+  --aa-selected-color-alpha: 0.2;
+  --aa-description-highlight-background-color-rgb: 175, 184, 193;
+  --aa-description-highlight-background-color-alpha: 0.4;
+  --aa-icon-color-rgb: 0, 0, 0;
+  --aa-panel-border-color-rgb: 184, 187, 191;
+  --aa-panel-border-color-alpha: 1;
+  --aa-input-border-color-rgb: 184, 187, 191;
+  --aa-input-border-color-alpha: 1;
+  --aa-panel-shadow: none;
+  --aa-font-family: var(--ifm-font-family-base);
+  --aa-search-input-height: 40px;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme="dark"] {
+html[data-theme="dark"] {
   --ifm-color-primary: #ffffff;
   --ifm-color-primary-dark: #b8bbbf;
   --ifm-color-primary-darker: #999999;
@@ -68,310 +80,301 @@
   --ifm-color-primary-lighter: #e6e6e6;
   --ifm-color-primary-lightest: #ffffff;
 
-  /* Background and text colors */
-  --ifm-background-color: #000000;
-  --ifm-background-surface-color: #000000;
-  --ifm-font-color-base: #ffffff;
+  --ifm-background-color: #18181b;
+  --ifm-background-surface-color: #222224;
+  --ifm-font-color-base: #f0f0f0;
 
-  /* Code block colors */
   --ifm-code-background: rgba(255, 255, 255, 0.1);
   --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.1);
 
-  /* Border colors */
-  --ifm-color-emphasis-300: #4d4d4d;
-  --ifm-border-color: #ffffff;
+  --ifm-color-emphasis-300: #3f3f46;
+  --ifm-footer-background-color: #18181b;
   --pp-footer-divider: rgba(255, 255, 255, 0.12);
 
+  /* Surface shades — one level above page background */
+  --pp-surface-raised: #1e1e20;
+  --pp-surface-overlay: #242428;
 }
 
-html {
-  font-size: 65%;
+/* Search dark mode: html body[…] beats autocomplete-theme-classic's body[…]
+   in specificity. */
+html body[data-theme="dark"] {
+  --aa-primary-color-rgb: 255, 255, 255;
+  --aa-text-color-rgb: 255, 255, 255;
+  --aa-muted-color-rgb: 160, 160, 160;
+  --aa-background-color-rgb: 24, 24, 27;
+  --aa-input-background-color-rgb: 24, 24, 27;
+  --aa-selected-color-rgb: 255, 255, 255;
+  --aa-selected-color-alpha: 0.1;
+  --aa-description-highlight-background-color-rgb: 255, 255, 255;
+  --aa-description-highlight-background-color-alpha: 0.15;
+  --aa-icon-color-rgb: 255, 255, 255;
+  --aa-panel-border-color-rgb: 255, 255, 255;
+  --aa-panel-border-color-alpha: 0.15;
+  --aa-input-border-color-rgb: 255, 255, 255;
+  --aa-input-border-color-alpha: 0.2;
+  --aa-scrollbar-track-background-color-rgb: 34, 34, 34;
 }
 
-/* Improved code block styling */
-.theme-code-block {
-  border: 1px solid var(--ifm-border-color);
-  border-radius: 0;
-  margin: 1rem 0;
-  background-color: var(--ifm-background-color);
+/* ── Content ── */
+
+/* Infima bumps heading sizes inside .markdown to 3rem/2rem/1.5rem, designed
+   for proportional fonts. Monospace glyphs are wider at the same size, so we
+   use a tighter scale that maintains hierarchy without overwhelming. */
+.markdown h1:first-child {
+  --ifm-h1-font-size: 1.714rem; /* 24px */
 }
 
-.theme-code-block pre {
-  margin: 0;
-  font-family: var(--ifm-font-family-monospace);
-  background-color: var(--ifm-background-color) !important;
+.markdown > h2 {
+  --ifm-h2-font-size: 1.393rem; /* ~19.5px */
+  margin-top: 2rem;
 }
 
-.prism-code {
-  padding: 1.5rem !important;
-  background-color: var(--ifm-background-color) !important;
-  font-size: var(--ifm-code-font-size) !important;
-  border-radius: 0;
+.markdown > h2:first-of-type {
+  margin-top: 1rem;
 }
 
-/* Inline code styling */
-code:not([class^="language-"]) {
-  background-color: rgba(175, 184, 193, 0.4);
-  border: none;
-  border-radius: var(--ifm-code-border-radius);
-  padding: 0.2rem 0.375rem;
-  font-size: 85%;
-  margin: 0 0.1rem;
-  font-family: var(--ifm-font-family-monospace);
-  font-weight: 550;
+.markdown > h3 {
+  --ifm-h3-font-size: 1.25rem; /* 17.5px */
 }
 
-/* Remove background from code blocks */
-.theme-code-block code {
-  background-color: transparent;
-}
-
-/* Code block title */
-.theme-code-block > div:first-child {
-  background-color: var(--ifm-background-color) !important;
-  border-bottom: 1px solid var(--ifm-border-color);
-  font-family: var(--ifm-font-family-monospace);
-}
-
-/* Navbar customization */
-.navbar {
-  border-bottom: 1px solid var(--ifm-border-color);
-  background-color: var(--ifm-background-color);
-}
-
-/* Sidebar customization */
-.menu {
-  font-family: var(--ifm-font-family-base);
-  font-size: var(--ifm-font-size-base);
-  border-right: 1px solid var(--ifm-border-color);
-}
-
-/* Card customization */
-.card {
-  border: 1px solid var(--ifm-border-color);
-  border-radius: 0;
-  background-color: var(--ifm-background-color);
-}
-
-/* Button customization */
-.button {
-  border-radius: var(--ifm-button-border-radius);
-  font-weight: 500;
-  text-transform: none;
-  border: 1px solid var(--ifm-border-color);
-}
-
-/* Table customization */
-.table {
-  border: 1px solid var(--ifm-border-color);
-  border-radius: 0;
-}
-
-.table th,
-.table td {
-  border-color: var(--ifm-border-color);
-}
-
-.markdown table {
-  font-size: 1.28rem;
-}
-
-.markdown table th {
-  font-size: 1.28rem;
-}
-
-/* Add this new section for main content styling */
-.markdown {
-  font-size: 2rem; /* 22.4px for main content */
-}
-
-.markdown p {
-  font-size: 1.54rem; /* 27.7px for paragraphs */
-}
-
+/* Body content bumped above 14px chrome for readability at mono widths */
+.markdown p,
 .markdown li {
-  font-size: 1.54rem; /* 27.7px for list items */
+  font-size: 1.07rem; /* ~15px */
+  line-height: 1.5;
 }
 
-/* Keep list markers and body text clear of the sidebar divider. */
-.theme-doc-markdown {
-  padding-left: 0.6rem;
+/* Prevent wide tables from clipping */
+.markdown .table-wrapper,
+.markdown > table {
+  display: block;
+  overflow-x: auto;
 }
 
-.theme-doc-markdown > ul,
-.theme-doc-markdown > ol {
-  padding-inline-start: 2.1rem;
-}
 
-.theme-doc-markdown li > ul,
-.theme-doc-markdown li > ol {
-  padding-inline-start: 1.8rem;
-}
-
-/* Mermaid labels use embedded HTML nodes; reset typography so global
-   markdown paragraph sizing does not clip node/edge text. */
-.markdown .mermaid .nodeLabel p,
-.markdown .mermaid .edgeLabel p,
+/* Mermaid: reset embedded HTML node sizing */
 .markdown .mermaid p,
 .markdown .mermaid .cluster-label text,
 .markdown .mermaid .edgeLabel text,
 .markdown .mermaid .label text {
-  font-size: 1.2rem !important;
+  font-size: 0.75rem !important;
   line-height: 1.2 !important;
   margin: 0 !important;
 }
 
-/* Keep code blocks at a smaller size for readability */
-.markdown code {
-  font-size: 1.16rem; /* 18px for code */
+/* ── Sidebar ── */
+
+/* Bold top-level sidebar categories for scannable grouping */
+.menu__list > .menu__list-item > .menu__link,
+.menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link {
+  font-weight: 600;
 }
 
+/* Sidebar depth: subtle left border for nested groups */
+.menu__list .menu__list {
+  border-left: 1px solid var(--ifm-color-emphasis-300);
+  margin-left: 6px;
+  padding-left: 8px;
+}
 
+/* Dark mode: give sidebar a subtle surface lift */
+html[data-theme="dark"] .theme-doc-sidebar-container {
+  background-color: var(--pp-surface-raised);
+}
+
+/* ── Cards ── */
+
+/* Dark mode cards: subtle fill so they read as surfaces, not outlines */
+html[data-theme="dark"] .card {
+  background-color: var(--pp-surface-raised);
+}
+
+/* Suppress heading margin inside cards */
+.card h2,
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+}
+
+/* ── Admonitions ── */
+
+html[data-theme="dark"] .theme-admonition {
+  background-color: var(--pp-surface-overlay);
+}
+
+/* ── Navigation ── */
+
+/* GitHub icon in navbar — replaces text link with SVG logo */
+.header-github-link::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  display: flex;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12' fill='currentColor'/%3E%3C/svg%3E")
+    no-repeat;
+}
+
+/* Dark mode: invert the black SVG to white */
+html[data-theme="dark"] .header-github-link::before {
+  filter: invert(1);
+}
+
+.header-github-link:hover {
+  opacity: 0.7;
+}
+
+/* Hide external-link icon on navbar items */
+.navbar__link [class*="iconExternalLink"] {
+  display: none;
+}
+
+/* Navbar title: subtle bump above 14px chrome for site-level landmark */
 .navbar__title {
-  font-size: 1.5rem;
+  font-size: 1.07rem; /* ~15px */
 }
 
+/* TOC: secondary navigation, smaller than body text to stay subordinate */
 .table-of-contents__link {
-  font-size: 1.2rem;
+  font-size: 0.857rem; /* 12px */
 }
 
-.toc-highlight {
-    font-size: 1.2rem;
+/* Highlight active TOC item */
+.table-of-contents__link--active {
+  font-weight: 600;
 }
 
-.navbar__item {
-    font-size: 1.2rem;
-    line-height: 1rem;
+/* Keep the color-mode toggle visible on mobile */
+div[class*="colorModeToggle"] {
+  display: flex !important;
 }
+
+@media (max-width: 996px) {
+  div[class*="colorModeToggle"] {
+    margin-right: 140px;
+  }
+}
+
+/* "Edit this page" link — subtle separator from content */
+.theme-edit-this-page {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+}
+
+/* Generated-index pages: match doc page H1 size */
+[class*="generatedIndexPage"] h1 {
+  --ifm-h1-font-size: 1.714rem;
+}
+
+/* ── Footer ── */
 
 .footer {
-  background: var(--ifm-background-color);
+  background: none;
   border-top: 1px solid var(--pp-footer-divider);
-  padding: 1.2rem 0 0.8rem;
-  color: var(--ifm-font-color-base);
+  padding: 1.25rem 0 1rem;
 }
 
-/* Keep footer legible in both themes even when using footer.style = "dark". */
-.footer--dark {
-  --ifm-footer-background-color: var(--ifm-background-color);
-  --ifm-footer-color: var(--ifm-font-color-base);
-  --ifm-footer-link-color: var(--ifm-font-color-base);
-  --ifm-footer-title-color: var(--ifm-font-color-base);
+.footer .container {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-.footer__container {
-  max-width: 840px;
+.footer__title {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.6;
+  margin: 0 0.75rem 0 0;
+  text-transform: none;
 }
 
 .footer__links {
   display: flex;
   justify-content: center;
-  margin: 0 auto 0.7rem;
+  margin: 0;
 }
 
 .footer__col {
+  display: flex;
+  align-items: center;
   flex: 0 0 auto;
   width: auto;
-  max-width: 100%;
   margin: 0;
-  text-align: center;
-}
-
-.footer__title {
-  margin: 0 0 0.55rem;
-  font-size: 1.05rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  opacity: 0.9;
-  color: var(--ifm-font-color-base);
 }
 
 .footer__items {
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.3rem;
+  display: flex;
+  gap: 1.25rem;
   margin: 0;
   padding: 0;
 }
 
 .footer__item {
   margin: 0;
-  padding: 0;
-  line-height: 1.2;
-  display: inline-flex;
-  align-items: center;
-}
-
-.footer__item:not(:first-child)::before {
-  content: "|";
-  margin: 0 0.6rem 0 0.45rem;
-  font-size: 0.92rem;
-  opacity: 0.45;
 }
 
 .footer__link-item {
-  font-size: 1.08rem;
-  opacity: 0.92;
-  color: var(--ifm-font-color-base);
+  font-size: 0.85rem;
+  opacity: 0.8;
 }
 
 .footer__link-item:hover {
   opacity: 1;
   text-decoration: none;
-  color: var(--ifm-font-color-base);
-}
-
-/* Hide external-link glyphs in footer only to reduce visual clutter. */
-.footer .footer__link-item [class*="iconExternalLink"],
-.footer .footer__link-item svg[class*="iconExternalLink"],
-.footer .footer__link-item svg[aria-label="(opens in new tab)"] {
-  display: none !important;
 }
 
 .footer__copyright {
-  margin-top: 0.4rem;
-  font-size: 1.02rem;
-  opacity: 0.82;
-  color: var(--ifm-font-color-base);
+  font-size: 0.7rem;
+  opacity: 0.5;
 }
 
-@media (max-width: 996px) {
-  .footer {
-    padding: 1rem 0 0.7rem;
-  }
-
-  .footer__title {
-    font-size: 1rem;
-  }
-
-  .footer__item:not(:first-child)::before {
-    margin: 0 0.5rem 0 0.35rem;
-  }
-
-  .footer__link-item {
-    font-size: 1rem;
-  }
+.footer .footer__link-item [class*="iconExternalLink"] {
+  display: none !important;
 }
 
-.table-of-contents {
-    font-size: 1.2rem;
+/* ── Search ── */
+
+/* Wider search button so "Search" text + shortcut badge have room */
+button.aa-DetachedSearchButton {
+  min-width: 180px;
 }
 
-.breadcrumbs__link {
-    font-size: 1.2rem;
+/* ⌘K shortcut badge inside the search button */
+button.aa-DetachedSearchButton::after {
+  content: "⌘K";
+  font-size: 12px;
+  font-family: var(--ifm-font-family-monospace);
+  padding: 2px 6px;
+  margin-left: auto;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  opacity: 0.8;
 }
 
-.markdown>h3 {
-  font-size: 1.7rem;
+/* Override autocomplete-theme-classic purple defaults.
+   The modal renders with its own scoped styles; we need high specificity. */
+.aa-DetachedFormContainer .aa-Form,
+.aa-DetachedFormContainer .aa-Form:focus-within {
+  border-color: var(--ifm-color-emphasis-300);
+  box-shadow: none;
 }
 
-.theme-doc-breadcrumbs .breadcrumbsContainer_Z_bl {
-  --ifm-breadcrumb-size-multiplier: 1.2;
+html[data-theme="dark"] .aa-DetachedFormContainer .aa-Form:focus-within {
+  box-shadow: rgba(255, 255, 255, 0.15) 0 0 0 2px;
 }
 
-@media (max-width: 996px) {
-  .theme-doc-markdown {
-    padding-left: 0;
-  }
+.aa-DetachedFormContainer {
+  border-bottom-color: var(--ifm-color-emphasis-300);
+}
+
+/* Search modal panel — kill purple accents */
+.aa-Panel .aa-Item[aria-selected="true"] {
+  background-color: rgba(var(--aa-selected-color-rgb), var(--aa-selected-color-alpha));
+}
+
+.aa-Item mark {
+  background: rgba(var(--aa-description-highlight-background-color-rgb), var(--aa-description-highlight-background-color-alpha));
+  color: inherit;
 }
