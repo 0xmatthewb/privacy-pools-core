@@ -1,23 +1,25 @@
 /**
  * Privacy Pools docs — design system overrides
  *
- * IBM Plex Mono throughout. Monochrome color system, sharp corners.
- * Only overrides what Infima can't provide via defaults.
+ * Mixed typography: Inter for body, IBM Plex Mono for headings + code + UI chrome.
+ * Monochrome color system, restrained radii.
  *
- * Type scale (1rem = 14px):
- *   Chrome (sidebar, nav, breadcrumbs): 14px (1rem base)
- *   Body content:  15px (1.07rem)
- *   H3:            17.5px (1.25rem)
- *   H2:            19.5px (1.393rem)
- *   H1:            24px (1.714rem)
- *   TOC:           12px (0.857rem)
+ * Type scale (1rem = 16px):
+ *   TOC / metadata:     13px (0.8125rem)   — mono
+ *   Chrome (sidebar):   14px (0.875rem)    — sans
+ *   Body content:       16px (1rem)        — sans
+ *   H3:                 18px (1.125rem)    — mono
+ *   H2:                 22px (1.375rem)    — mono
+ *   H1:                 30px (1.875rem)    — mono
  */
 
-/* ── Design tokens ── */
+/* ══════════════════════════════════════════════════════════════════════
+   Design tokens
+   ══════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Primary color scale (monochrome) */
-  --ifm-color-primary: #000000;
+  /* ── Brand palette (monochrome) ── */
+  --ifm-color-primary: #111111;
   --ifm-color-primary-dark: #262626;
   --ifm-color-primary-darker: #1a1a1a;
   --ifm-color-primary-darkest: #000000;
@@ -25,54 +27,78 @@
   --ifm-color-primary-lighter: #737373;
   --ifm-color-primary-lightest: #999999;
 
-  /* Background and text */
-  --ifm-background-color: #ffffff;
-  --ifm-font-color-base: #000000;
+  /* ── Page palette ── */
+  --ifm-background-color: #F7F7F5;
+  --ifm-background-surface-color: #FCFCFA;
+  --ifm-font-color-base: #111111;
+  --pp-muted: #5F5F5A;
+  --pp-border: #D9D9D4;
+  --pp-surface: #FCFCFA;
+  --ifm-menu-color: #5F5F5A;
+  --ifm-menu-color-active: #111111;
 
-  /* Typography — IBM Plex Mono throughout.
-     Mono glyphs are wider than proportional at the same size, so we
-     scale the base down to 14px. Infima applies this to <html>, making
-     1rem = 14px site-wide; all heading ratios scale proportionally. */
-  --ifm-font-family-base: "IBM Plex Mono", SFMono-Regular, Menlo, monospace;
+  /* ── Typography ── */
+  --ifm-font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --ifm-font-family-monospace: "IBM Plex Mono", SFMono-Regular, Menlo, monospace;
-  --ifm-font-size-base: 0.875rem; /* 14px */
+  --pp-font-heading: "IBM Plex Mono", SFMono-Regular, Menlo, monospace;
+  --ifm-font-size-base: 100%; /* 16px */
+  --ifm-line-height-base: 1.6;
 
-  /* Tighter heading spacing — compact docs, not a blog */
-  --ifm-heading-margin-bottom: 0.5rem;
+  /* ── Headings ── */
+  --ifm-heading-font-family: var(--pp-font-heading);
+  --ifm-heading-margin-bottom: 0.375rem;
+  --ifm-heading-font-weight: 600;
+  --ifm-h1-font-size: 1.875rem;
+  --ifm-h2-font-size: 1.375rem;
+  --ifm-h3-font-size: 1.125rem;
 
-  /* Sharp corners — brand signature */
-  --ifm-global-radius: 0;
+  /* ── Radii ── */
+  --ifm-global-radius: 1px;
+  --pp-radius-sm: 1px;
+  --pp-radius-md: 3px;
+  --pp-radius-lg: 4px;
 
-  /* Code */
-  --ifm-code-background: rgba(175, 184, 193, 0.2);
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  /* ── Spacing ── */
+  --pp-section-gap: 3rem;
+  --pp-card-padding: 1.25rem 1.5rem;
 
-  /* Footer divider */
-  --pp-footer-divider: rgba(0, 0, 0, 0.14);
+  /* ── Transitions ── */
+  --pp-transition: 180ms ease;
 
-  /* Search (@cmfcmf/docusaurus-search-local via autocomplete-theme-classic) */
-  --aa-primary-color-rgb: 0, 0, 0;
+  /* ── Code ── */
+  --ifm-code-background: rgba(0, 0, 0, 0.05);
+  --ifm-code-border-radius: var(--pp-radius-sm);
+  --ifm-code-padding-horizontal: 0.35rem;
+  --ifm-code-padding-vertical: 0.15rem;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.06);
+
+  /* ── Footer ── */
+  --pp-footer-divider: rgba(0, 0, 0, 0.1);
+
+  /* ── Search (autocomplete-theme-classic) ── */
+  --aa-primary-color-rgb: 17, 17, 17;
   --aa-primary-color-alpha: 1;
-  --aa-text-color-rgb: 0, 0, 0;
-  --aa-muted-color-rgb: 100, 100, 100;
-  --aa-background-color-rgb: 255, 255, 255;
-  --aa-input-background-color-rgb: 255, 255, 255;
-  --aa-selected-color-rgb: 175, 184, 193;
-  --aa-selected-color-alpha: 0.2;
-  --aa-description-highlight-background-color-rgb: 175, 184, 193;
-  --aa-description-highlight-background-color-alpha: 0.4;
-  --aa-icon-color-rgb: 0, 0, 0;
-  --aa-panel-border-color-rgb: 184, 187, 191;
+  --aa-text-color-rgb: 17, 17, 17;
+  --aa-muted-color-rgb: 95, 95, 90;
+  --aa-background-color-rgb: 252, 252, 250;
+  --aa-input-background-color-rgb: 252, 252, 250;
+  --aa-selected-color-rgb: 0, 0, 0;
+  --aa-selected-color-alpha: 0.06;
+  --aa-description-highlight-background-color-rgb: 0, 0, 0;
+  --aa-description-highlight-background-color-alpha: 0.08;
+  --aa-icon-color-rgb: 17, 17, 17;
+  --aa-panel-border-color-rgb: 217, 217, 212;
   --aa-panel-border-color-alpha: 1;
-  --aa-input-border-color-rgb: 184, 187, 191;
+  --aa-input-border-color-rgb: 217, 217, 212;
   --aa-input-border-color-alpha: 1;
-  --aa-panel-shadow: none;
-  --aa-font-family: var(--ifm-font-family-base);
-  --aa-search-input-height: 40px;
+  --aa-panel-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --aa-font-family: var(--ifm-font-family-monospace);
+  --aa-search-input-height: 44px;
 }
 
+/* ── Dark mode ── */
 html[data-theme="dark"] {
-  --ifm-color-primary: #ffffff;
+  --ifm-color-primary: #F3F3F0;
   --ifm-color-primary-dark: #b8bbbf;
   --ifm-color-primary-darker: #999999;
   --ifm-color-primary-darkest: #737373;
@@ -80,132 +106,469 @@ html[data-theme="dark"] {
   --ifm-color-primary-lighter: #e6e6e6;
   --ifm-color-primary-lightest: #ffffff;
 
-  --ifm-background-color: #18181b;
-  --ifm-background-surface-color: #222224;
-  --ifm-font-color-base: #f0f0f0;
+  --ifm-background-color: #121212;
+  --ifm-background-surface-color: #1A1A1A;
+  --ifm-font-color-base: #F3F3F0;
+  --pp-muted: #A8A8A1;
+  --pp-border: #313131;
+  --pp-surface: #1A1A1A;
+  --ifm-menu-color: #A8A8A1;
+  --ifm-menu-color-active: #F3F3F0;
 
-  --ifm-code-background: rgba(255, 255, 255, 0.1);
-  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.1);
+  --ifm-code-background: rgba(255, 255, 255, 0.08);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.08);
 
-  --ifm-color-emphasis-300: #3f3f46;
-  --ifm-footer-background-color: #18181b;
-  --pp-footer-divider: rgba(255, 255, 255, 0.12);
+  --ifm-color-emphasis-300: #313131;
+  --ifm-footer-background-color: #121212;
+  --pp-footer-divider: rgba(255, 255, 255, 0.08);
 
-  /* Surface shades — one level above page background */
-  --pp-surface-raised: #1e1e20;
-  --pp-surface-overlay: #242428;
+  --pp-surface-raised: #1A1A1A;
+  --pp-surface-overlay: #222222;
 }
 
-/* Search dark mode: html body[…] beats autocomplete-theme-classic's body[…]
-   in specificity. */
+/* Search dark mode overrides */
 html body[data-theme="dark"] {
-  --aa-primary-color-rgb: 255, 255, 255;
-  --aa-text-color-rgb: 255, 255, 255;
-  --aa-muted-color-rgb: 160, 160, 160;
-  --aa-background-color-rgb: 24, 24, 27;
-  --aa-input-background-color-rgb: 24, 24, 27;
+  --aa-primary-color-rgb: 243, 243, 240;
+  --aa-text-color-rgb: 243, 243, 240;
+  --aa-muted-color-rgb: 168, 168, 161;
+  --aa-background-color-rgb: 26, 26, 26;
+  --aa-input-background-color-rgb: 26, 26, 26;
   --aa-selected-color-rgb: 255, 255, 255;
-  --aa-selected-color-alpha: 0.1;
+  --aa-selected-color-alpha: 0.08;
   --aa-description-highlight-background-color-rgb: 255, 255, 255;
-  --aa-description-highlight-background-color-alpha: 0.15;
-  --aa-icon-color-rgb: 255, 255, 255;
-  --aa-panel-border-color-rgb: 255, 255, 255;
-  --aa-panel-border-color-alpha: 0.15;
-  --aa-input-border-color-rgb: 255, 255, 255;
-  --aa-input-border-color-alpha: 0.2;
-  --aa-scrollbar-track-background-color-rgb: 34, 34, 34;
+  --aa-description-highlight-background-color-alpha: 0.12;
+  --aa-icon-color-rgb: 243, 243, 240;
+  --aa-panel-border-color-rgb: 49, 49, 49;
+  --aa-panel-border-color-alpha: 1;
+  --aa-input-border-color-rgb: 49, 49, 49;
+  --aa-input-border-color-alpha: 1;
+  --aa-scrollbar-track-background-color-rgb: 26, 26, 26;
+  --aa-panel-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
 }
 
-/* ── Content ── */
+/* ══════════════════════════════════════════════════════════════════════
+   Global reset & base
+   ══════════════════════════════════════════════════════════════════════ */
 
-/* Infima bumps heading sizes inside .markdown to 3rem/2rem/1.5rem, designed
-   for proportional fonts. Monospace glyphs are wider at the same size, so we
-   use a tighter scale that maintains hierarchy without overwhelming. */
+/* Smooth color-scheme transitions */
+html {
+  transition: background-color var(--pp-transition), color var(--pp-transition);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Content typography
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* All headings use mono */
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  font-family: var(--pp-font-heading);
+}
+
 .markdown h1:first-child {
-  --ifm-h1-font-size: 1.714rem; /* 24px */
+  --ifm-h1-font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .markdown > h2 {
-  --ifm-h2-font-size: 1.393rem; /* ~19.5px */
-  margin-top: 2rem;
+  --ifm-h2-font-size: 1.375rem;
+  margin-top: 2.25rem;
+  margin-bottom: 0.625rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--pp-border);
+  font-weight: 600;
 }
 
 .markdown > h2:first-of-type {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 
 .markdown > h3 {
-  --ifm-h3-font-size: 1.25rem; /* 17.5px */
+  --ifm-h3-font-size: 1.125rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
 }
 
-/* Body content bumped above 14px chrome for readability at mono widths */
+/* Body text */
 .markdown p,
 .markdown li {
-  font-size: 1.07rem; /* ~15px */
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
-/* Prevent wide tables from clipping */
+/* Prose spacing */
+.markdown p {
+  margin-bottom: 1.125rem;
+}
+
+/* List spacing */
+.markdown ul,
+.markdown ol {
+  margin-bottom: 1.125rem;
+}
+
+.markdown li + li {
+  margin-top: 0.35rem;
+}
+
+/* Wider tables */
 .markdown .table-wrapper,
 .markdown > table {
   display: block;
   overflow-x: auto;
 }
 
-
-/* Mermaid: reset embedded HTML node sizing */
-.markdown .mermaid p,
-.markdown .mermaid .cluster-label text,
-.markdown .mermaid .edgeLabel text,
-.markdown .mermaid .label text {
-  font-size: 0.75rem !important;
-  line-height: 1.2 !important;
-  margin: 0 !important;
+/* Table styling */
+.markdown table {
+  font-size: 0.875rem;
+  border-collapse: collapse;
 }
 
-/* ── Sidebar ── */
-
-/* Bold top-level sidebar categories for scannable grouping */
-.menu__list > .menu__list-item > .menu__link,
-.menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link {
+.markdown th {
   font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--pp-muted);
+  border-bottom: 2px solid var(--pp-border);
 }
 
-/* Sidebar depth: subtle left border for nested groups */
-.menu__list .menu__list {
-  border-left: 1px solid var(--ifm-color-emphasis-300);
-  margin-left: 6px;
-  padding-left: 8px;
+.markdown td,
+.markdown th {
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--pp-border);
 }
 
-/* Dark mode: give sidebar a subtle surface lift */
+.markdown tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown tbody tr {
+  transition: background-color var(--pp-transition);
+}
+
+.markdown tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+html[data-theme="dark"] .markdown tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Mermaid diagrams ── */
+
+/* Container: subtle border + background */
+.docusaurus-mermaid-container {
+  background-color: var(--ifm-background-surface-color);
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-md);
+  padding: 1.5rem 1rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+/* Responsive SVGs */
+.docusaurus-mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+html[data-theme="dark"] .docusaurus-mermaid-container {
+  background-color: var(--pp-surface-raised);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Sidebar
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Sidebar container */
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--pp-border) !important;
+}
+
 html[data-theme="dark"] .theme-doc-sidebar-container {
   background-color: var(--pp-surface-raised);
 }
 
-/* ── Cards ── */
+/* Sidebar padding */
+.menu {
+  padding: 0.75rem 0.5rem;
+}
 
-/* Dark mode cards: subtle fill so they read as surfaces, not outlines */
+/* ── All sidebar links ── */
+.menu__link {
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.875rem;
+  font-weight: 400;
+  padding: 0.3125rem 0.75rem;
+  border-radius: var(--pp-radius-sm);
+  transition: background-color var(--pp-transition), color var(--pp-transition), border-color var(--pp-transition);
+  border-left: 2px solid transparent;
+  padding-left: calc(0.75rem - 2px);
+  line-height: 1.45;
+  color: var(--pp-muted);
+}
+
+.menu__link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--ifm-font-color-base);
+}
+
+html[data-theme="dark"] .menu__link:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Active item: left-accent pill ── */
+.menu__link--active:not([class*="categoryLink"]) {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  border-left-color: var(--ifm-font-color-base);
+  font-weight: 500;
+  color: var(--ifm-font-color-base);
+}
+
+html[data-theme="dark"] .menu__link--active:not([class*="categoryLink"]) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ── Top-level section headers: mono accent ── */
+.menu > .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link {
+  font-family: var(--pp-font-heading);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--ifm-font-color-base);
+  padding: 0.3125rem 0.75rem;
+  border-left: none;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+.menu > .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="dark"] .menu > .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu > .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link.menu__link--active {
+  background-color: transparent !important;
+}
+
+/* ── Nested sub-category headers (Smart Contracts, Zero Knowledge) ── */
+.menu__list .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link {
+  font-family: var(--pp-font-heading);
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pp-muted);
+  padding: 0.375rem 0.75rem 0.1875rem;
+  border-left: none;
+  margin-top: 0.5rem;
+}
+
+.menu__list .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link:hover {
+  background-color: transparent;
+  color: var(--ifm-font-color-base);
+}
+
+/* Active sub-category label: no pill, just darken */
+.menu__list .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link.menu__link--active {
+  background-color: transparent !important;
+  color: var(--ifm-font-color-base);
+}
+
+/* ── Standalone layer labels (e.g. ASP Layer) ── */
+.sidebar-layer-label > .menu__link {
+  font-family: var(--pp-font-heading);
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pp-muted);
+  padding: 0.375rem 0.75rem 0.1875rem;
+  border-left: none;
+  margin-top: 0.5rem;
+}
+
+.sidebar-layer-label > .menu__link:hover {
+  background-color: transparent;
+  color: var(--ifm-font-color-base);
+}
+
+.sidebar-layer-label > .menu__link.menu__link--active {
+  background-color: transparent !important;
+  border-left: none;
+  color: var(--ifm-font-color-base);
+  font-weight: 500;
+}
+
+/* ── Hide chevrons (non-collapsible) ── */
+.menu__link--sublist-caret::after {
+  display: none;
+}
+
+/* Suppress collapsible hover background */
+.menu__list-item-collapsible:hover {
+  background-color: transparent !important;
+}
+
+/* ── Top-level standalone links ── */
+.menu > .menu__list > .menu__list-item > .menu__link:not([class*="categoryLink"]) {
+  font-family: var(--ifm-font-family-base);
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
+/* ── Nested groups: indentation ── */
+.menu__list .menu__list {
+  border-left: none;
+  margin-left: 0;
+  padding-left: 0.75rem;
+  margin-top: 0.0625rem;
+}
+
+/* ── Item spacing ── */
+.menu__list > .menu__list-item + .menu__list-item {
+  margin-top: 0.125rem;
+}
+
+/* ── Top-level section spacing ── */
+.menu > .menu__list > .menu__list-item + .menu__list-item {
+  margin-top: 1rem;
+}
+
+/* ── Separator before standalone items ── */
+.menu > .menu__list > .menu__list-item:has(.menu__list-item-collapsible) + .menu__list-item:not(:has(.menu__list-item-collapsible)):not(:has(~ .menu__list-item > .menu__list-item-collapsible)) {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--pp-border);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Cards
+   ══════════════════════════════════════════════════════════════════════ */
+
+.card {
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-md);
+  transition: border-color var(--pp-transition), box-shadow var(--pp-transition), transform var(--pp-transition);
+}
+
+.card:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
 html[data-theme="dark"] .card {
   background-color: var(--pp-surface-raised);
 }
 
-/* Suppress heading margin inside cards */
+html[data-theme="dark"] .card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.24);
+}
+
+/* Card titles: mono accent */
 .card h2,
 .card h3 {
+  font-family: var(--pp-font-heading);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ifm-font-color-base);
   margin-top: 0;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
-/* ── Admonitions ── */
-
-html[data-theme="dark"] .theme-admonition {
-  background-color: var(--pp-surface-overlay);
+/* Card descriptions: sans-serif for readability */
+.card p {
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--pp-muted);
 }
 
-/* ── Navigation ── */
+/* ══════════════════════════════════════════════════════════════════════
+   Admonitions
+   ══════════════════════════════════════════════════════════════════════ */
 
-/* GitHub icon in navbar — replaces text link with SVG logo */
+/* Admonition base: keep shape overrides, let Docusaurus handle colors */
+.theme-admonition {
+  border-radius: var(--pp-radius-md) !important;
+  padding: 1rem 1.25rem !important;
+  margin-bottom: 1.5rem !important;
+  border-left-width: 3px !important;
+}
+
+/* Note/info/tip: subtle monochrome since they're informational */
+.theme-admonition-note,
+.theme-admonition-info {
+  border-left-color: var(--pp-border) !important;
+  background-color: var(--ifm-background-surface-color) !important;
+  --ifm-alert-foreground-color: var(--ifm-font-color-base);
+  color: var(--ifm-font-color-base);
+}
+
+.theme-admonition-note [class*="admonitionHeading"],
+.theme-admonition-info [class*="admonitionHeading"] {
+  color: var(--pp-muted) !important;
+}
+
+.theme-admonition-note [class*="admonitionHeading"] svg,
+.theme-admonition-info [class*="admonitionHeading"] svg {
+  fill: var(--pp-muted) !important;
+}
+
+html[data-theme="dark"] .theme-admonition-note,
+html[data-theme="dark"] .theme-admonition-info {
+  background-color: var(--pp-surface-overlay) !important;
+  border-left-color: #444 !important;
+}
+
+/* Tip: green tint */
+.theme-admonition-tip {
+  border-left-color: #059669 !important;
+  background-color: rgba(5, 150, 105, 0.05) !important;
+}
+
+html[data-theme="dark"] .theme-admonition-tip {
+  background-color: rgba(5, 150, 105, 0.1) !important;
+}
+
+/* Warning/caution: amber tint */
+.theme-admonition-warning,
+.theme-admonition-caution {
+  border-left-color: #d97706 !important;
+  background-color: rgba(217, 119, 6, 0.05) !important;
+}
+
+html[data-theme="dark"] .theme-admonition-warning,
+html[data-theme="dark"] .theme-admonition-caution {
+  background-color: rgba(217, 119, 6, 0.1) !important;
+}
+
+/* Danger: red tint */
+.theme-admonition-danger {
+  border-left-color: #dc2626 !important;
+  background-color: rgba(220, 38, 38, 0.05) !important;
+}
+
+html[data-theme="dark"] .theme-admonition-danger {
+  background-color: rgba(220, 38, 38, 0.1) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Navigation — Navbar
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* GitHub icon */
 .header-github-link::before {
   content: "";
   width: 24px;
@@ -213,9 +576,9 @@ html[data-theme="dark"] .theme-admonition {
   display: flex;
   background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12' fill='currentColor'/%3E%3C/svg%3E")
     no-repeat;
+  transition: opacity var(--pp-transition);
 }
 
-/* Dark mode: invert the black SVG to white */
 html[data-theme="dark"] .header-github-link::before {
   filter: invert(1);
 }
@@ -229,19 +592,138 @@ html[data-theme="dark"] .header-github-link::before {
   display: none;
 }
 
-/* Navbar title: subtle bump above 14px chrome for site-level landmark */
+/* Navbar title */
 .navbar__title {
-  font-size: 1.07rem; /* ~15px */
+  font-family: var(--pp-font-heading);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
-/* TOC: secondary navigation, smaller than body text to stay subordinate */
+/* Navbar itself */
+.navbar {
+  box-shadow: none;
+  border-bottom: 1px solid var(--pp-border);
+  padding: 0.5rem 1.25rem;
+  height: 3.5rem;
+  background-color: rgba(247, 247, 245, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+html[data-theme="dark"] .navbar {
+  background-color: rgba(18, 18, 18, 0.6);
+}
+
+/* Navbar links */
+.navbar__items .navbar__link {
+  font-family: var(--pp-font-heading);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--pp-muted);
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--pp-radius-sm);
+  transition: color var(--pp-transition), background-color var(--pp-transition);
+}
+
+.navbar__items .navbar__link:hover {
+  color: var(--ifm-font-color-base);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="dark"] .navbar__items .navbar__link:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.navbar__items .navbar__link--active {
+  color: var(--ifm-font-color-base);
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TOC (right rail)
+   ══════════════════════════════════════════════════════════════════════ */
+
 .table-of-contents__link {
-  font-size: 0.857rem; /* 12px */
+  font-family: var(--pp-font-heading);
+  font-size: 0.8125rem;
+  color: var(--pp-muted);
+  transition: color var(--pp-transition);
+  padding: 0.25rem 0;
+  display: block;
 }
 
-/* Highlight active TOC item */
+.table-of-contents__link:hover {
+  color: var(--ifm-font-color-base);
+}
+
 .table-of-contents__link--active {
   font-weight: 600;
+  color: var(--ifm-font-color-base);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Breadcrumbs
+   ══════════════════════════════════════════════════════════════════════ */
+
+.breadcrumbs__link {
+  font-family: var(--pp-font-heading);
+  font-size: 0.8125rem;
+  color: var(--pp-muted);
+  transition: color var(--pp-transition);
+}
+
+.breadcrumbs__link:hover {
+  color: var(--ifm-font-color-base);
+}
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--ifm-font-color-base);
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Pagination (prev/next)
+   ══════════════════════════════════════════════════════════════════════ */
+
+.pagination-nav {
+  margin-top: var(--pp-section-gap);
+}
+
+.pagination-nav__link {
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-md);
+  padding: 1rem 1.25rem;
+  background-color: var(--ifm-background-surface-color);
+  transition: border-color var(--pp-transition), box-shadow var(--pp-transition);
+}
+
+html[data-theme="dark"] .pagination-nav__link {
+  background-color: var(--pp-surface-raised);
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="dark"] .pagination-nav__link:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pagination-nav__sublabel {
+  font-family: var(--pp-font-heading);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pp-muted);
+  margin-bottom: 0.25rem;
+}
+
+.pagination-nav__label {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ifm-font-color-base);
 }
 
 /* Keep the color-mode toggle visible on mobile */
@@ -255,24 +737,35 @@ div[class*="colorModeToggle"] {
   }
 }
 
-/* "Edit this page" link — subtle separator from content */
+/* "Edit this page" link */
 .theme-edit-this-page {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--ifm-color-emphasis-300);
+  border-top: 1px solid var(--pp-border);
+  font-size: 0.8125rem;
+  color: var(--pp-muted);
+  transition: color var(--pp-transition);
 }
 
-/* Generated-index pages: match doc page H1 size */
+.theme-edit-this-page:hover {
+  color: var(--ifm-font-color-base);
+}
+
+/* Generated-index pages: match doc H1 */
 [class*="generatedIndexPage"] h1 {
-  --ifm-h1-font-size: 1.714rem;
+  --ifm-h1-font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-/* ── Footer ── */
+/* ══════════════════════════════════════════════════════════════════════
+   Footer
+   ══════════════════════════════════════════════════════════════════════ */
 
 .footer {
   background: none;
   border-top: 1px solid var(--pp-footer-divider);
-  padding: 1.25rem 0 1rem;
+  padding: 2.5rem 0 2rem;
 }
 
 .footer .container {
@@ -280,15 +773,17 @@ div[class*="colorModeToggle"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
+  gap: 1rem;
 }
 
 .footer__title {
+  font-family: var(--pp-font-heading);
   font-size: 0.75rem;
-  font-weight: 400;
-  opacity: 0.6;
+  font-weight: 500;
+  opacity: 0.5;
   margin: 0 0.75rem 0 0;
-  text-transform: none;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .footer__links {
@@ -307,7 +802,7 @@ div[class*="colorModeToggle"] {
 
 .footer__items {
   display: flex;
-  gap: 1.25rem;
+  gap: 1.5rem;
   margin: 0;
   padding: 0;
 }
@@ -317,64 +812,342 @@ div[class*="colorModeToggle"] {
 }
 
 .footer__link-item {
-  font-size: 0.85rem;
-  opacity: 0.8;
+  font-family: var(--pp-font-heading);
+  font-size: 0.8125rem;
+  color: var(--pp-muted);
+  transition: color var(--pp-transition);
 }
 
 .footer__link-item:hover {
-  opacity: 1;
+  color: var(--ifm-font-color-base);
   text-decoration: none;
 }
 
 .footer__copyright {
-  font-size: 0.7rem;
-  opacity: 0.5;
+  font-size: 0.75rem;
+  color: var(--pp-muted);
+  opacity: 0.7;
 }
 
 .footer .footer__link-item [class*="iconExternalLink"] {
   display: none !important;
 }
 
-/* ── Search ── */
+/* ══════════════════════════════════════════════════════════════════════
+   Code blocks
+   ══════════════════════════════════════════════════════════════════════ */
 
-/* Wider search button so "Search" text + shortcut badge have room */
-button.aa-DetachedSearchButton {
-  min-width: 180px;
+/* Code block container */
+div[class*="codeBlockContainer"] {
+  border-radius: var(--pp-radius-md);
+  border: 1px solid var(--pp-border);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background-color: #EFEEEB;
 }
 
-/* ⌘K shortcut badge inside the search button */
+html[data-theme="dark"] div[class*="codeBlockContainer"] {
+  border-color: var(--pp-border);
+  background-color: #1A1A1A;
+}
+
+/* Override Prism light theme background and ensure font size */
+div[class*="codeBlockContainer"] pre {
+  background-color: #EFEEEB !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-theme="dark"] div[class*="codeBlockContainer"] pre {
+  background-color: #1A1A1A !important;
+}
+
+/* Code block title bar */
+div[class*="codeBlockTitle"] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--pp-border);
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+html[data-theme="dark"] div[class*="codeBlockTitle"] {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Code block content */
+div[class*="codeBlockContent"] {
+  font-size: 0.8125rem;
+}
+
+/* Copy button */
+button[class*="copyButton"] {
+  border-radius: var(--pp-radius-sm);
+  opacity: 0;
+  transition: opacity var(--pp-transition), background-color var(--pp-transition);
+}
+
+div[class*="codeBlockContainer"]:hover button[class*="copyButton"] {
+  opacity: 0.7;
+}
+
+button[class*="copyButton"]:hover {
+  opacity: 1 !important;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="dark"] button[class*="copyButton"]:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Inline code */
+code {
+  border-radius: var(--pp-radius-sm);
+  font-size: 0.875em;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Search
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Search trigger button */
+button.aa-DetachedSearchButton {
+  min-width: 200px;
+  border-radius: var(--pp-radius-md);
+  border: 1px solid var(--pp-border);
+  height: 2.25rem;
+  color: var(--pp-muted) !important;
+  background-color: var(--ifm-background-surface-color);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8125rem;
+  transition: border-color var(--pp-transition), box-shadow var(--pp-transition);
+}
+
+button.aa-DetachedSearchButton:hover {
+  border-color: var(--ifm-color-primary);
+}
+
+html[data-theme="dark"] button.aa-DetachedSearchButton {
+  background-color: var(--pp-surface-raised, #1A1A1A);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="dark"] button.aa-DetachedSearchButton:hover {
+  border-color: var(--ifm-color-primary);
+}
+
+/* Search icon + placeholder */
+.aa-DetachedSearchButtonIcon {
+  color: var(--pp-muted) !important;
+}
+
+.aa-DetachedSearchButtonIcon svg {
+  color: var(--pp-muted) !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.aa-DetachedSearchButtonPlaceholder {
+  color: var(--pp-muted) !important;
+}
+
+/* Shortcut badge */
 button.aa-DetachedSearchButton::after {
   content: "⌘K";
-  font-size: 12px;
+  font-size: 0.75rem;
   font-family: var(--ifm-font-family-monospace);
-  padding: 2px 6px;
+  padding: 3px 7px;
   margin-left: auto;
-  border: 1px solid var(--ifm-color-emphasis-300);
-  opacity: 0.8;
+  border: 1px solid var(--pp-border);
+  border-radius: 4px;
+  font-weight: 500;
+  color: var(--pp-muted);
 }
 
-/* Override autocomplete-theme-classic purple defaults.
-   The modal renders with its own scoped styles; we need high specificity. */
+html[data-theme="dark"] button.aa-DetachedSearchButton::after {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Search modal container */
+.aa-DetachedContainer--modal {
+  border-radius: var(--pp-radius-md) !important;
+  overflow: hidden;
+}
+
+/* Search overlay backdrop */
+.aa-DetachedOverlay {
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  background-color: rgba(252, 252, 250, 0.35) !important;
+}
+
+html[data-theme="dark"] .aa-DetachedOverlay {
+  background-color: rgba(18, 18, 18, 0.35) !important;
+}
+
+/* Search modal form — kill purple submit icon */
+.aa-SubmitButton svg {
+  color: var(--pp-muted) !important;
+}
+
 .aa-DetachedFormContainer .aa-Form,
 .aa-DetachedFormContainer .aa-Form:focus-within {
-  border-color: var(--ifm-color-emphasis-300);
+  border-color: var(--pp-border);
   box-shadow: none;
+  border-radius: var(--pp-radius-md);
 }
 
 html[data-theme="dark"] .aa-DetachedFormContainer .aa-Form:focus-within {
-  box-shadow: rgba(255, 255, 255, 0.15) 0 0 0 2px;
+  box-shadow: rgba(255, 255, 255, 0.1) 0 0 0 2px;
 }
 
 .aa-DetachedFormContainer {
-  border-bottom-color: var(--ifm-color-emphasis-300);
+  border-bottom-color: var(--pp-border);
 }
 
-/* Search modal panel — kill purple accents */
+/* Search modal — cancel / clear buttons */
+.aa-DetachedCancelButton {
+  color: var(--pp-muted) !important;
+}
+
+.aa-ClearButton svg,
+.aa-DetachedCancelButton:hover {
+  color: var(--ifm-font-color-base) !important;
+}
+
+/* Search modal input */
+.aa-DetachedFormContainer .aa-Input {
+  color: var(--ifm-font-color-base) !important;
+}
+
+.aa-DetachedFormContainer .aa-Input::placeholder {
+  color: var(--pp-muted) !important;
+}
+
+/* Search result items */
 .aa-Panel .aa-Item[aria-selected="true"] {
   background-color: rgba(var(--aa-selected-color-rgb), var(--aa-selected-color-alpha));
+  border-radius: var(--pp-radius-sm);
+}
+
+.aa-Panel .aa-Item {
+  border-radius: var(--pp-radius-sm);
+  padding: 0.5rem;
+  transition: background-color var(--pp-transition);
+}
+
+/* Result action icons */
+.aa-ItemActionButton svg {
+  color: var(--pp-muted) !important;
+}
+
+.aa-ItemActionButton:hover svg {
+  color: var(--ifm-font-color-base) !important;
 }
 
 .aa-Item mark {
   background: rgba(var(--aa-description-highlight-background-color-rgb), var(--aa-description-highlight-background-color-alpha));
   color: inherit;
+  border-radius: 2px;
+}
+
+/* Source header */
+.aa-SourceHeader {
+  border-bottom-color: var(--pp-border) !important;
+}
+
+.aa-SourceHeaderTitle {
+  color: var(--pp-muted) !important;
+}
+
+/* Footer */
+.aa-DetachedContainer .aa-PanelFooter {
+  border-top-color: var(--pp-border) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Links
+   ══════════════════════════════════════════════════════════════════════ */
+
+.markdown a {
+  transition: color var(--pp-transition), opacity var(--pp-transition);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Doc page layout spacing
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Content area spacing */
+.theme-doc-markdown {
+  padding-top: 0.75rem;
+}
+
+[class*="docMainContainer"] {
+  padding-left: 1rem;
+}
+
+/* Breadcrumb to content gap */
+nav[class*="breadcrumbs"] {
+  margin-bottom: 0.75rem;
+}
+
+/* Right rail border */
+div[class*="tableOfContents"] {
+  border-left: 1px solid var(--pp-border);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Responsive
+   ══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 996px) {
+  .markdown h1:first-child {
+    --ifm-h1-font-size: 1.625rem;
+  }
+
+  .markdown > h2 {
+    --ifm-h2-font-size: 1.25rem;
+  }
+
+  /* Constrain search button on mobile */
+  button.aa-DetachedSearchButton {
+    min-width: 0;
+    max-width: 140px;
+  }
+
+  /* Hide shortcut badge on mobile */
+  button.aa-DetachedSearchButton::after {
+    display: none;
+  }
+
+  /* Navbar spacing */
+  .navbar {
+    padding: 0.375rem 0.75rem;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 1.5rem 1rem 1.25rem;
+  }
+
+  .footer__items {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Reduced motion
+   ══════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
