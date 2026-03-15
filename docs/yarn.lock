@@ -3834,6 +3834,14 @@ batch@0.6.1:
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
   integrity sha512-x+VAiMRL6UPkx+kudNvxTl6hB2XNNCG2r+7wixVfIYwu/2HKRXimwQyaumLjMveWvT2Hkd/cAJw+QBMfJ/EKVw==
 
+beautiful-mermaid@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/beautiful-mermaid/-/beautiful-mermaid-1.1.3.tgz#33622aacd24f3cf37d61a1912673a4710ed90461"
+  integrity sha512-TItrtrAyHp1vwFfFVYauWGrquouk/6SS21Aq3RsxindSYZODcN4xYrPZD6BiZRU+o5mKJzDPz9MUSMvELdylyg==
+  dependencies:
+    elkjs "^0.11.0"
+    entities "^7.0.1"
+
 big.js@^5.2.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
@@ -5214,6 +5222,11 @@ electron-to-chromium@^1.5.73:
   version "1.5.102"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.102.tgz#81a452ace8e2c3fa7fba904ea4fed25052c53d3f"
   integrity sha512-eHhqaja8tE/FNpIiBrvBjFV/SSKpyWHLvxuR9dPTdo+3V9ppdLmFB7ZZQ98qNovcngPLYIz0oOBF9P0FfZef5Q==
+
+elkjs@^0.11.0:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/elkjs/-/elkjs-0.11.1.tgz#d27fcdbbf5a8aeeff80420d17d1666f78cfc8544"
+  integrity sha512-zxxR9k+rx5ktMwT/FwyLdPCrq7xN6e4VGGHH8hA01vVYKjTFik7nHOxBnAYtrgYUB1RpAiLvA1/U2YraWxyKKg==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
