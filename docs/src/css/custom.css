@@ -58,6 +58,9 @@
   --pp-radius-md: 3px;
   --pp-radius-lg: 4px;
 
+  /* ── Sidebar width ── */
+  --ifm-navbar-sidebar-width: min(83vw, 320px);
+
   /* ── Spacing ── */
   --pp-section-gap: 3rem;
   --pp-card-padding: 1.25rem 1.5rem;
@@ -613,6 +616,239 @@ html[data-theme="dark"] .header-github-link::before {
 
 html[data-theme="dark"] .navbar {
   background-color: rgba(18, 18, 18, 0.6);
+}
+
+/* ── Mobile sidebar ── */
+
+/* Disable navbar backdrop-filter when sidebar is open —
+   backdrop-filter creates a containing block that prevents
+   child elements' backdrop-filter from working properly */
+.navbar-sidebar--show {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.navbar-sidebar {
+  height: 100vh !important;
+  overflow-y: auto;
+  background-color: var(--ifm-background-surface-color);
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="dark"] .navbar-sidebar {
+  background-color: var(--ifm-background-color);
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Brand bar */
+.navbar-sidebar .navbar-sidebar__brand {
+  height: 3.5rem;
+  border-bottom: 1px solid var(--pp-border);
+}
+
+html[data-theme="dark"] .navbar-sidebar .navbar-sidebar__brand {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Sidebar backdrop — full viewport, match search modal blur */
+.navbar-sidebar__backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(252, 252, 250, 0.35) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+
+html[data-theme="dark"] .navbar-sidebar__backdrop {
+  background-color: rgba(18, 18, 18, 0.35) !important;
+}
+
+/* Menu container */
+.navbar-sidebar .menu {
+  padding: 0.5rem 0 !important;
+}
+
+/* List item spacing — tighten Docusaurus default 16px gap */
+.navbar-sidebar .menu__list-item {
+  margin-top: 0 !important;
+}
+
+/* Menu items — full-width, no rounded corners for flush edges */
+.navbar-sidebar .menu__link {
+  font-family: var(--pp-font-heading) !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1rem !important;
+  color: var(--ifm-font-color-base) !important;
+  border-radius: 0 !important;
+  transition: background-color 180ms ease;
+  border-left: none !important;
+}
+
+.navbar-sidebar .menu__link:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-theme="dark"] .navbar-sidebar .menu__link:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Active item — full-width highlight */
+.navbar-sidebar .menu__link--active:not(.menu__link--sublist) {
+  color: var(--ifm-font-color-base) !important;
+  font-weight: 600 !important;
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  border-left: none !important;
+}
+
+html[data-theme="dark"] .navbar-sidebar .menu__link--active:not(.menu__link--sublist) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Nested menu indentation — indent text via padding, not list, so backgrounds stay flush */
+.navbar-sidebar .menu__list .menu__list {
+  padding-left: 0 !important;
+  border-left: none !important;
+  margin-top: 0 !important;
+}
+
+.navbar-sidebar .menu__list .menu__list .menu__link {
+  padding-left: 1.75rem !important;
+}
+
+/* Third-level nesting */
+.navbar-sidebar .menu__list .menu__list .menu__list .menu__link {
+  padding-left: 2.5rem !important;
+}
+
+/* Top-level category headers — prominent parent items */
+.navbar-sidebar .menu > .menu__list > .theme-doc-sidebar-item-category > .menu__list-item-collapsible > .menu__link {
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  text-transform: none !important;
+  letter-spacing: -0.01em !important;
+  color: var(--ifm-font-color-base) !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.125rem !important;
+  background-color: transparent !important;
+}
+
+.navbar-sidebar .menu > .menu__list > .theme-doc-sidebar-item-category > .menu__list-item-collapsible > .menu__link:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-theme="dark"] .navbar-sidebar .menu > .menu__list > .theme-doc-sidebar-item-category > .menu__list-item-collapsible > .menu__link:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Sub-category headers — muted uppercase labels (e.g. SMART CONTRACTS LAYER) */
+.navbar-sidebar .menu__list .menu__list > .theme-doc-sidebar-item-category > .menu__list-item-collapsible > .menu__link {
+  font-weight: 600 !important;
+  font-size: 0.6875rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pp-muted) !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.1875rem !important;
+  background-color: transparent !important;
+}
+
+/* First sub-category directly under parent needs less top space */
+.navbar-sidebar .menu__list .menu__list > .theme-doc-sidebar-item-category:first-child > .menu__list-item-collapsible > .menu__link {
+  padding-top: 0.25rem !important;
+}
+
+.navbar-sidebar .menu__list .menu__list > .theme-doc-sidebar-item-category > .menu__list-item-collapsible > .menu__link:hover {
+  background-color: transparent !important;
+}
+
+/* Doc items under categories — slightly smaller */
+.navbar-sidebar .theme-doc-sidebar-item-link > .menu__link {
+  font-size: 0.8125rem !important;
+  font-weight: 400 !important;
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+}
+
+/* Standalone layer labels (e.g. ASP Layer) — match sub-category header style
+   Must come AFTER .theme-doc-sidebar-item-link rule since ASP Layer has both classes */
+.navbar-sidebar .menu__list .sidebar-layer-label.theme-doc-sidebar-item-link > .menu__link {
+  font-weight: 600 !important;
+  font-size: 0.6875rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pp-muted) !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.1875rem !important;
+  background-color: transparent !important;
+}
+
+.navbar-sidebar .menu__list .sidebar-layer-label > .menu__link:hover {
+  background-color: transparent !important;
+  color: var(--ifm-font-color-base) !important;
+}
+
+.navbar-sidebar .theme-doc-sidebar-item-link > .menu__link--active {
+  font-weight: 600 !important;
+}
+
+/* GitHub icon in mobile sidebar — show as subtle footer item */
+.navbar-sidebar .menu__list-item:has(> a[href*="github"]) > a {
+  font-size: 0.8125rem !important;
+  font-weight: 400 !important;
+  color: var(--pp-muted) !important;
+  opacity: 0.7;
+  margin-top: 0.5rem !important;
+  padding-top: 0.75rem !important;
+  border-top: 1px solid var(--pp-border);
+}
+
+.navbar-sidebar .menu__list-item:has(> a[href*="github"]) > a:hover {
+  opacity: 1;
+  color: var(--ifm-font-color-base) !important;
+}
+
+/* Back to main menu — full-width, flush edges */
+.navbar-sidebar .navbar-sidebar__back {
+  font-family: var(--pp-font-heading) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  padding: 0.625rem 1rem !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--pp-border);
+  color: var(--pp-muted) !important;
+  border-radius: 0 !important;
+}
+
+.navbar-sidebar .navbar-sidebar__back:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+html[data-theme="dark"] .navbar-sidebar .navbar-sidebar__back {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .navbar-sidebar .navbar-sidebar__back:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Hide Docusaurus default collapsible toggle arrows in sidebar categories */
+.navbar-sidebar .menu__link--sublist-caret::after {
+  opacity: 0.4;
+}
+
+/* Remove separator lines and background from collapsible wrappers */
+.navbar-sidebar .menu__list-item-collapsible {
+  border: none !important;
+  background: none !important;
+  border-radius: 0 !important;
+}
+
+.navbar-sidebar .menu__list-item-collapsible:hover {
+  background: none !important;
 }
 
 /* Navbar links */
