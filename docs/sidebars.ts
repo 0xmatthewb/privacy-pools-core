@@ -17,18 +17,43 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Overview",
-      collapsible: false,
+      link: {
+        type: "generated-index",
+        slug: "/overview",
+        title: "Overview",
+        description:
+          "Introductory docs for Privacy Pools, its architecture, and core concepts.",
+        keywords: [
+          "privacy pools",
+          "overview",
+          "architecture",
+          "core concepts",
+        ],
+      },
       items: ["overview/what-is-privacy-pools", "overview/core-concepts"],
     },
     {
       type: "category",
       label: "Protocol Components",
-      collapsible: false,
+      link: {
+        type: "generated-index",
+        slug: "/layers",
+        title: "Protocol Components",
+        description:
+          "Reference pages for the contract, zero-knowledge, and ASP layers.",
+        keywords: [
+          "privacy pools",
+          "contracts",
+          "zero knowledge",
+          "zk proofs",
+          "asp",
+          "protocol layers",
+        ],
+      },
       items: [
         {
           type: "category",
           label: "Smart Contracts Layer",
-          collapsible: false,
           link: {
             type: "doc",
             id: "layers/contracts",
@@ -41,7 +66,6 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Zero Knowledge Layer",
-          collapsible: false,
           link: {
             type: "doc",
             id: "layers/zk",
@@ -57,8 +81,22 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      collapsible: false,
       label: "Using Privacy Pools",
+      link: {
+        type: "generated-index",
+        slug: "/protocol",
+        title: "Using Privacy Pools",
+        description:
+          "Integration, deposit, withdrawal, and ragequit guidance for Privacy Pools.",
+        keywords: [
+          "privacy pools",
+          "integration",
+          "deposit",
+          "withdrawal",
+          "ragequit",
+          "relayer",
+        ],
+      },
       items: [
         "protocol/integrations",
         "protocol/deposit",
@@ -68,9 +106,27 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      collapsible: false,
       label: "Technical Reference",
+      link: {
+        type: "generated-index",
+        slug: "/reference",
+        title: "Technical Reference",
+        description:
+          "SDK, contract, and circuit reference material for Privacy Pools.",
+        keywords: [
+          "privacy pools",
+          "sdk",
+          "contracts",
+          "circuits",
+          "reference",
+          "api",
+        ],
+      },
       items: ["reference/contracts", "reference/circuits", "reference/sdk"],
+    },
+    {
+      type: "ref",
+      id: "protocol/integrations",
     },
     "agent-workflows",
     "dev-guide",

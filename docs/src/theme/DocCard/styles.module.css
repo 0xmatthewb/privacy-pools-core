@@ -1,0 +1,42 @@
+/**
+ * DocCard styles — consolidated from upstream + custom overrides.
+ * Upstream source: @docusaurus/theme-classic v3.7.0 (MIT license).
+ */
+
+.cardContainer {
+  --ifm-link-color: var(--ifm-color-emphasis-800);
+  --ifm-link-hover-color: var(--ifm-color-emphasis-700);
+  --ifm-link-hover-decoration: none;
+
+  box-shadow: none;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  transition: all var(--ifm-transition-fast) ease;
+  transition-property: border, box-shadow;
+}
+
+.cardContainer:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+:global(html[data-theme="dark"]) .cardContainer {
+  background-color: var(--pp-surface-raised);
+}
+
+:global(html[data-theme="dark"]) .cardContainer:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.cardContainer *:last-child {
+  margin-bottom: 0;
+}
+
+.cardTitle {
+  font-size: 1.07rem; /* 15px — matches body text, above description */
+  font-weight: 700;
+}
+
+.cardDescription {
+  font-size: 0.857rem; /* 12px — subordinate to title */
+  font-family: var(--ifm-font-family-monospace);
+}

@@ -1,3 +1,12 @@
+/**
+ * Swizzled DocItem/Content (eject) — adds PageActions button beside the H1 title.
+ * No config-level alternative exists for injecting components into the title row.
+ *
+ * Based on @docusaurus/theme-classic v3.7.0 DocItem/Content (MIT license).
+ * On Docusaurus upgrades, diff against the upstream source to pick up changes:
+ *   node_modules/@docusaurus/theme-classic/src/theme/DocItem/Content/index.tsx
+ */
+
 import React from "react";
 import clsx from "clsx";
 import { ThemeClassNames } from "@docusaurus/theme-common";
@@ -8,34 +17,27 @@ import PageActions from "../../../components/PageActions";
 import styles from "./styles.module.css";
 
 /**
- * Decide whether a synthetic title should be rendered.
- * Mirrors upstream behavior from @docusaurus/theme-classic.
+ * Resolve the page title — either from the markdown H1 (contentTitle)
+ * or from metadata when the markdown has no H1.
  */
-function useSyntheticTitle(): string | null {
+function usePageTitle(): string | null {
   const { metadata, frontMatter, contentTitle } = useDoc();
-  const shouldRender = !frontMatter.hide_title && typeof contentTitle === "undefined";
-  if (!shouldRender) {
-    return null;
-  }
-  return metadata.title;
+  if (frontMatter.hide_title) return null;
+  return contentTitle ?? metadata.title;
 }
 
 export default function DocItemContent({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const syntheticTitle = useSyntheticTitle();
+  const title = usePageTitle();
 
   return (
     <div className={clsx(ThemeClassNames.docs.docMarkdown, "markdown")}>
-      {syntheticTitle ? (
+      {title && (
         <header className={styles.headerRow}>
           <Heading as="h1" className={styles.title}>
-            {syntheticTitle}
+            {title}
           </Heading>
           <PageActions />
         </header>
-      ) : (
-        <div className={styles.actionsOnlyRow}>
-          <PageActions />
-        </div>
       )}
       <MDXContent>{children}</MDXContent>
     </div>
