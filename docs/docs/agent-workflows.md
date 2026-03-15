@@ -10,8 +10,6 @@ keywords:
   - skills
 ---
 
-# Agent Workflows
-
 Privacy Pools documents agent integrations through `skills-core.md`, `skills.md`, and tool-specific entry files.
 
 ## File Map

@@ -28,7 +28,7 @@ Outside the repository, use the published docs:
 - Model user state as a mnemonic-backed account with pool-account tracking. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI where raw secrets can be exposed.
 - Build app withdrawal UX around relayed withdrawals because that is the privacy-preserving withdrawal path. Do not make direct withdrawal part of normal app flows.
 - If a task explicitly implements the advanced direct path, `PrivacyPool.withdraw()` requires `processooor == msg.sender`, so funds go to the signer. The relay path instead uses `Entrypoint.relay()` with `processooor = entrypointAddress` and recipient routing encoded in `withdrawal.data`.
-- When onboarding from a wallet, only use deterministic wallet-signature seed derivation when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup step, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts. Otherwise fall back to manual mnemonic setup/load.
+- When onboarding from a wallet, only use deterministic wallet-signature seed derivation when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup step. Otherwise fall back to manual mnemonic setup/load.
 - Only offer private withdrawal from pool accounts with positive balance and ASP approval.
 - Request relayer quotes on the review step, invalidate them when amount, recipient, relayer, or `extraGas` changes, and warn if a partial withdrawal would leave a remainder below the relayer minimum.
 
@@ -49,7 +49,7 @@ Outside the repository, use the published docs:
 
 - Use mnemonic/account-backed pool-account state plus on-chain events; do not design around secret-bearing note copy/paste workflows.
 - Build app withdrawal flows around relayed withdrawals. If direct withdrawal is explicitly implemented, present it as advanced, signer-only, and non-private.
-- Wallet-signature seed derivation requires deterministic EIP-712 signing. Sign the same payload twice, use the current derivation flow for new accounts, only expose any older restore path for existing legacy accounts, require a backup step, and fall back to manual mnemonic setup/load when unsupported.
+- Wallet-signature seed derivation requires deterministic EIP-712 signing. Sign the same payload twice, require a backup step, and fall back to manual mnemonic setup/load when unsupported.
 - Manual recovery phrase entry must be sanitized before use.
 - Only privately withdraw from balances with `balance > 0` and `reviewStatus === APPROVED`.
 - Resolve and validate the recipient before requesting a quote or generating a proof.

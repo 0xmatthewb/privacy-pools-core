@@ -24,7 +24,7 @@ This page covers the production integration path for Privacy Pools. It is the sh
 ## Happy Path
 
 1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
-2. If wallet onboarding is supported, derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice, and require a backup step. Only expose any older restore path when restoring an existing legacy account. If the wallet path cannot guarantee deterministic signing, fall back to manual mnemonic create/load.
+2. If wallet onboarding is supported, derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice, and require a backup step. If the wallet path cannot guarantee deterministic signing, fall back to manual mnemonic create/load.
 3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts and refresh review state across all loaded chain/scope pairs. Treat deposits as pending until both the review status and current ASP leaves agree.
 5. Build withdrawal proofs with two roots: `contracts.getStateRoot(poolAddress)` for the pool state root and ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
@@ -51,7 +51,7 @@ This page covers the production integration path for Privacy Pools. It is the sh
 ### Account and Recovery
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. Feature-detect this at runtime based on wallet capability.
-- Use the current derivation flow for new accounts, compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing. Only expose any older restore path when restoring an existing legacy account.
+- Compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing.
 - If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
 
 ### Deposit UX
@@ -123,6 +123,17 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, us
 | Protocol flows | [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit) |
 | SDK API and types | [SDK Utilities](/reference/sdk) |
 | End-to-end integration detail | [skills.md](https://docs.privacypools.com/skills.md) |
+
+## Minimal Frontend Recipe
+
+This is the shortest path from zero to a working deposit-and-withdraw loop. Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
+
+1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
+2. **Initialize SDK and contract helpers.** Create a `DataService` pointed at the pool address and your RPC provider, passing the deployment `startBlock` so event scans skip genesis. Create a `ContractInteractionsService` with the signer's private key for write operations.
+3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Scan on-chain events via `DataService.getDeposits` and `DataService.getWithdrawals` to reconstruct the account's current commitments and balances.
+4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.deposit`, and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
+5. **Perform the relayed withdrawal.** Fetch ASP roots via `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and verify `onchainMtRoot` equals `Entrypoint.latestRoot()`. Build the withdrawal proof, request a relayer quote from `POST /relayer/quote`, and submit via `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets.
+6. **Refresh state after withdrawal.** Re-scan events to pick up the new change commitment. Insert it into local account state before generating another proof.
 
 ## Common Failure Modes
 

@@ -21,6 +21,14 @@ On public blockchains like Ethereum, every transaction is visible to everyone. W
 
 Privacy Pools enables private withdrawals through a combination of zero-knowledge proofs and commitment schemes. Users can deposit assets into Privacy Pools and later withdraw them, either partially or fully, without creating an on-chain link between their deposit and withdrawal addresses. The protocol uses an [Association Set Provider (ASP)](/layers/asp) to maintain a set of approved deposits, preventing potentially illicit funds from entering the system and enabling regulatory compliance.
 
+## Start here
+
+| Goal | Page |
+|---|---|
+| Build a frontend integration | [Integrations](/protocol/integrations) |
+| Discover agent and tool ingestion paths | [Agent Workflows](/agent-workflows) |
+| Look up chain addresses and `startBlock` | [Deployments](/deployments) |
+
 ## System architecture overview
 
 Privacy Pools' architecture consists of three distinct layers:

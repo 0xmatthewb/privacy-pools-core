@@ -21,7 +21,7 @@ Use these frontend defaults unless you have a specific reason not to:
 
 - Model the user as a mnemonic-backed account and keep deposits plus change commitments in pool-account state. This keeps secret-bearing notes out of copy/paste UX and gives users a safer abstraction.
 - Build app withdrawal UX around relayed withdrawal. It is the privacy-preserving path. Direct withdrawal is a signer-only non-private protocol path and should stay out of normal app flows.
-- Only offer wallet-signature onboarding when deterministic EIP-712 signing is supported. Sign the same typed-data payload twice, require backup before continuing, use the current derivation flow for new accounts, and only expose any older restore path for existing legacy accounts.
+- Only offer wallet-signature onboarding when deterministic EIP-712 signing is supported. Sign the same typed-data payload twice and require backup before continuing.
 - If manual recovery phrase entry exists, sanitize whitespace/newlines/commas, validate checksum, and avoid clipboard-first UX.
 - Only offer private withdrawal from balances that are both positive and ASP-approved.
 - Request relayer quotes late in the flow, usually on the review step, and invalidate them when amount, recipient, relayer, or gas-drop settings change.
@@ -111,7 +111,7 @@ The core SDK does not ship a frontend onboarding wrapper. The reference pattern 
 1. Connect a wallet and determine whether it can reproduce the same EIP-712 signature for the same payload. If not, or if the signer path is abstracted in a way that breaks deterministic signing, fall back to manual setup.
 2. Build a versioned typed-data payload bound to `keccak256(addressBytes)`.
 3. Sign the same payload twice and compare signatures. If the signatures differ, reject wallet-based derivation.
-4. Derive the mnemonic from the signature's `r` value using HKDF, with the wallet address bytes as salt and an app-specific context string. Use the current derivation flow for new accounts and only expose any older restore path for existing legacy accounts.
+4. Derive the mnemonic from the signature's `r` value using HKDF, with the wallet address bytes as salt and an app-specific context string.
 5. Require the user to download or otherwise back up the recovery phrase before loading the account.
 6. Never log raw signatures, recovery phrases, nullifiers, or secrets.
 

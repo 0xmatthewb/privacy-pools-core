@@ -25,7 +25,7 @@ This guide keeps the production integration path small:
 ### Account and Recovery
 
 - Frontends should use mnemonic-backed pool-account state. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI where raw secrets can be exposed.
-- Wallet-signature onboarding is only safe when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup/download step, use the current derivation flow for new accounts, only expose any older restore path for existing legacy accounts, and fall back to manual 12- or 24-word mnemonic setup/load when that deterministic signer path is unavailable.
+- Wallet-signature onboarding is only safe when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup/download step, and fall back to manual 12- or 24-word mnemonic setup/load when that deterministic signer path is unavailable.
 - Manual recovery phrase entry must be sanitized before use, and clipboard-first UX should be avoided.
 
 ### Private Withdrawal
@@ -91,7 +91,7 @@ Production default: use `fastrelay.xyz` for relayed withdrawals. Do not build no
 ### Account Bootstrap (Frontend Default)
 
 1. Create or load a mnemonic-backed account before the user can deposit or withdraw.
-2. If you offer wallet-based onboarding, gate it by wallet capability, derive the recovery seed from deterministic EIP-712 signatures, use the current derivation flow for new accounts, and require a backup step before proceeding. Only expose any older restore path when restoring an existing legacy account.
+2. If you offer wallet-based onboarding, gate it by wallet capability, derive the recovery seed from deterministic EIP-712 signatures, and require a backup step before proceeding.
 3. If the wallet cannot produce deterministic signatures, fall back to manual mnemonic creation/load.
 4. Use the mnemonic/account state to reconstruct pool accounts across sessions; do not ask users to manually carry notes.
 
