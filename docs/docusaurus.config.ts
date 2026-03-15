@@ -2,25 +2,29 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
 const config: Config = {
   title: "Privacy Pools Documentation",
   tagline: "Technical documentation for Privacy Pools protocol",
   favicon: "img/favicon.ico",
 
-  // Set the production url of your site here
   url: "https://docs.privacypools.com",
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "0xbow-io", // Usually your GitHub org/user name.
-  projectName: "privacy-pools-core", // Usually your repo name.
+  organizationName: "0xbow-io",
+  projectName: "privacy-pools-core",
 
   onBrokenLinks: "throw",
+  clientModules: ["./src/searchKeyboardShortcut.ts"],
+  /* Font stylesheet first — Docusaurus emits stylesheets before headTags,
+     so preconnect hints go here as objects to fire before the font request. */
+  stylesheets: [
+    { href: "https://fonts.googleapis.com", rel: "preconnect" },
+    {
+      href: "https://fonts.gstatic.com",
+      rel: "preconnect",
+      crossorigin: "anonymous",
+    },
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap",
+  ],
   headTags: [
     {
       tagName: "link",
@@ -73,6 +77,15 @@ const config: Config = {
 
   plugins: [
     [
+      "@cmfcmf/docusaurus-search-local",
+      {
+        language: "en",
+        indexBlog: false,
+        indexDocSidebarParentCategories: 2,
+        maxSearchResults: 8,
+      },
+    ],
+    [
       "docusaurus-plugin-llms",
       {
         generateMarkdownFiles: true,
@@ -92,9 +105,6 @@ const config: Config = {
     ],
   ],
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -133,16 +143,12 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
     image: "img/privacy-pools-banner.png",
     mermaid: {
       theme: {
         light: "neutral",
         dark: "dark",
       },
-    },
-    sidebar: {
-      autoCollapseCategories: false,
     },
     navbar: {
       title: "Privacy Pools Documentation",
@@ -154,22 +160,21 @@ const config: Config = {
       items: [
         {
           href: "https://github.com/0xbow-io/privacy-pools-core",
-          label: "GitHub",
           position: "right",
+          className: "header-github-link",
+          "aria-label": "GitHub repository",
         },
       ],
     },
     footer: {
-      style: "dark",
+      style: "light",
       links: [
         {
           title: "For AI Agents",
           items: [
             { label: "llms.txt", href: "https://docs.privacypools.com/llms.txt" },
-            { label: "llms-full.txt", href: "https://docs.privacypools.com/llms-full.txt" },
-            { label: "skills-core.md", href: "https://docs.privacypools.com/skills-core.md" },
             { label: "skills.md", href: "https://docs.privacypools.com/skills.md" },
-            { label: "agent-workflows", to: "/agent-workflows" },
+            { label: "Agent Workflows", to: "/agent-workflows" },
           ],
         },
       ],
@@ -183,9 +188,11 @@ const config: Config = {
     docs: {
       sidebar: {
         hideable: false,
-        autoCollapseCategories: false,
+        autoCollapseCategories: true,
       },
     },
+    /* NOTE: sidebar config also exists at the top-level themeConfig for
+       Docusaurus v3.x; the docs.sidebar block above is the canonical location. */
   } satisfies Preset.ThemeConfig,
 };
 
