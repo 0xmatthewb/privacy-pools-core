@@ -17,7 +17,7 @@ The commitment circuit (`commitment.circom`) handles the creation and verificati
 ```cpp
 template CommitmentHasher() {
     signal input value;              // Value being committed
-    signal input label;              // keccak256(pool_scope, nonce)
+    signal input label;              // keccak256(abi.encodePacked(pool_scope, nonce)) % SNARK_SCALAR_FIELD
     signal input nullifier;          // Unique nullifier
     signal input secret;             // Secret value
 

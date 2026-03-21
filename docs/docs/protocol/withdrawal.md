@@ -130,7 +130,7 @@ struct Withdrawal {
 
 struct RelayData {
     address recipient;     // Final recipient of withdrawn funds
-    address feeRecipient;  // Relayer address (receives the fee)
+    address feeRecipient;  // Fee receiver from the relayer's signed quote
     uint256 relayFeeBPS;   // Fee in basis points
 }
 ```

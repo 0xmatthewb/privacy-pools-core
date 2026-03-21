@@ -169,18 +169,21 @@ Some packages require environment variables to be set.
 
 ```
 // packages/contracts/.env
-MAINNET_RPC=
-MAINNET_DEPLOYER_NAME=
+ETHEREUM_MAINNET_RPC=
+ETHEREUM_SEPOLIA_RPC=
 
-SEPOLIA_RPC=
-SEPOLIA_DEPLOYER_NAME=
+GNOSIS_RPC=
+GNOSIS_CHIADO_RPC=
 
 ETHERSCAN_API_KEY=
 
+DEPLOYER_ADDRESS=
 OWNER_ADDRESS=
 POSTMAN_ADDRESS=
-VERIFIER_ADDRESS=
+
 ENTRYPOINT_ADDRESS=
+WITHDRAWAL_VERIFIER_ADDRESS=
+RAGEQUIT_VERIFIER_ADDRESS=
 ```
 
 ### Relayer
@@ -188,18 +191,30 @@ ENTRYPOINT_ADDRESS=
 ```json
 // config.example.json
 {
-  "fee_receiver_address": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
-  "provider_url": "http://0.0.0.0:8545", // Anvil port
-  "fee_bps": "1000",
-  "signer_private_key": "<ANVIL_PRIVATE_KEY>",  // e.g. Anvil Account #0: 0xac0974bec...f2ff80 — NEVER use a real key here
-  "sqlite_db_path": "/tmp/pp_relayer.sqlite",
-  "entrypoint_address": "0xa513e6e4b8f2a923d98304ec87f64353c4d5c853",
-  "chain": {
-    "name": "localhost",
-    "id": "31337"
+  "defaults": {
+    "fee_receiver_address": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+    "signer_private_key": "<ANVIL_PRIVATE_KEY>",
+    "entrypoint_address": "0xa513e6e4b8f2a923d98304ec87f64353c4d5c853"
   },
-  "withdraw_amounts": {
-    "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9": 100
-  }
+  "chains": [
+    {
+      "chain_id": "31337",
+      "chain_name": "localhost",
+      "rpc_url": "http://0.0.0.0:8545",
+      "max_gas_price": "2392000000",
+      "native_currency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+      "supported_assets": [
+        {
+          "asset_address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+          "asset_name": "Test Token",
+          "fee_bps": "1000",
+          "min_withdraw_amount": "100"
+        }
+      ]
+    }
+  ],
+  "sqlite_db_path": "/tmp/pp_relayer.sqlite",
+  "cors_allow_all": true,
+  "allowed_domains": ["http://localhost:3000"]
 }
 ```

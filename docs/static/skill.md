@@ -12,8 +12,8 @@ This is the privacy-preserving withdrawal path. All frontend flows should use re
 
 1. **Resolve recipient** — Validate the withdrawal recipient address before any proof generation.
 2. **Check ASP root parity** — Verify the latest ASP root matches the on-chain value before generating proofs.
-3. **Generate withdrawal proof** — Use `sdk.proveWithdrawal()` with the pool account's commitment data.
-4. **Request relayer quote** — Call `POST https://fastrelay.xyz/v1/quote` with withdrawal details. Re-quote if amount, recipient, relayer, or gas-token changes, or if the quote expires.
+3. **Request relayer quote** — Call `POST https://fastrelay.xyz/relayer/quote` with withdrawal details. Re-quote if amount, recipient, relayer, or gas-token changes, or if the quote expires.
+4. **Generate withdrawal proof** — Build `withdrawal.data` from the quote's `feeCommitment.withdrawalData`, then use `sdk.proveWithdrawal()` with the pool account's commitment data.
 5. **User confirms** — Display the quote (fee, net amount, recipient) for user confirmation.
 6. **Submit via Entrypoint.relay()** — The relayer calls `Entrypoint.relay()` with `processooor = entrypointAddress` and recipient routing encoded in `withdrawal.data`.
 7. **Verify on-chain** — Confirm the withdrawal transaction settled.
@@ -43,7 +43,7 @@ This is the privacy-preserving withdrawal path. All frontend flows should use re
 ## Ragequit (Emergency Exit)
 
 - Only the original depositor (`depositors[_label] == msg.sender`) can ragequit.
-- Ragequit is a public, non-private exit. Use only when ASP rejects a legitimate deposit.
+- Ragequit is a public, non-private exit available at any time. Primarily used when the ASP has not approved a deposit.
 - Requires a commitment proof via `sdk.proveCommitment()`.
 
 ## Deployments

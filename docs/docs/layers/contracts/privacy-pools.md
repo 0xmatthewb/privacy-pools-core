@@ -70,7 +70,7 @@ function deposit(
 The deposit flow:
 
 1. Validates pool is active and deposit value is within bounds
-2. Computes unique label from scope and nonce (`keccak256(scope, nonce) % SNARK_SCALAR_FIELD`)
+2. Computes unique label from scope and nonce (`uint256(keccak256(abi.encodePacked(scope, nonce))) % SNARK_SCALAR_FIELD`)
 3. Records depositor address (for ragequit authorization)
 4. Computes commitment hash (`Poseidon(value, label, precommitment)`)
 5. Inserts commitment into the Merkle tree
@@ -101,12 +101,12 @@ For direct withdrawals, `processooor` must equal `msg.sender`, so the pool pays 
 function ragequit(ProofLib.RagequitProof memory _proof) external
 ```
 
-Allows original depositors to:
+Allows original depositors to publicly reclaim funds at any time (no ASP check):
 
-1. Reclaim funds when ASP excludes them
-2. Verify they are original depositor
+1. Verify caller is original depositor
+2. Verify commitment exists in state tree
 3. Spend nullifier hash
-4. Receive back deposited funds
+4. Transfer committed value back to depositor
 
 ### 4. Wind Down Capability
 

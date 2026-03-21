@@ -46,14 +46,12 @@ The Association Set Provider is a crucial compliance layer that controls which d
 
   ```
 
-- History maintained for proof verification
-- Circular buffer stores recent roots
+- Root history stored in a growing array on the Entrypoint
 
 ### Set Validation
 
-- Withdrawals require valid ASP root
+- Withdrawals require the proof's ASP root to match the latest root exactly (`Entrypoint.latestRoot()`)
 - Proof must demonstrate label inclusion
-- Latest root used for validation
 - Failed validations trigger [ragequit](/protocol/ragequit) option
 
 ### Wind Down Process

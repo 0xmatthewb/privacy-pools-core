@@ -16,17 +16,14 @@ keywords:
 Creates commitment proofs using Poseidon hash.
 
 ```
-Public Inputs:
+Inputs:
 - value: Amount being committed
-- label: keccak256(scope, nonce)
-
-Private Inputs:
+- label: keccak256(abi.encodePacked(scope, nonce)) % SNARK_SCALAR_FIELD
 - nullifier: Unique nullifier for commitment
 - secret: Secret for commitment
 
-Public Outputs:
+Outputs:
 - commitment: Poseidon(value, label, Poseidon(nullifier, secret))
-- precommitmentHash: Poseidon(nullifier, secret)
 - nullifierHash: Poseidon(nullifier)
 ```
 
@@ -41,10 +38,10 @@ Public Inputs:
 - stateTreeDepth: Current state tree depth
 - ASPRoot: Latest ASP root
 - ASPTreeDepth: Current ASP tree depth
-- context: keccak256(scope, Withdrawal)
+- context: uint256(keccak256(abi.encode(withdrawal, scope))) % SNARK_SCALAR_FIELD
 
 Private Inputs:
-- label: keccak256(scope, nonce)
+- label: keccak256(abi.encodePacked(scope, nonce)) % SNARK_SCALAR_FIELD
 - existingValue: Value of existing commitment
 - existingNullifier: Nullifier of existing commitment
 - existingSecret: Secret of existing commitment

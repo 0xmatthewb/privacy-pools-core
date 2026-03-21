@@ -24,6 +24,7 @@ For production integration guidance, see [Integrations](/protocol/integrations).
 sequenceDiagram
     participant User
     participant SDK
+    participant Token as ERC20 Token
     participant Entrypoint
     participant Pool
 
@@ -37,7 +38,7 @@ sequenceDiagram
     deactivate SDK
 
     alt ERC20 Deposit
-        User->>Entrypoint: approve(amount)
+        User->>Token: approve(entrypoint, amount)
         User->>Entrypoint: deposit(token, amount, precommitment)
     else ETH Deposit
         User->>Entrypoint: deposit{value: amount}(precommitment)
@@ -75,7 +76,7 @@ graph TD
 | Parameter       | Description                                                                     |
 | --------------- | ------------------------------------------------------------------------------- |
 | `value`         | The deposit amount after fees                                                   |
-| `label`         | `keccak256(scope, nonce)` where scope is pool-specific and nonce is incremental |
+| `label`         | Generated on-chain by the pool contract; read from the `Deposited` event |
 | `nullifier`     | Random value used to create unique commitments                                  |
 | `secret`        | Random value that helps secure the commitment                                   |
 | `precommitment` | Hash(nullifier, secret)                                                         |

@@ -1,6 +1,6 @@
 ---
 title: Ragequit
-description: "Public fallback exit flow that allows original depositors to recover funds when ASP approval is unavailable or revoked."
+description: "Public fallback exit that allows original depositors to unconditionally reclaim funds from the pool."
 keywords:
   - privacy pools
   - ragequit
@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-Ragequit is a safety mechanism that allows the original depositor to publicly withdraw their funds without needing [ASP](/layers/asp) approval. This operation serves as a critical backup [withdrawal](/protocol/withdrawal) method, ensuring fund recovery when a deposit's label has not been approved or has been removed from the approved set.
+Ragequit allows the original depositor to publicly reclaim their funds at any time, regardless of [ASP](/layers/asp) approval status. The contract enforces no ASP-related checks — only that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. While always available, ragequit is primarily useful when a deposit has not been approved, since approved deposits can use the privacy-preserving [withdrawal](/protocol/withdrawal) path instead.
 
 :::info Integration
 For production integration guidance, see [Integrations](/protocol/integrations).

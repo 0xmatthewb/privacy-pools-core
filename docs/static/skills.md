@@ -180,7 +180,7 @@ await tx.wait();
 // await tx.wait();
 
 // Step 5: Capture the label AND committedValue from the Deposited event
-// The pool contract generates label = keccak256(scope, nonce) % SNARK_SCALAR_FIELD
+// The pool contract generates label = uint256(keccak256(abi.encodePacked(scope, nonce))) % SNARK_SCALAR_FIELD
 // and emits: Deposited(depositor, commitment, label, value, precommitmentHash)
 // You must read `label` and `value` from the event logs of the deposit transaction.
 // IMPORTANT: The event's `value` is the post-fee committed amount (after vettingFeeBPS
@@ -829,13 +829,16 @@ const requestRes = await fetch(`${relayerHost}/relayer/request`, {
     feeCommitment: quote.feeCommitment,  // pass through unchanged from quote response
   }),
 });
-if (!requestRes.ok) {
-  // Relayer returns JSON error bodies with { message, error?, statusCode? } on failure.
-  // Common: 400 (bad proof/inputs), 422 (expired feeCommitment), 503 (relayer at capacity).
-  const errBody = await requestRes.json().catch(() => ({}));
-  throw new Error(`Relayer request failed (${requestRes.status}): ${errBody.message ?? "unknown"}`);
-}
 const result = await requestRes.json();
+// The relayer returns HTTP 200 for both success and application-level failures.
+// Pre-processing errors (bad schema, unsupported chain, gas too high) return non-200.
+if (!requestRes.ok) {
+  throw new Error(`Relayer HTTP error (${requestRes.status}): ${result.message ?? "unknown"}`);
+}
+if (!result.success) {
+  // Application-level failure: bad proof, expired feeCommitment, context mismatch, etc.
+  throw new Error(`Relayer rejected request (${result.requestId}): ${result.error ?? "unknown"}`);
+}
 // result: { success: true, txHash: "0x...", timestamp: ..., requestId: "..." }
 
 // Step 5: Wait for the relay transaction to be mined

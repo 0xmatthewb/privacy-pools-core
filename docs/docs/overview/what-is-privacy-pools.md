@@ -92,4 +92,4 @@ These layers work together to create a secure privacy-preserving system: the con
 - **Multi-Asset Support**: Supports both native cryptocurrency and ERC20 tokens.
 - **Compliance Integration**: ASP-based approval system for regulatory compliance.
 - **Non-Custodial**: Users maintain control of their funds through cryptographic commitments.
-- **[Ragequit](/protocol/ragequit) Mechanism**: Allows original depositors to recover funds if their funds are not approved by the ASP by **publicly** exiting the privacy pool.
+- **[Ragequit](/protocol/ragequit) Mechanism**: Allows original depositors to **publicly** reclaim their funds at any time, primarily useful when deposits have not been approved by the ASP.
