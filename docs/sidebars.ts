@@ -23,6 +23,33 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Build",
+      collapsible: false,
+      link: {
+        type: "generated-index",
+        slug: "/build",
+        title: "Build",
+        description:
+          "Guides for integrating Privacy Pools into frontends, backends, and agent workflows.",
+        keywords: [
+          "privacy pools",
+          "build",
+          "integration",
+          "agents",
+          "skills",
+          "contributing",
+        ],
+      },
+      items: [
+        "build/start",
+        "build/integration",
+        "build/agents",
+        "build/skills",
+        "build/contributing",
+      ],
+    },
+    {
+      type: "category",
       label: "Protocol Components",
       collapsible: false,
       link: {
@@ -113,7 +140,7 @@ const sidebars: SidebarsConfig = {
         slug: "/reference",
         title: "Technical Reference",
         description:
-          "Integration guide, SDK, contract, and circuit reference material for Privacy Pools.",
+          "SDK, contract, circuit, API, and deployment reference material for Privacy Pools.",
         keywords: [
           "privacy pools",
           "sdk",
@@ -121,25 +148,22 @@ const sidebars: SidebarsConfig = {
           "circuits",
           "reference",
           "api",
-          "integration",
+          "deployments",
+          "errors",
         ],
       },
       items: [
-        "protocol/integrations",
         "reference/contracts",
         "reference/circuits",
         "reference/sdk",
+        "deployments",
+        "reference/asp-api",
+        "reference/relayer-api",
+        "reference/errors",
       ],
     },
-    {
-      type: "ref",
-      id: "protocol/integrations",
-    },
-    "agent-workflows",
-    "dev-guide",
     "toc",
     "privacy-policy",
-    "deployments",
   ],
 };
 

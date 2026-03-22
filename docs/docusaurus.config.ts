@@ -130,12 +130,31 @@ const config: Config = {
         removeDuplicateHeadings: true,
         ignoreFiles: ["toc.md", "privacy-policy.md"],
         rootContent:
-          "Sitemap: https://docs.privacypools.com/sitemap.xml\nFull docs for LLMs: https://docs.privacypools.com/llms-full.txt\nAgent quickstart: https://docs.privacypools.com/skills-core.md\nCanonical deep reference: https://docs.privacypools.com/skills.md",
+          "Sitemap: https://docs.privacypools.com/sitemap.xml\nFull docs for LLMs: https://docs.privacypools.com/llms-full.txt\nAgent integration: https://docs.privacypools.com/build/agents\nSkill library: https://docs.privacypools.com/build/skills",
         fullRootContent:
-          "Start here: https://docs.privacypools.com/skills-core.md (agent quickstart).\nCanonical deep reference: https://docs.privacypools.com/skills.md (full operational detail).\nSitemap: https://docs.privacypools.com/sitemap.xml\nSDK package: @0xbow/privacy-pools-core-sdk (npm)",
+          "Start here: https://docs.privacypools.com/build/start (build quickstart).\nSkill library: https://docs.privacypools.com/build/skills (agent skill reference).\nSitemap: https://docs.privacypools.com/sitemap.xml\nSDK package: @0xbow/privacy-pools-core-sdk (npm)",
         pathTransformation: {
           ignorePaths: ["docs"],
         },
+      },
+    ],
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: [
+          {
+            from: "/protocol/integrations",
+            to: "/build/integration",
+          },
+          {
+            from: "/agent-workflows",
+            to: "/build/agents",
+          },
+          {
+            from: "/dev-guide",
+            to: "/build/contributing",
+          },
+        ],
       },
     ],
   ],
@@ -166,8 +185,6 @@ const config: Config = {
             // Include LLM/AI static artifacts in sitemap for crawler discoverability
             return [
               ...items,
-              { url: "https://docs.privacypools.com/skills-core.md", changefreq: "weekly" as const, priority: 0.7 },
-              { url: "https://docs.privacypools.com/skills.md", changefreq: "weekly" as const, priority: 0.7 },
               { url: "https://docs.privacypools.com/llms.txt", changefreq: "weekly" as const, priority: 0.6 },
               { url: "https://docs.privacypools.com/llms-full.txt", changefreq: "weekly" as const, priority: 0.6 },
             ];
@@ -205,8 +222,13 @@ const config: Config = {
           position: "left",
         },
         {
-          to: "/protocol/integrations",
-          label: "Integrations",
+          to: "/build/start",
+          label: "Build",
+          position: "left",
+        },
+        {
+          to: "/build/skills",
+          label: "Skills",
           position: "left",
         },
         {
@@ -233,9 +255,10 @@ const config: Config = {
         {
           title: "For AI Agents",
           items: [
+            { label: "Skill Library", to: "/build/skills" },
+            { label: "Agent Integration", to: "/build/agents" },
             { label: "llms.txt", href: "https://docs.privacypools.com/llms.txt" },
-            { label: "skills.md", href: "https://docs.privacypools.com/skills.md" },
-            { label: "Agent Workflows", to: "/agent-workflows" },
+            { label: "llms-full.txt", href: "https://docs.privacypools.com/llms-full.txt" },
           ],
         },
       ],

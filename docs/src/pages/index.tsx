@@ -84,7 +84,7 @@ const PERSONAS = [
     title: "Builders",
     icon: IconCode,
     description: "Build frontend flows for deposit, withdrawal, and account management.",
-    link: "/protocol/integrations",
+    link: "/build/integration",
     label: "Integration guide",
   },
   {
@@ -102,11 +102,11 @@ const PERSONAS = [
     label: "Contract reference",
   },
   {
-    title: "Agents",
+    title: "Build with Agents",
     icon: IconCpu,
     description: "Discover LLM-facing artifacts, workflow files, and tool ingestion paths.",
-    link: "/agent-workflows",
-    label: "Agent workflows",
+    link: "/build/agents",
+    label: "Agent integration",
   },
 ];
 
