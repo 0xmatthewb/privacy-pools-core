@@ -1,0 +1,110 @@
+---
+sidebar_label: Errors & Constraints
+sidebar_position: 7
+title: Errors and Constraints
+description: "Contract revert reasons, SDK error patterns, and common integration pitfalls for Privacy Pools."
+keywords:
+  - privacy pools
+  - errors
+  - revert
+  - constraints
+  - troubleshooting
+  - integration
+---
+
+Revert reason names are taken directly from the Solidity interface definitions in the contracts package.
+
+## Contract Revert Reasons
+
+### PrivacyPool Errors
+
+These errors are defined in `IPrivacyPool.sol` and triggered during deposit, withdrawal, or ragequit operations on the pool contract.
+
+| Error | Triggered By | Description |
+|-------|-------------|-------------|
+| `InvalidProcessooor` | `withdraw` | `msg.sender != withdrawal.processooor`. For direct withdrawal, the signer must match. For relayed withdrawal, the Entrypoint contract is the caller. |
+| `ContextMismatch` | `withdraw` | The proof's `context` signal does not match `keccak256(abi.encode(withdrawal, SCOPE)) % SNARK_SCALAR_FIELD`. Usually caused by constructing the `Withdrawal` object with the wrong `processooor` or `data`, or using the wrong pool scope. |
+| `InvalidTreeDepth` | `withdraw` | State tree depth or ASP tree depth in the proof exceeds `MAX_TREE_DEPTH`. The SDK uses `32n` for both, which is the circuit maximum. |
+| `UnknownStateRoot` | `withdraw` | The proof's state root is not in the pool's recent root history. The contract keeps the last 64 roots in a circular buffer. Re-fetch the current state root and regenerate the proof. |
+| `IncorrectASPRoot` | `withdraw` | The proof's ASP root does not exactly match `Entrypoint.latestRoot()`. Unlike state roots, the ASP root must be the **latest** value, not just a recent one. Re-fetch from the [ASP API](/reference/asp-api) and verify parity before submitting. |
+| `InvalidProof` | `withdraw`, `ragequit` | The Groth16 verifier rejected the proof. Check that all proof inputs (commitment values, Merkle proofs, roots) are correct and consistent. |
+| `InvalidCommitment` | `ragequit` | The commitment hash from the proof is not present in the pool's state tree. |
+| `OnlyOriginalDepositor` | `ragequit` | `depositors[label] != msg.sender`. Only the address that made the original deposit can call ragequit for that commitment. |
+| `InvalidDepositValue` | `deposit` | Deposit value is `>= type(uint128).max`. |
+| `PoolIsDead` | `deposit`, pool admin | The pool has been permanently suspended by the Entrypoint. |
+
+### Entrypoint Errors
+
+These errors are defined in `IEntrypoint.sol` and triggered during relay, deposit routing, or admin operations.
+
+| Error | Triggered By | Description |
+|-------|-------------|-------------|
+| `InvalidProcessooor` | `relay` | `withdrawal.processooor != address(this)`. For relayed withdrawals, `processooor` must be the Entrypoint address. |
+| `InvalidWithdrawalAmount` | `relay` | Withdrawn value is zero. |
+| `PoolNotFound` | `relay`, `deposit` | No pool is registered for the given scope or asset. |
+| `RelayFeeGreaterThanMax` | `relay` | `relayFeeBPS > assetConfig.maxRelayFeeBPS`. The quoted fee exceeds the on-chain maximum for this asset. |
+| `MinimumDepositAmount` | `deposit` | `value < minimumDepositAmount` for the asset. |
+| `PrecommitmentAlreadyUsed` | `deposit` | The precommitment hash has already been used in a previous deposit. Increment your deposit index and recompute the precommitment. |
+| `NativeAssetTransferFailed` | `relay` | ETH transfer to the recipient or fee recipient failed. |
+| `AssetMismatch` | admin | Pool asset does not match the registered asset. |
+
+### State Errors
+
+These errors are defined in `IState.sol` and triggered by internal state operations.
+
+| Error | Triggered By | Description |
+|-------|-------------|-------------|
+| `NullifierAlreadySpent` | `withdraw`, `ragequit` | The commitment's nullifier has already been spent. This commitment was already exited via withdrawal or ragequit. Withdrawal and ragequit are mutually exclusive on the same commitment. |
+| `OnlyEntrypoint` | internal | A function restricted to the Entrypoint was called by another address. |
+| `MaxTreeDepthReached` | `deposit` | The state Merkle tree has reached its maximum capacity. |
+
+## SDK Error Patterns
+
+### Proof Generation Failures
+
+- **`MERKLE_ERROR`**: The target leaf is not present in the provided leaf array. Common causes: wrong pool scope, stale data, or the deposit has not been indexed yet. If no deposits have been approved for a new pool, `aspLeaves` will be empty and `generateMerkleProof` will throw this error.
+- **Circuit errors from invalid inputs**: If `withdrawalAmount > committedValue`, the circuit produces a cryptic error during proof generation rather than a clear validation message. Always validate `withdrawalAmount > 0n && withdrawalAmount <= committedValue` before calling `proveWithdrawal`.
+
+### Root Staleness
+
+The state root and ASP root can become stale between fetching data and submitting a transaction:
+
+- **State root**: The contract accepts the last 64 roots (circular buffer). A recently fetched root is usually still valid, but high-activity pools may cycle through roots quickly.
+- **ASP root**: Must be the **latest** root exactly. If the ASP pushes a new root to the Entrypoint between proof generation and submission, the transaction will revert with `IncorrectASPRoot`. Re-fetch the ASP root, verify parity with `Entrypoint.latestRoot()`, and regenerate the proof.
+
+### ASP Root Parity
+
+The `onchainMtRoot` from the ASP `mt-roots` endpoint may temporarily differ from `Entrypoint.latestRoot()` if the ASP has computed a new root that has not been pushed on-chain yet. The `mt-leaves` endpoint returns leaves corresponding to `mtRoot` (the database root), not `onchainMtRoot`. If these values diverge, wait and re-fetch until they converge before building a proof.
+
+## Common Integration Mistakes
+
+### Confusing State Root and ASP Root
+
+These are two separate Merkle trees with different sources and validation rules:
+
+| | State Root | ASP Root |
+|---|-----------|----------|
+| **Source** | `contracts.getStateRoot(poolAddress)` which reads pool `currentRoot()` | ASP API `onchainMtRoot` from `GET /{chainId}/public/mt-roots` |
+| **On-chain check** | Must be one of the last 64 known roots | Must exactly equal `Entrypoint.latestRoot()` |
+| **Contains** | Commitment hashes | Approved labels |
+| **Error on mismatch** | `UnknownStateRoot` | `IncorrectASPRoot` |
+
+### Using Hex for X-Pool-Scope
+
+The `X-Pool-Scope` header must be a decimal string. Hex-encoded scope values will not match any pool (the API treats the header as a literal string lookup), and the API returns 404 rather than a validation error.
+
+### Scanning Events from Genesis
+
+When using `DataService` for event reconstruction, always initialize with the deployment `startBlock` from the [Deployments](/deployments) page. Scanning from `0n` works but is unnecessarily slow and may hit RPC provider limits.
+
+### Submitting Duplicate Precommitments
+
+Each precommitment hash can only be used once. If a deposit transaction fails or is dropped, increment the deposit index and compute a new precommitment rather than retrying with the same one. The contract will revert with `PrecommitmentAlreadyUsed`.
+
+### Forgetting to Refresh After Partial Withdrawal
+
+After a partial withdrawal, a new change commitment is inserted into the state tree. Before generating the next withdrawal proof, re-fetch state tree leaves and rebuild the Merkle proof. Using stale leaves will produce an invalid state root.
+
+### Using Raw Event Value Instead of Committed Value
+
+The `Deposited` event's `value` field is the post-fee amount (after `vettingFeeBPS` deduction). Always use this value, not the original `amount` sent in the deposit transaction, when reconstructing commitments or computing withdrawal amounts.

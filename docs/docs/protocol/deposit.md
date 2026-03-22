@@ -15,7 +15,7 @@ keywords:
 The deposit operation is the entry point into the Privacy Pools protocol. It allows users to publicly deposit assets (ETH or ERC20 tokens) into a pool, creating a private commitment that can later be used for [private withdrawals](/protocol/withdrawal) or public [ragequit](/protocol/ragequit) operations.
 
 :::info Integration
-For production integration guidance, see [Integrations](/protocol/integrations).
+For production integration guidance, see [Frontend Integration](/build/integration).
 :::
 
 ## Protocol Flow
@@ -107,5 +107,42 @@ graph TD
 
 ### Fee Structure
 
-- Vetting fee: Configurable percentage (in basis points) taken by Entrypoint
+- Vetting fee: Configurable percentage (`vettingFeeBPS`) taken by the Entrypoint on every deposit
 - Example: 100 basis points = 1% fee
+- The fee is deducted **on deposit**, not on withdrawal. The `value` emitted in the `Deposited` event is the post-fee `committedValue`, which may be less than the `amount` sent. Always use this post-fee value when reconstructing commitments or computing withdrawal amounts.
+
+### Minimum Deposit
+
+Each asset has a `minimumDepositAmount` configured on the Entrypoint. The contract enforces this and reverts with `MinimumDepositAmount` if the deposit is below the threshold. Check this before submitting:
+
+```typescript
+const assetConfig = await contracts.getAssetConfig(assetAddress);
+if (amount < assetConfig.minimumDepositAmount) {
+  throw new Error("Deposit below minimum");
+}
+```
+
+### What to Persist After Deposit
+
+After a successful deposit, parse the `Deposited` event and persist the following into pool-account state:
+
+| Value | Source | Purpose |
+|-------|--------|---------|
+| `label` | `Deposited` event `_label` field | Identifies the deposit in the ASP tree; needed for withdrawal proofs and ragequit |
+| `committedValue` | `Deposited` event `_value` field (post-fee) | The actual committed amount; used to compute valid withdrawal amounts |
+| `nullifier` | Locally generated | Required to reconstruct the commitment and generate proofs |
+| `secret` | Locally generated | Required to reconstruct the commitment and generate proofs |
+
+Store these in mnemonic-backed account state rather than surfacing raw secrets to the user. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI.
+
+### Account and Recovery
+
+Frontends should use mnemonic-backed pool accounts. Deposit secrets (`nullifier`, `secret`) are derived deterministically from the mnemonic, pool scope, and a sequential deposit index, so accounts can be fully reconstructed from the mnemonic and on-chain events.
+
+- If offering wallet-signature onboarding, gate it by wallet capability: sign the same EIP-712 payload twice and compare. If signatures differ, fall back to manual mnemonic setup.
+- Always require a backup step before the user can deposit.
+- For manual recovery phrase entry, sanitize whitespace, newlines, and commas, and validate the checksum before use.
+
+### Precommitment Uniqueness
+
+Each precommitment hash can only be used once across all pools. The Entrypoint tracks used precommitments and reverts with `PrecommitmentAlreadyUsed` on duplicates. If a deposit transaction fails, increment your deposit index and compute a fresh precommitment.

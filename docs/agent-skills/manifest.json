@@ -1,0 +1,36 @@
+{
+  "skills": [
+    {
+      "name": "privacy-pools-integration",
+      "description": "End-to-end Privacy Pools integration planning",
+      "fragment": "privacy-pools-integration.md",
+      "docsRoutes": ["/build/integration", "/build/start", "/protocol/deposit", "/protocol/withdrawal", "/protocol/ragequit", "/deployments"],
+      "readOrder": ["/build/integration", "/protocol/deposit", "/protocol/withdrawal", "/protocol/ragequit", "/deployments"],
+      "guardrails": ["Use relayed withdrawals via fastrelay.xyz as the standard withdrawal path", "Never expose raw secrets in copy/paste flows", "Verify ASP root parity before proof submission", "Use deployment startBlock for event scans, not genesis"]
+    },
+    {
+      "name": "privacy-pools-deposit",
+      "description": "Deposit flow implementation for Privacy Pools",
+      "fragment": "privacy-pools-deposit.md",
+      "docsRoutes": ["/protocol/deposit", "/reference/sdk", "/reference/errors", "/deployments"],
+      "readOrder": ["/protocol/deposit", "/reference/sdk", "/deployments"],
+      "guardrails": ["Check minimum deposit amount before submitting", "Persist label and committedValue from Deposited event", "Use post-fee committedValue, not raw deposit amount", "Use deployment startBlock for event scans"]
+    },
+    {
+      "name": "privacy-pools-withdraw",
+      "description": "Relayed withdrawal implementation for Privacy Pools",
+      "fragment": "privacy-pools-withdraw.md",
+      "docsRoutes": ["/protocol/withdrawal", "/reference/relayer-api", "/reference/asp-api", "/reference/sdk", "/reference/errors", "/deployments"],
+      "readOrder": ["/protocol/withdrawal", "/reference/relayer-api", "/reference/asp-api", "/reference/sdk", "/deployments"],
+      "guardrails": ["Use Entrypoint.relay() with processooor = entrypointAddress", "Request relayer quote before proof generation", "Re-quote if amount, recipient, relayer, or gas-token changes", "Verify ASP root parity before submission", "Refresh change commitment state after partial withdrawal"]
+    },
+    {
+      "name": "privacy-pools-ragequit",
+      "description": "Ragequit (public exit) implementation for Privacy Pools",
+      "fragment": "privacy-pools-ragequit.md",
+      "docsRoutes": ["/protocol/ragequit", "/reference/sdk", "/reference/errors", "/deployments"],
+      "readOrder": ["/protocol/ragequit", "/reference/sdk", "/deployments"],
+      "guardrails": ["Ragequit is unconditionally available — no ASP prerequisite", "Only the original depositor can ragequit a commitment", "A ragequit commitment cannot later be privately withdrawn", "Ragequit is a public on-chain exit — no privacy"]
+    }
+  ]
+}

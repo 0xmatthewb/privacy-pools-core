@@ -15,7 +15,7 @@ keywords:
 Ragequit allows the original depositor to publicly reclaim their funds at any time, regardless of [ASP](/layers/asp) approval status. The contract enforces no ASP-related checks — only that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. While always available, ragequit is primarily useful when a deposit has not been approved, since approved deposits can use the privacy-preserving [withdrawal](/protocol/withdrawal) path instead.
 
 :::info Integration
-For production integration guidance, see [Integrations](/protocol/integrations).
+For production integration guidance, see [Frontend Integration](/build/integration).
 :::
 
 ## Protocol Flow
@@ -77,12 +77,41 @@ sequenceDiagram
     Note over User,State: Funds returned to original depositor<br/>Commitment permanently spent
 ```
 
-### Ragequit steps
+### Ragequit Steps
 
 1. Check Requirements
-   - Must be original depositor
-   - Commitment must not be already spent
-2. Generate Proof
-3. Call the `ragequit` method with the proof
+   - Must be original depositor (`depositors[label] == msg.sender`)
+   - Commitment must not be already spent (nullifier not yet marked)
+2. Generate commitment proof via `sdk.proveCommitment(value, label, nullifier, secret)`
+3. Call `contracts.ragequit(commitmentProof, privacyPoolAddress)`
 4. Finalized ragequit
-   - User received the full commitment amount
+   - User receives the full commitment value
+   - Nullifier is marked as spent
+
+## Key Properties
+
+### Unconditional Availability
+
+Ragequit does not require ASP approval. The contract enforces no ASP-related checks -- only that the caller is the original depositor, the commitment exists in the state tree, and the nullifier has not been spent. This makes ragequit the guaranteed exit path when:
+
+- A deposit has not yet been approved by the ASP (most deposits are approved within 1 hour, but some may take up to 7 days)
+- A label has been retroactively removed from the ASP approved set
+- The ASP service is unavailable
+
+### Original Depositor Restriction
+
+Only the address that submitted the original deposit can call ragequit for that commitment. The contract stores `depositors[label] = msg.sender` at deposit time and checks `depositors[label] == msg.sender` on ragequit. If a different address calls ragequit, the transaction reverts with `OnlyOriginalDepositor`.
+
+This means ragequit cannot be delegated to another wallet. The original depositing address must submit the ragequit transaction.
+
+### Mutual Exclusivity with Private Withdrawal
+
+Ragequit and private withdrawal are **mutually exclusive** on the same commitment. Both operations spend the commitment's nullifier. Once a commitment has been exited via either path, the nullifier is marked as spent and the other path will revert with `NullifierAlreadySpent`.
+
+A partial private withdrawal creates a new change commitment with a new nullifier. The original commitment's nullifier is spent, but the change commitment can still be ragequit (by the original depositor) or privately withdrawn.
+
+### When to Use Ragequit
+
+Ragequit is a public fallback -- it sacrifices privacy because the on-chain transaction links the deposit to the exit. Use the privacy-preserving [relayed withdrawal](/protocol/withdrawal) path when the deposit is ASP-approved. Reserve ragequit for situations where private withdrawal is not available.
+
+Frontend integrations should keep ragequit visually separate from the private withdrawal flow and label it clearly as a public exit.

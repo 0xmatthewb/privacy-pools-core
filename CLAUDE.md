@@ -4,25 +4,42 @@ Route all Privacy Pools tasks through the docs below.
 
 ## Key Docs
 
-- Integrator-friendly onboarding + frontend patterns: `docs/docs/protocol/integrations.md`
-- Primary operational quickstart: `docs/static/skills-core.md`
-- Deep reference: `docs/static/skills.md`
+- Frontend integration guide: `docs/docs/build/integration.md`
+- Agent and backend integration: `docs/docs/build/agents.md`
 - Deployments and start blocks: `docs/docs/deployments.md`
-- Agent file map and usage: `docs/docs/agent-workflows.md`
+- Skill library: `docs/docs/build/skills.md`
+
+## Quick Start
+
+- Getting started: https://docs.privacypools.com/build/start
+- Agent workflows: https://docs.privacypools.com/build/agents
+- Skill library: https://docs.privacypools.com/build/skills
+- Deployments: https://docs.privacypools.com/deployments
 
 ## Recommended Read Order
 
-1. Read `docs/docs/protocol/integrations.md` for fast orientation.
-2. Read `docs/static/skills-core.md`.
-3. Read only the relevant section(s) in `docs/static/skills.md`.
-4. Pull addresses/startBlock from `docs/docs/deployments.md`.
+1. Read `docs/docs/build/integration.md` for fast orientation.
+2. Read the relevant protocol flow: `docs/docs/protocol/deposit.md`, `withdrawal.md`, or `ragequit.md`.
+3. Pull addresses/startBlock from `docs/docs/deployments.md`.
+4. Check API references in `docs/docs/reference/` as needed.
 
 ## Quick Task Router
 
-- If the task is first-time protocol integration, start with `docs/docs/protocol/integrations.md`.
-- If the task needs exact SDK/API payloads or edge-case handling, use `docs/static/skills.md`.
+- If the task is first-time protocol integration, start with `docs/docs/build/integration.md`.
+- If the task needs API payloads or edge-case handling, check `docs/docs/reference/`.
 - If the task needs chain addresses/start blocks, use `docs/docs/deployments.md`.
-- If the task is about agent file behavior/discovery, use `docs/docs/agent-workflows.md`.
+- If the task is about agent file behavior/discovery, use `docs/docs/build/agents.md`.
+
+## Available Skills
+
+- **privacy-pools-integration** -- End-to-end Privacy Pools integration planning  
+  Skill file: `docs/static/agent-skills/privacy-pools-integration/SKILL.md`
+- **privacy-pools-deposit** -- Deposit flow implementation for Privacy Pools  
+  Skill file: `docs/static/agent-skills/privacy-pools-deposit/SKILL.md`
+- **privacy-pools-withdraw** -- Relayed withdrawal implementation for Privacy Pools  
+  Skill file: `docs/static/agent-skills/privacy-pools-withdraw/SKILL.md`
+- **privacy-pools-ragequit** -- Ragequit (public exit) implementation for Privacy Pools  
+  Skill file: `docs/static/agent-skills/privacy-pools-ragequit/SKILL.md`
 
 ## Workflow Rules
 

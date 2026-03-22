@@ -12,7 +12,7 @@ keywords:
 ---
 
 :::info Integration
-For production integration guidance, see [Integrations](/protocol/integrations).
+For production integration guidance, see [Frontend Integration](/build/integration).
 :::
 
 
@@ -105,6 +105,21 @@ interface ContractInteractionsService {
 
 `getStateRoot(poolAddress)` returns the pool state-tree root from `currentRoot()`. This is distinct from the ASP root: for `WithdrawalProofInput.aspRoot`, use ASP `onchainMtRoot` and verify it against `Entrypoint.latestRoot()`.
 
+`ContractInteractionsService` always requires a `privateKey` in its constructor, even for read-only methods like `getScope()` and `getStateRoot()`. If you need scope or state root without a signer (e.g., for `DataService` workflows), read them directly from the pool contract via a viem `PublicClient`:
+
+```typescript
+import { createPublicClient, http } from "viem";
+const client = createPublicClient({ transport: http(rpcUrl) });
+const scope = await client.readContract({
+  address: privacyPoolAddress,
+  abi: [{ name: "SCOPE", type: "function", inputs: [],
+          outputs: [{ type: "uint256" }], stateMutability: "view" }],
+  functionName: "SCOPE",
+});
+```
+
+For frontend dapps with browser wallets, use the contract ABIs from the contracts package with your own viem `WalletClient`. The SDK's crypto functions (`generateMasterKeys`, `hashPrecommitment`, etc.) work in any environment.
+
 ## `DataService`
 
 Exported for read-only event scanning and account reconstruction.
@@ -128,7 +143,11 @@ class DataService {
 }
 ```
 
-`DataService` fetches logs in chunked, rate-limited ranges. Initialize it with the deployment `startBlock` rather than `0n`, and use the optional second constructor argument only when you need per-chain fetch overrides. It also preserves zero-value withdrawal events so account reconstruction stays correct for full-withdrawal chains, even though zero-value change commitments are not spendable.
+`DataService` is fully standalone -- it does not require `PrivacyPoolSDK` or a private key. It only needs an RPC URL. Use it for read-only event scanning and account reconstruction in contexts where a signer is not available (e.g., indexers, dashboards, or pre-login state reconstruction).
+
+`DataService` fetches logs in chunked, rate-limited ranges. Always initialize it with the deployment `startBlock` from the [Deployments](/deployments) page rather than `0n` -- scanning from genesis works but is unnecessarily slow and may hit RPC provider limits. Use the optional second constructor argument when you need per-chain fetch overrides (chunk size, concurrency, delay, retries). It also preserves zero-value withdrawal events so account reconstruction stays correct for full-withdrawal chains, even though zero-value change commitments are not spendable.
+
+`getWithdrawals` and `getRagequits` accept an optional `fromBlock` parameter for incremental fetching. `getDeposits` does not have this parameter -- it always fetches from the configured `startBlock`.
 
 ## Crypto Utilities
 
@@ -298,3 +317,25 @@ interface RagequitEvent {
   transactionHash: Hex;
 }
 ```
+
+## Account Reconstruction
+
+Pool accounts are reconstructed from on-chain events using a mnemonic. The SDK provides `AccountService` for this:
+
+```typescript
+import { AccountService, DataService } from "@0xbow/privacy-pools-core-sdk";
+
+const dataService = new DataService([
+  { chainId, rpcUrl, privacyPoolAddress, startBlock }
+]);
+
+const accounts = await AccountService.initializeWithEvents(
+  dataService,
+  { mnemonic },
+  pools // array of PoolInfo
+);
+```
+
+The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search.
+
+After initialization, refresh ASP review status across every loaded chain/scope combination to determine which accounts are eligible for private withdrawal.

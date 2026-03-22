@@ -20,7 +20,7 @@ Privacy Pools supports two withdrawal paths, but frontend integrations should bu
 Both paths require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership. This page documents both paths, but frontend integrations should treat relayed withdrawal as the standard app flow.
 
 :::info Integration
-For production integration guidance, see [Integrations](/protocol/integrations).
+For production integration guidance, see [Frontend Integration](/build/integration).
 :::
 
 Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()` (via SDK `contracts.getStateRoot(poolAddress)`), while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
@@ -168,6 +168,43 @@ Do not expose this as the default frontend action if recipient privacy matters.
    - Process withdrawal through pool
    - Handle fee distribution
    - Transfer assets to recipient
+
+### Quote Lifecycle
+
+The relayer's `feeCommitment` expires approximately **60 seconds** after the quote response. The entire flow -- get quote, generate proof, submit relay request -- must complete within this window.
+
+Request the quote late in the flow (on the review step), and discard it whenever any of the following change:
+
+- Withdrawal amount
+- Recipient address
+- Relayer selection
+- `extraGas` toggle (optional gas-token drop for non-native assets)
+- Quote expiration
+
+After re-quoting, require the user to review and confirm again before proof generation. See [Relayer API Reference](/reference/relayer-api) for endpoint details.
+
+### State Root vs ASP Root
+
+Withdrawal proofs carry two separate Merkle roots with different sources and validation rules:
+
+| | State Root | ASP Root |
+|---|-----------|----------|
+| **Read from** | `contracts.getStateRoot(poolAddress)` (pool `currentRoot()`) | ASP API `onchainMtRoot` from `GET /{chainId}/public/mt-roots` |
+| **On-chain validation** | Must be one of the last 64 known roots (circular buffer) | Must exactly equal `Entrypoint.latestRoot()` |
+| **Tree contents** | Commitment hashes | Approved labels |
+| **Error on mismatch** | `UnknownStateRoot` | `IncorrectASPRoot` |
+
+Always verify ASP root parity before submitting: `BigInt(onchainMtRoot) === Entrypoint.latestRoot()`. See the [ASP API Reference](/reference/asp-api) for details on root convergence.
+
+### Change Commitment Refresh
+
+After a partial withdrawal, a new zero-value or reduced-value change commitment is inserted into the state tree. Before generating the next withdrawal proof from the same pool account:
+
+1. Re-fetch state tree leaves from the [ASP API](/reference/asp-api) or reconstruct via `DataService`
+2. Rebuild the Merkle proof with the updated leaf set
+3. Verify the reconstructed root matches the pool's `currentRoot()`
+
+Using stale leaves after a partial withdrawal will produce an invalid state root.
 
 ### Context Generation
 
