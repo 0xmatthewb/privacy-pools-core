@@ -1,0 +1,16 @@
+# QA: Integration withdrawal path
+# Tests that the LLM recommends the relayed withdrawal path.
+
+- description: "Recommends relayed withdrawal path for frontend integration"
+  vars:
+    question: "How should I integrate the standard withdrawal path in my frontend?"
+    context: |
+      file://../../docs/protocol/withdrawal.md
+      file://../../docs/reference/relayer-api.md
+  assert:
+    - type: icontains
+      value: "relay"
+    - type: icontains
+      value: "Entrypoint"
+    - type: not-icontains
+      value: "PrivacyPool.withdraw"

@@ -1,0 +1,58 @@
+# Static checks for the integration skill file.
+# Validates that SKILL.md contains required content for integrators.
+
+- description: "Integration skill mentions relayed withdrawal path"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-integration/SKILL.md'),
+          'utf-8'
+        );
+        const hasRelay = /relay/i.test(content);
+        return { pass: hasRelay, score: hasRelay ? 1 : 0, reason: hasRelay ? 'Found relay reference' : 'Missing "relay" or "relayed withdrawal" reference' };
+
+- description: "Integration skill links to deposit docs"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-integration/SKILL.md'),
+          'utf-8'
+        );
+        const hasDeposit = /deposit/i.test(content);
+        return { pass: hasDeposit, score: hasDeposit ? 1 : 0, reason: hasDeposit ? 'Found deposit reference' : 'Missing deposit docs link' };
+
+- description: "Integration skill links to withdraw docs"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-integration/SKILL.md'),
+          'utf-8'
+        );
+        const hasWithdraw = /withdraw/i.test(content);
+        return { pass: hasWithdraw, score: hasWithdraw ? 1 : 0, reason: hasWithdraw ? 'Found withdraw reference' : 'Missing withdraw docs link' };
+
+- description: "Integration skill links to ragequit docs"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-integration/SKILL.md'),
+          'utf-8'
+        );
+        const hasRagequit = /ragequit/i.test(content);
+        return { pass: hasRagequit, score: hasRagequit ? 1 : 0, reason: hasRagequit ? 'Found ragequit reference' : 'Missing ragequit docs link' };

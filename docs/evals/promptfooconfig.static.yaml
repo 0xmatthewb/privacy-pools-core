@@ -1,0 +1,19 @@
+# Privacy Pools - Static skill and docs validation
+# Checks that skill files contain required strings/patterns.
+# Run: yarn eval:static
+
+description: "Privacy Pools - Static skill and docs validation"
+
+providers:
+  # echo provider returns the prompt as-is; we use javascript assertions
+  # to read and validate the actual skill files on disk.
+  - id: echo
+
+prompts:
+  - "static-check"
+
+tests:
+  - tests/static/integration-skill.yaml
+  - tests/static/deposit-skill.yaml
+  - tests/static/withdraw-skill.yaml
+  - tests/static/ragequit-skill.yaml

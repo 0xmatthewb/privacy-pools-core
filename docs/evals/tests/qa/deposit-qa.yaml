@@ -1,0 +1,16 @@
+# QA: Deposit persistence
+# Tests that the LLM knows what to persist after deposit.
+
+- description: "Knows what to persist after a successful deposit"
+  vars:
+    question: "What should I persist after a successful deposit?"
+    context: |
+      file://../../docs/protocol/deposit.md
+  assert:
+    - type: icontains
+      value: "label"
+    - type: javascript
+      value: |
+        const output = String(vars.output || output);
+        const has = /committedValue|committed value/i.test(output);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions committedValue' : 'Missing committedValue or committed value' };

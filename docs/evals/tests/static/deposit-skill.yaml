@@ -1,0 +1,58 @@
+# Static checks for the deposit skill file.
+# Validates that SKILL.md contains required deposit-related content.
+
+- description: "Deposit skill mentions minimum deposit"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-deposit/SKILL.md'),
+          'utf-8'
+        );
+        const has = /minimum deposit|MinimumDepositAmount/i.test(content);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found minimum deposit reference' : 'Missing "minimum deposit" or "MinimumDepositAmount"' };
+
+- description: "Deposit skill mentions Deposited event"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-deposit/SKILL.md'),
+          'utf-8'
+        );
+        const has = /Deposited/.test(content);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found Deposited event' : 'Missing "Deposited" event name' };
+
+- description: "Deposit skill mentions label"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-deposit/SKILL.md'),
+          'utf-8'
+        );
+        const has = /label/.test(content);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found label reference' : 'Missing "label"' };
+
+- description: "Deposit skill mentions committedValue"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-deposit/SKILL.md'),
+          'utf-8'
+        );
+        const has = /committedValue|committed value/i.test(content);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found committedValue reference' : 'Missing "committedValue" or "committed value"' };

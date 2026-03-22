@@ -1,0 +1,46 @@
+# Static checks for the ragequit skill file.
+# Validates that SKILL.md contains required ragequit-related content.
+
+- description: "Ragequit skill mentions public exit"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-ragequit/SKILL.md'),
+          'utf-8'
+        );
+        const has = /public/i.test(content);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found "public" reference' : 'Missing "public" (public exit)' };
+
+- description: "Ragequit skill mentions original depositor restriction"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-ragequit/SKILL.md'),
+          'utf-8'
+        );
+        const has = /original depositor|OnlyOriginalDepositor/i.test(content);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found original depositor restriction' : 'Missing "original depositor" or "OnlyOriginalDepositor"' };
+
+- description: "Ragequit skill mentions mutual exclusivity with private withdrawal"
+  vars: {}
+  assert:
+    - type: javascript
+      value: |
+        const fs = require('fs');
+        const path = require('path');
+        const content = fs.readFileSync(
+          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-ragequit/SKILL.md'),
+          'utf-8'
+        );
+        const hasCannot = /cannot/i.test(content);
+        const hasPrivately = /privately withdrawn|private withdrawal/i.test(content);
+        const pass = hasCannot && hasPrivately;
+        return { pass, score: pass ? 1 : 0, reason: pass ? 'Found mutual exclusivity language' : `Missing: ${!hasCannot ? '"cannot" ' : ''}${!hasPrivately ? '"privately withdrawn"' : ''}` };

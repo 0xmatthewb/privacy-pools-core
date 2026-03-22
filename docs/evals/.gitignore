@@ -1,0 +1,5 @@
+output/
+*.html
+.cache/
+node_modules/
+*.log

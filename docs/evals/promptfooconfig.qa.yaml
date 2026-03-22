@@ -1,0 +1,19 @@
+# Privacy Pools - QA evaluation against docs context
+# Tests LLM answers to protocol questions using docs as context.
+# Run: yarn eval:qa
+# Requires OPENAI_API_KEY env var.
+
+description: "Privacy Pools - QA evaluation against docs context"
+
+providers:
+  - id: openai:gpt-4o-mini
+
+prompts:
+  - file://prompts/answer-from-context.txt
+
+tests:
+  - tests/qa/integration-qa.yaml
+  - tests/qa/deposit-qa.yaml
+  - tests/qa/withdrawal-qa.yaml
+  - tests/qa/ragequit-qa.yaml
+  - tests/qa/roots-qa.yaml

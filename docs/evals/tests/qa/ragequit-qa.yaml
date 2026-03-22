@@ -1,0 +1,19 @@
+# QA: Ragequit use case
+# Tests understanding of when to use ragequit.
+
+- description: "Explains when ragequit is appropriate"
+  vars:
+    question: "When should I use ragequit instead of a normal withdrawal?"
+    context: |
+      file://../../docs/protocol/ragequit.md
+  assert:
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /public|on-chain/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions public/on-chain nature' : 'Missing public or on-chain reference' };
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /unconditional|always available|no ASP/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions unconditional availability' : 'Missing unconditional/always available/no ASP reference' };

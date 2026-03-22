@@ -1,0 +1,20 @@
+# QA: Quote invalidation
+# Tests understanding of what invalidates a relayer quote.
+
+- description: "Knows what invalidates a relayer quote"
+  vars:
+    question: "What invalidates a relayer quote?"
+    context: |
+      file://../../docs/reference/relayer-api.md
+      file://../../docs/protocol/withdrawal.md
+  assert:
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /amount|recipient|relayer/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions invalidation trigger' : 'Missing amount/recipient/relayer reference' };
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /expir|TTL|timeout/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions expiration' : 'Missing expiration/TTL/timeout reference' };

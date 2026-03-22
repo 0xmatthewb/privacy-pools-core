@@ -1,0 +1,19 @@
+# QA: Root types
+# Tests understanding of state root vs ASP root.
+
+- description: "Distinguishes state root from ASP root"
+  vars:
+    question: "What is the difference between state root and ASP root?"
+    context: |
+      file://../../docs/protocol/withdrawal.md
+      file://../../docs/reference/asp-api.md
+  assert:
+    - type: icontains
+      value: "state root"
+    - type: icontains
+      value: "ASP root"
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /[Mm]erkle/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions Merkle' : 'Missing Merkle tree reference' };
