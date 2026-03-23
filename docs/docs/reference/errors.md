@@ -31,7 +31,7 @@ These errors are defined in `IPrivacyPool.sol` and triggered during deposit, wit
 | `InvalidCommitment` | `ragequit` | The commitment hash from the proof is not present in the pool's state tree. |
 | `OnlyOriginalDepositor` | `ragequit` | `depositors[label] != msg.sender`. Only the address that made the original deposit can call ragequit for that commitment. |
 | `InvalidDepositValue` | `deposit` | Deposit value is `>= type(uint128).max`. |
-| `ScopeMismatch` | `withdraw` | The scope encoded in the proof does not match the pool's `SCOPE()`. Usually caused by submitting to the wrong pool contract. |
+| `ScopeMismatch` | — | Defined in the interface but not currently reverted by pool contracts. Reserved for future use. |
 | `PoolIsDead` | `deposit`, pool admin | The pool has been permanently suspended by the Entrypoint. |
 
 ### Pool Variant Errors
@@ -60,7 +60,7 @@ These errors are defined in `IEntrypoint.sol` and triggered during relay, deposi
 | `NativeAssetTransferFailed` | `relay` | ETH transfer to the recipient or fee recipient failed. |
 | `NoRootsAvailable` | `latestRoot` | No ASP root has been published yet. Called `latestRoot()` before the first `updateRoot` transaction. Wait for the ASP to push an initial root. |
 | `InvalidPoolState` | `relay` | Post-relay balance integrity check failed. The pool's asset balance is less than expected after processing the withdrawal. |
-| `NativeAssetNotAccepted` | `receive` | ETH was sent directly to the Entrypoint contract. The Entrypoint does not accept plain ETH transfers; use `deposit()` with `msg.value` instead. |
+| `NativeAssetNotAccepted` | `receive` | ETH was sent to the Entrypoint by an address other than the registered native-asset pool. Only the pool contract can send ETH to the Entrypoint (during withdrawal processing). |
 | `AssetMismatch` | admin | Pool asset does not match the registered asset. |
 
 ### State Errors
@@ -70,7 +70,7 @@ These errors are defined in `IState.sol` and triggered by internal state operati
 | Error | Triggered By | Description |
 |-------|-------------|-------------|
 | `NullifierAlreadySpent` | `withdraw`, `ragequit` | The commitment's nullifier has already been spent. This commitment was already exited via withdrawal or ragequit. Withdrawal and ragequit are mutually exclusive on the same commitment. |
-| `NotYetRagequitteable` | `ragequit` | The waiting period after deposit has not elapsed. The commitment cannot be ragequit until the on-chain waiting period expires. |
+| `NotYetRagequitteable` | — | Defined in the interface for a potential future waiting period, but the current contract implementation does not enforce any timing constraint on ragequit. |
 | `OnlyEntrypoint` | internal | A function restricted to the Entrypoint was called by another address. |
 | `MaxTreeDepthReached` | `deposit` | The state Merkle tree has reached its maximum capacity. |
 
