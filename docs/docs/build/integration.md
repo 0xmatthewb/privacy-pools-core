@@ -95,6 +95,20 @@ const deposits = await dataService.getDeposits({
 
 See [SDK Utilities](/reference/sdk) for the full API surface.
 
+### Log Fetch Configuration
+
+`DataService` accepts an optional `logFetchConfig` second argument (a `Map<number, LogFetchConfig>`) that controls how event logs are fetched per chain. Tuning these values prevents RPC rate-limit errors in production.
+
+| Chain | `chainId` | `blockChunkSize` |
+|---|---|---|
+| Ethereum mainnet | `1` | `1_250_000` |
+| Optimism | `10` | `12_000_000` |
+| Base | `8453` | `6_000_000` |
+| Arbitrum One | `42161` | `48_000_000` |
+| BNB Chain | `56` | `10_000_000` |
+
+Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRetries`, and `retryBaseDelayMs`. See [SDK Utilities](/reference/sdk) for the full `LogFetchConfig` type.
+
 ## Integration Checklist
 
 1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
@@ -203,6 +217,10 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, se
 | `InvalidProcessooor` | Direct vs relayed `processooor` mismatch | Direct: `processooor = msg.sender`; relayed: `processooor = entrypointAddress` |
 | `NullifierAlreadySpent` | Commitment already exited via withdrawal or ragequit | Stop retrying that commitment and select another spendable commitment |
 | `PrecommitmentAlreadyUsed` | Duplicate deposit precommitment / index reuse | Increment deposit index, recompute secrets/precommitment, resubmit |
+| `ContextMismatch` | Wrong `withdrawal.data` or `processooor` caused the context hash to differ | Rebuild the `Withdrawal` object and re-derive context |
+| `UnknownStateRoot` | State root expired from the 64-slot circular buffer | Re-fetch state root via `contracts.getStateRoot(poolAddress)` and regenerate proof |
+| `InvalidTreeDepth` | Tree depth exceeds circuit maximum | Use `32n` for both state and ASP tree depth |
+| `InvalidDepositValue` | Deposit value exceeds `type(uint128).max` | Reduce the deposit amount |
 
 ## Reference Map
 

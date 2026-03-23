@@ -26,6 +26,7 @@ Skills complement the docs -- they do not replace them. For the full integration
 **When to use:** Starting a new integration, onboarding to the protocol, or planning the full deposit-to-withdrawal flow for a frontend or backend.
 
 **Skill file:** [`/agent-skills/privacy-pools-integration/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md)
+**Local:** `.agents/skills/privacy-pools-integration/SKILL.md`
 
 ---
 
@@ -36,6 +37,7 @@ Skills complement the docs -- they do not replace them. For the full integration
 **When to use:** Implementing the deposit path -- secret generation, precommitment, transaction submission, and event tracking.
 
 **Skill file:** [`/agent-skills/privacy-pools-deposit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md)
+**Local:** `.agents/skills/privacy-pools-deposit/SKILL.md`
 
 ---
 
@@ -46,6 +48,7 @@ Skills complement the docs -- they do not replace them. For the full integration
 **When to use:** Implementing the private withdrawal path -- ASP root verification, relayer quoting, proof generation, and relay submission.
 
 **Skill file:** [`/agent-skills/privacy-pools-withdraw/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md)
+**Local:** `.agents/skills/privacy-pools-withdraw/SKILL.md`
 
 ---
 
@@ -56,3 +59,4 @@ Skills complement the docs -- they do not replace them. For the full integration
 **When to use:** Implementing the ragequit fallback -- commitment proof, on-chain exit, and depositor-only access control.
 
 **Skill file:** [`/agent-skills/privacy-pools-ragequit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md)
+**Local:** `.agents/skills/privacy-pools-ragequit/SKILL.md`

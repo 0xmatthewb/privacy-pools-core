@@ -1,5 +1,7 @@
 # Privacy Pools Claude Code Guide
 
+Privacy Pools is a smart-contract protocol for compliant private transactions on Ethereum. It uses zero-knowledge proofs and Association Set Providers (ASPs) to let users withdraw funds privately while proving their deposits are not associated with illicit activity.
+
 Route all Privacy Pools tasks through the docs below.
 
 ## Key Docs

@@ -85,4 +85,11 @@ done
 
 ### Other LLM Tools
 
-For systems that ingest a single document, use [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt). It includes all docs pages with the highest-value content first.
+For agents that ingest a single document, two corpus files are available:
+
+- [`llms.txt`](https://docs.privacypools.com/llms.txt) -- lightweight site index with page titles and URLs. Good for quick orientation or retrieval-augmented pipelines that fetch pages on demand.
+- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt) -- complete corpus with all docs pages inlined. Highest-value content loads first. Best when the agent can consume the full context in one pass.
+
+Individual skill files can also be fetched directly by URL (e.g., `https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md`) without loading the full corpus.
+
+IDE-based agents such as Cursor, Copilot, and Windsurf can discover skill files from the `.agents/skills/` directory at the repository root. Each subdirectory contains a `SKILL.md` that the agent can load as workspace context.
