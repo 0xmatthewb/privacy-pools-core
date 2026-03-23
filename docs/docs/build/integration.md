@@ -22,7 +22,7 @@ This is the shortest path from zero to a working deposit-and-withdraw loop. Each
 
 1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
 2. **Initialize SDK and contract helpers.** Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block. Create a `ContractInteractionsService` for write operations via `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)`.
-3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Scan on-chain events via `DataService.getDeposits`, `DataService.getWithdrawals`, and `DataService.getRagequits` to reconstruct the account's current commitments and balances.
+3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Reconstruct pool state via `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` — this scans on-chain events and returns an `AccountService` with the account's current commitments and balances (see [SDK Utilities](/reference/sdk#account-reconstruction) for the full return type).
 4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.depositETH` (or `depositERC20` for token deposits after calling `approveERC20`), and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
 5. **Perform the relayed withdrawal.**
    1. **Fetch ASP root and verify parity.** Call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and confirm that `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly.
@@ -207,6 +207,7 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, se
 - For relayed withdrawal, `withdrawal.processooor` must equal the Entrypoint address, and recipient plus fee routing comes from `withdrawal.data`.
 - Relayer `feeCommitment` has a short TTL (~60s); quote and request should be near-contiguous, and quote invalidation should be tied to form changes.
 - After partial withdrawals, refresh leaves before generating the next proof.
+- Use a generous `waitForTransactionReceipt` timeout — the production frontend uses 300 seconds (5 minutes) for deposit, withdrawal, and ragequit confirmations.
 
 ## Common Failure Modes
 
