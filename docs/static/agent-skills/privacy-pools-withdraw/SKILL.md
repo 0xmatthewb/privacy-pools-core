@@ -25,7 +25,7 @@ Implement the relayed withdrawal flow for Privacy Pools. This is the privacy-pre
 
 ## Key Steps
 
-1. **Select pool account.** Choose a spendable account with `balance > 0` and `reviewStatus === APPROVED`.
+1. **Select pool account.** Choose a spendable account with `balance > 0` whose `label` is present in the current ASP leaves.
 2. **Resolve recipient.** Validate the withdrawal recipient to a final address. Block unresolved ENS or invalid input.
 3. **Fetch ASP data.** Retrieve ASP roots (`GET /{chainId}/public/mt-roots`) and leaves (`GET /{chainId}/public/mt-leaves`).
 4. **Verify ASP root parity.** Confirm `BigInt(onchainMtRoot) === Entrypoint.latestRoot()` before proceeding.

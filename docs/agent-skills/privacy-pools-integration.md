@@ -24,7 +24,7 @@ This skill covers high-level integration planning. For step-by-step implementati
 - Use deployment `startBlock` from `/deployments` for all event scans. Never scan from genesis.
 - Use decimal `X-Pool-Scope` header values (`scope.toString()`), not hex.
 - Validate recipient address before requesting a relayer quote or generating a proof.
-- Only offer private withdrawal from pool accounts with `balance > 0` and `reviewStatus === APPROVED`.
+- Only offer private withdrawal from pool accounts with `balance > 0` whose `label` is present in the current ASP leaves.
 
 ## Docs
 
