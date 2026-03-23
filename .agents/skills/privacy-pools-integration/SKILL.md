@@ -2,11 +2,11 @@
 
 ## Read Order
 
-1. https://docs.privacypools.com/build/integration
-1. https://docs.privacypools.com/protocol/deposit
-1. https://docs.privacypools.com/protocol/withdrawal
-1. https://docs.privacypools.com/protocol/ragequit
-1. https://docs.privacypools.com/deployments
+1. https://docs.privacypools.com/build/integration (local: `docs/docs/build/integration.md`)
+1. https://docs.privacypools.com/protocol/deposit (local: `docs/docs/protocol/deposit.md`)
+1. https://docs.privacypools.com/protocol/withdrawal (local: `docs/docs/protocol/withdrawal.md`)
+1. https://docs.privacypools.com/protocol/ragequit (local: `docs/docs/protocol/ragequit.md`)
+1. https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
 
 ## Guardrails
 

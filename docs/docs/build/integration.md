@@ -12,17 +12,28 @@ slug: /build/integration
 1. [Deployments](/deployments): chain-specific addresses and `startBlock`
 2. [SDK Utilities](/reference/sdk): SDK types and functions
 3. [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit): protocol behavior
-4. [skills.md](https://docs.privacypools.com/skills.md): single-document reference covering all endpoints, schemas, and edge cases
+4. [Skill Library](/build/skills): task-specific agent skill files for each integration workflow
 
-## Happy Path
+## Minimal Frontend Recipe
+
+This is the shortest path from zero to a working deposit-and-withdraw loop. Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
+
+1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
+2. **Initialize SDK and contract helpers.** Create a `DataService` pointed at the pool address and your RPC provider, passing the deployment `startBlock` so event scans skip genesis. Create a `ContractInteractionsService` with the signer's private key for write operations.
+3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Scan on-chain events via `DataService.getDeposits`, `DataService.getWithdrawals`, and `DataService.getRagequits` to reconstruct the account's current commitments and balances.
+4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.depositETH` (or `depositERC20` for token deposits after calling `approveERC20`), and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
+5. **Perform the relayed withdrawal.** Fetch ASP roots via `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and verify `onchainMtRoot` equals `Entrypoint.latestRoot()`. Request a relayer quote from `POST /relayer/quote` (the quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and proof `context`), then build the withdrawal proof, and submit via `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets.
+6. **Refresh state after withdrawal.** Re-scan events to pick up the new change commitment. Insert it into local account state before generating another proof.
+
+## Integration Checklist
 
 1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
 2. If wallet onboarding is supported, derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice, and require a backup step. If the wallet path cannot guarantee deterministic signing, fall back to manual mnemonic create/load.
 3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
-4. Reconstruct balances as pool accounts and refresh review state across all loaded chain/scope pairs. Treat deposits as pending until both the review status and current ASP leaves agree.
+4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs. A deposit is approved when its `label` appears in the current ASP leaves returned by `GET /{chainId}/public/mt-leaves`. Treat deposits as pending until the label is present.
 5. Build withdrawal proofs with two roots: `contracts.getStateRoot(poolAddress)` for the pool state root and ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
 6. Build the app's withdrawal UX around relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. This is the privacy-preserving withdrawal path and should be the standard withdrawal action.
-7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval.
+7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval (label present in ASP leaves).
 8. Resolve the final recipient before review, fetch relayer details plus `minWithdrawAmount`, and request the relayer quote on the review step. Discard the quote whenever amount, recipient, relayer, or optional gas-token-drop settings change.
 9. Do not surface direct `PrivacyPool.withdraw()` in normal frontend integrations. It is a signer-only non-private protocol path. If an explicit advanced direct flow is ever implemented, `processooor` must equal `msg.sender`, while the relayed path uses `Entrypoint.relay()` with `processooor = entrypointAddress`.
 10. Keep ragequit separate and clearly public.
@@ -30,7 +41,6 @@ slug: /build/integration
 ## Frontend Defaults
 
 - Track each deposit and each post-withdrawal change commitment inside the same pool-account tree.
-- Refresh deposit review state across every loaded chain/scope combination after account load. If a deposit reports `APPROVED` but its label is not yet present in the current ASP leaves, continue treating it as pending until the leaf arrives.
 - Disable withdraw CTAs unless wallet is connected, account state is loaded, at least one relayer is available, and there is at least one approved non-zero pool account.
 - Filter withdraw selectors to approved non-zero accounts for the active chain/scope and pick a sensible default account automatically.
 - Parse confirmed receipts and persist them in pool-account state. Pool-account state keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI where raw secrets can be exposed.
@@ -89,7 +99,7 @@ ASP API docs: `https://api.0xbow.io/api-docs`
 `request.0xbow.io` is a partner-only host and does not serve public `mt-roots` / `mt-leaves` endpoints.
 For public ASP reads, use `api.0xbow.io` (mainnet chains) or `dw.0xbow.io` (testnet chains).
 
-OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, use [skills.md](https://docs.privacypools.com/skills.md).
+OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, see the [Skill Library](/build/skills) or the individual skill files for [deposits](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md), [withdrawals](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md), and [ragequit](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md).
 
 ## Critical API Endpoints
 
@@ -114,17 +124,6 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, us
 - Relayer `feeCommitment` has a short TTL (~60s); quote and request should be near-contiguous, and quote invalidation should be tied to form changes.
 - After partial withdrawals, refresh leaves before generating the next proof.
 
-## Minimal Frontend Recipe
-
-This is the shortest path from zero to a working deposit-and-withdraw loop. Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
-
-1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
-2. **Initialize SDK and contract helpers.** Create a `DataService` pointed at the pool address and your RPC provider, passing the deployment `startBlock` so event scans skip genesis. Create a `ContractInteractionsService` with the signer's private key for write operations.
-3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Scan on-chain events via `DataService.getDeposits`, `DataService.getWithdrawals`, and `DataService.getRagequits` to reconstruct the account's current commitments and balances.
-4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.depositETH` (or `depositERC20` for token deposits after calling `approveERC20`), and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
-5. **Perform the relayed withdrawal.** Fetch ASP roots via `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and verify `onchainMtRoot` equals `Entrypoint.latestRoot()`. Request a relayer quote from `POST /relayer/quote` (the quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and proof `context`), then build the withdrawal proof, and submit via `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets.
-6. **Refresh state after withdrawal.** Re-scan events to pick up the new change commitment. Insert it into local account state before generating another proof.
-
 ## Common Failure Modes
 
 | Error | Typical cause | Immediate action |
@@ -142,4 +141,4 @@ This is the shortest path from zero to a working deposit-and-withdraw loop. Each
 | Chain addresses and start blocks | [Deployments](/deployments) |
 | Protocol flows | [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit) |
 | SDK API and types | [SDK Utilities](/reference/sdk) |
-| End-to-end integration detail | [skills.md](https://docs.privacypools.com/skills.md) |
+| Task-specific agent skills | [Skill Library](/build/skills) |

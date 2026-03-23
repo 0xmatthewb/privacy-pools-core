@@ -7,36 +7,51 @@ slug: /build/agents
 
 # Agent & Backend Integration
 
-Privacy Pools documents agent integrations through `skills-core.md`, `skills.md`, and tool-specific entry files. This page explains how autonomous agents and backend services can discover, read, and use these resources.
+Privacy Pools provides structured entry points for autonomous agents and backend services. This page explains how to discover and use them.
 
-## Entry Points
+## Reference Table
 
 | Resource | URL | Purpose |
 |---|---|---|
-| [skills-core.md](https://docs.privacypools.com/skills-core.md) | Hosted | Operational quickstart for agents and human+agent sessions |
-| [skills.md](https://docs.privacypools.com/skills.md) | Hosted | Deep reference covering SDK, API schemas, types, and error handling |
+| [Skill Library](/build/skills) | `/build/skills` | Task-specific skill files for integration, deposit, withdrawal, and ragequit |
+| [Frontend Integration](/build/integration) | `/build/integration` | Production integration happy path and safety checks |
+| [Deployments](/deployments) | `/deployments` | Chain-specific contract addresses and `startBlock` values |
 | [llms.txt](https://docs.privacypools.com/llms.txt) | Hosted | Lightweight site index for crawlers and retrieval systems |
-| [llms-full.txt](https://docs.privacypools.com/llms-full.txt) | Hosted | Complete LLM corpus; prepends `skills-core.md` + `skills.md`, fully self-contained |
-| [Deployments](/deployments) | Hosted | Chain-specific contract addresses and `startBlock` values |
-| [Frontend Integration](/build/integration) | Hosted | Production integration happy path and safety checks |
-
-For systems that ingest a single document, use `llms-full.txt`. It includes `skills-core.md` and `skills.md` at the top, followed by all docs pages, so the highest-value content loads first.
-
-## File Map
-
-| File | Purpose | Audience |
-|---|---|---|
-| `skills-core.md` | Minimal operational rules; pair with the integration guide for the happy path | Agents, human+agent sessions |
-| `skills.md` | Primary docs reference for SDK, API schemas, types, and error handling | Agents, engineers |
-| [Frontend Integration](/build/integration) | Concise onboarding, frontend happy path, safety checks, and deep-reference links | Engineers, human+agent sessions |
-| [Deployments](/deployments) | Authoritative chain-specific deployment data | All |
-| `CLAUDE.md` | Claude Code config at the repo root; auto-loaded locally and routes to canonical docs | Claude Code |
-| `AGENTS.md` | Repo-level guidance covering build commands, security constraints, and repo structure | Codex and similar coding agents |
-| `.agents/skills/privacy-pools/SKILL.md` | Installable Codex skill | Codex skill users |
+| [llms-full.txt](https://docs.privacypools.com/llms-full.txt) | Hosted | Complete LLM corpus with all docs pages; highest-value content loads first |
+| `CLAUDE.md` | Repo root | Claude Code config; auto-loaded locally, routes to canonical docs |
+| `AGENTS.md` | Repo root | Build commands, security constraints, and repo structure for coding agents |
 
 ## Skill Library
 
-The [Skill Library](/build/skills) provides task-specific skill files that agents can load for focused integration tasks: end-to-end planning, deposit implementation, relayed withdrawal, and ragequit.
+The [Skill Library](/build/skills) provides four task-specific skill files that agents can load for focused work:
+
+| Skill | Hosted URL | Purpose |
+|---|---|---|
+| `privacy-pools-integration` | [`/agent-skills/privacy-pools-integration/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md) | End-to-end integration planning |
+| `privacy-pools-deposit` | [`/agent-skills/privacy-pools-deposit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md) | Deposit flow implementation |
+| `privacy-pools-withdraw` | [`/agent-skills/privacy-pools-withdraw/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md) | Relayed withdrawal implementation |
+| `privacy-pools-ragequit` | [`/agent-skills/privacy-pools-ragequit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md) | Ragequit (public exit) implementation |
+
+Each skill is a self-contained markdown document with structured sections (purpose, instructions, references) that agents can parse without special tooling.
+
+## Skill Discovery Convention
+
+The `.agents/skills/` directory at the repository root follows the emerging convention for agent-discoverable skill files:
+
+```
+.agents/
+  skills/
+    privacy-pools-integration/
+      SKILL.md
+    privacy-pools-deposit/
+      SKILL.md
+    privacy-pools-withdraw/
+      SKILL.md
+    privacy-pools-ragequit/
+      SKILL.md
+```
+
+The same skill files are hosted at `https://docs.privacypools.com/agent-skills/<name>/SKILL.md`.
 
 ## Agent-Specific Workflows
 
@@ -45,52 +60,27 @@ The [Skill Library](/build/skills) provides task-specific skill files that agent
 Claude Code auto-discovers `CLAUDE.md` at the repository root. It routes the agent to:
 
 1. [Frontend Integration](/build/integration) for the integration happy path.
-2. `skills-core.md` for operational flows and safety rules.
-3. `skills.md` for SDK details, API schemas, or edge cases.
-4. [Deployments](/deployments) for chain addresses and `startBlock` values.
+2. The [Skill Library](/build/skills) for task-specific workflows.
+3. [Deployments](/deployments) for chain addresses and `startBlock` values.
+4. Reference pages under `/reference/` for SDK details, API schemas, or edge cases.
 
 ### Codex
 
 Codex reads `AGENTS.md` at the repository root for build commands, repo structure, and security constraints. For protocol integration work:
 
 1. Start with [Frontend Integration](/build/integration) for the integration happy path.
-2. Refer to `skills-core.md` for the operational path.
-3. Refer to `skills.md` for advanced implementation details.
-4. Use [Deployments](/deployments) for authoritative addresses and start blocks.
-
-In the repository, Codex can also read `.agents/skills/privacy-pools/SKILL.md`.
+2. Load the relevant skill from `.agents/skills/<name>/SKILL.md`.
+3. Use [Deployments](/deployments) for authoritative addresses and start blocks.
 
 For user-scoped installation, Codex discovers skills under `$CODEX_HOME/skills` (default: `~/.codex/skills`):
 
 ```bash
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills/privacy-pools"
-cp skills/privacy-pools/SKILL.md "${CODEX_HOME:-$HOME/.codex}/skills/privacy-pools/SKILL.md"
+for skill in privacy-pools-integration privacy-pools-deposit privacy-pools-withdraw privacy-pools-ragequit; do
+  mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills/$skill"
+  cp ".agents/skills/$skill/SKILL.md" "${CODEX_HOME:-$HOME/.codex}/skills/$skill/SKILL.md"
+done
 ```
 
 ### Other LLM Tools
 
-For systems that ingest a single document, use `llms-full.txt`. It includes `skills-core.md` and `skills.md` at the top, followed by all docs pages, so the highest-value content loads first.
-
-## Skill Discovery Convention
-
-The `.agents/skills/` directory at the repository root follows the emerging convention for agent-discoverable skill files. Each subdirectory contains a `SKILL.md` that an agent platform can read to understand what capabilities the project exposes.
-
-```
-.agents/
-  skills/
-    privacy-pools/
-      SKILL.md        # end-to-end integration skill
-```
-
-Skill files are plain markdown with structured sections (purpose, instructions, references) that agents can parse without special tooling.
-
-## Hosted References
-
-| Resource | URL |
-|---|---|
-| Agent quickstart | https://docs.privacypools.com/skills-core.md |
-| Deep reference | https://docs.privacypools.com/skills.md |
-| Integration guide | https://docs.privacypools.com/build/integration |
-| Deployments | https://docs.privacypools.com/deployments |
-| Full LLM corpus | https://docs.privacypools.com/llms-full.txt |
-| Site index | https://docs.privacypools.com/llms.txt |
+For systems that ingest a single document, use [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt). It includes all docs pages with the highest-value content first.

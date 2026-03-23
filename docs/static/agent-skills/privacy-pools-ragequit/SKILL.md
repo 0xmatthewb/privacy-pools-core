@@ -2,9 +2,9 @@
 
 ## Read Order
 
-1. https://docs.privacypools.com/protocol/ragequit
-1. https://docs.privacypools.com/reference/sdk
-1. https://docs.privacypools.com/deployments
+1. https://docs.privacypools.com/protocol/ragequit (local: `docs/docs/protocol/ragequit.md`)
+1. https://docs.privacypools.com/reference/sdk (local: `docs/docs/reference/sdk.md`)
+1. https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
 
 ## Guardrails
 

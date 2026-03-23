@@ -22,7 +22,7 @@
       "fragment": "privacy-pools-withdraw.md",
       "docsRoutes": ["/protocol/withdrawal", "/reference/relayer-api", "/reference/asp-api", "/reference/sdk", "/reference/errors", "/deployments"],
       "readOrder": ["/protocol/withdrawal", "/reference/relayer-api", "/reference/asp-api", "/reference/sdk", "/deployments"],
-      "guardrails": ["Use Entrypoint.relay() with processooor = entrypointAddress", "Request relayer quote before proof generation", "Re-quote if amount, recipient, relayer, or gas-token changes", "Verify ASP root parity before submission", "Refresh change commitment state after partial withdrawal"]
+      "guardrails": ["Use Entrypoint.relay() with processooor = entrypointAddress", "Request relayer quote before proof generation", "Use the relayer quote's withdrawalData for withdrawal.data and proof context", "Re-quote if amount, recipient, relayer, or gas-token changes", "Verify ASP root parity before submission", "Refresh change commitment state after partial withdrawal"]
     },
     {
       "name": "privacy-pools-ragequit",
