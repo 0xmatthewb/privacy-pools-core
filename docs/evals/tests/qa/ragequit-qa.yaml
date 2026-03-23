@@ -4,8 +4,7 @@
 - description: "Explains when ragequit is appropriate"
   vars:
     question: "When should I use ragequit instead of a normal withdrawal?"
-    context: |
-      file://../../docs/protocol/ragequit.md
+    context: file://helpers/context-ragequit.js
   assert:
     - type: javascript
       value: |
@@ -17,3 +16,14 @@
         const out = String(vars.output || output);
         const has = /unconditional|always available|no ASP/i.test(out);
         return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions unconditional availability' : 'Missing unconditional/always available/no ASP reference' };
+
+- description: "Knows only original depositor can ragequit"
+  vars:
+    question: "Can anyone ragequit a deposit, or only the original depositor?"
+    context: file://helpers/context-ragequit.js
+  assert:
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /original depositor|OnlyOriginalDepositor/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions original depositor restriction' : 'Missing original depositor reference' };

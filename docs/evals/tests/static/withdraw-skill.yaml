@@ -1,74 +1,58 @@
 # Static checks for the withdraw skill file.
-# Validates that SKILL.md contains required withdrawal-related content.
+# The custom provider reads the skill file content; assertions check for required patterns.
 
 - description: "Withdraw skill mentions Entrypoint.relay"
-  vars: {}
+  vars:
+    skillPath: "privacy-pools-withdraw/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-withdraw/SKILL.md'),
-          'utf-8'
-        );
-        const has = /Entrypoint\.relay/i.test(content);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found Entrypoint.relay reference' : 'Missing "Entrypoint.relay"' };
+    - type: icontains
+      value: "Entrypoint.relay"
 
 - description: "Withdraw skill mentions processooor or entrypointAddress"
-  vars: {}
+  vars:
+    skillPath: "privacy-pools-withdraw/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-withdraw/SKILL.md'),
-          'utf-8'
-        );
-        const has = /processooor|entrypointAddress/i.test(content);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found processooor/entrypointAddress' : 'Missing "processooor" or "entrypointAddress"' };
+    - type: icontains-any
+      value:
+        - "processooor"
+        - "entrypointAddress"
 
 - description: "Withdraw skill mentions both state root and ASP root"
-  vars: {}
+  vars:
+    skillPath: "privacy-pools-withdraw/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-withdraw/SKILL.md'),
-          'utf-8'
-        );
-        const hasState = /state root/i.test(content);
-        const hasASP = /ASP root/i.test(content);
-        const pass = hasState && hasASP;
-        return { pass, score: pass ? 1 : 0, reason: pass ? 'Found both state root and ASP root' : `Missing: ${!hasState ? 'state root ' : ''}${!hasASP ? 'ASP root' : ''}` };
+    - type: icontains
+      value: "state root"
+    - type: icontains
+      value: "ASP root"
 
-- description: "Withdraw skill mentions quote invalidation"
-  vars: {}
+- description: "Withdraw skill mentions quote re-quoting or expiration"
+  vars:
+    skillPath: "privacy-pools-withdraw/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-withdraw/SKILL.md'),
-          'utf-8'
-        );
-        const has = /quote/i.test(content);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found quote reference' : 'Missing "quote"' };
+    - type: icontains-any
+      value:
+        - "re-quote"
+        - "quote expires"
+        - "60 seconds"
 
 - description: "Withdraw skill mentions change commitment"
-  vars: {}
+  vars:
+    skillPath: "privacy-pools-withdraw/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-withdraw/SKILL.md'),
-          'utf-8'
-        );
-        const has = /change commitment/i.test(content);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found change commitment reference' : 'Missing "change commitment"' };
+    - type: icontains
+      value: "change commitment"
+
+- description: "Withdraw skill mentions withdrawalData"
+  vars:
+    skillPath: "privacy-pools-withdraw/SKILL.md"
+  assert:
+    - type: icontains
+      value: "withdrawalData"
+
+- description: "Withdraw skill mentions feeCommitment"
+  vars:
+    skillPath: "privacy-pools-withdraw/SKILL.md"
+  assert:
+    - type: icontains
+      value: "feeCommitment"

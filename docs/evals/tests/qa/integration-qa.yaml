@@ -4,9 +4,7 @@
 - description: "Recommends relayed withdrawal path for frontend integration"
   vars:
     question: "How should I integrate the standard withdrawal path in my frontend?"
-    context: |
-      file://../../docs/protocol/withdrawal.md
-      file://../../docs/reference/relayer-api.md
+    context: file://helpers/context-withdrawal-relayer.js
   assert:
     - type: icontains
       value: "relay"
@@ -14,3 +12,14 @@
       value: "Entrypoint"
     - type: not-icontains
       value: "PrivacyPool.withdraw"
+
+- description: "Recommends mnemonic-backed pool accounts"
+  vars:
+    question: "What is the recommended account model for Privacy Pools?"
+    context: file://helpers/context-deposit-withdrawal.js
+  assert:
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /mnemonic|pool account/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions mnemonic or pool account' : 'Missing mnemonic or pool account reference' };

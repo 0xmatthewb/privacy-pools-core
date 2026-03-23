@@ -4,15 +4,15 @@
 - description: "Knows what invalidates a relayer quote"
   vars:
     question: "What invalidates a relayer quote?"
-    context: |
-      file://../../docs/reference/relayer-api.md
-      file://../../docs/protocol/withdrawal.md
+    context: file://helpers/context-relayer-withdrawal.js
   assert:
     - type: javascript
       value: |
         const out = String(vars.output || output);
-        const has = /amount|recipient|relayer/i.test(out);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions invalidation trigger' : 'Missing amount/recipient/relayer reference' };
+        const triggers = [/amount/i, /recipient/i, /relayer/i];
+        const count = triggers.filter(r => r.test(out)).length;
+        const pass = count >= 2;
+        return { pass, score: pass ? 1 : 0, reason: pass ? `Mentions ${count} invalidation triggers` : `Only mentions ${count}/2 required invalidation triggers (amount, recipient, relayer)` };
     - type: javascript
       value: |
         const out = String(vars.output || output);

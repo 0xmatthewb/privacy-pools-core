@@ -4,8 +4,7 @@
 - description: "Knows what to persist after a successful deposit"
   vars:
     question: "What should I persist after a successful deposit?"
-    context: |
-      file://../../docs/protocol/deposit.md
+    context: file://helpers/context-deposit.js
   assert:
     - type: icontains
       value: "label"
@@ -14,3 +13,14 @@
         const output = String(vars.output || output);
         const has = /committedValue|committed value/i.test(output);
         return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions committedValue' : 'Missing committedValue or committed value' };
+
+- description: "Knows raw amount differs from committed value due to vetting fee"
+  vars:
+    question: "What happens if I use the raw deposit amount instead of the committed value?"
+    context: file://helpers/context-deposit.js
+  assert:
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /vetting.*fee|vettingFeeBPS|fee.*deducted/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions vetting fee' : 'Missing vetting fee / vettingFeeBPS reference' };

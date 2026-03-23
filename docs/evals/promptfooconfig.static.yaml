@@ -5,12 +5,12 @@
 description: "Privacy Pools - Static skill and docs validation"
 
 providers:
-  # echo provider returns the prompt as-is; we use javascript assertions
-  # to read and validate the actual skill files on disk.
-  - id: echo
+  # Custom provider that reads the skill file path from the prompt
+  # and returns its content as the output for assertion checks.
+  - id: file://helpers/skill-provider.js
 
 prompts:
-  - "static-check"
+  - "{{skillPath}}"
 
 tests:
   - tests/static/integration-skill.yaml

@@ -4,9 +4,7 @@
 - description: "Distinguishes state root from ASP root"
   vars:
     question: "What is the difference between state root and ASP root?"
-    context: |
-      file://../../docs/protocol/withdrawal.md
-      file://../../docs/reference/asp-api.md
+    context: file://helpers/context-withdrawal-asp.js
   assert:
     - type: icontains
       value: "state root"
@@ -17,3 +15,14 @@
         const out = String(vars.output || output);
         const has = /[Mm]erkle/i.test(out);
         return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions Merkle' : 'Missing Merkle tree reference' };
+
+- description: "Knows processooor must be entrypointAddress for relayed withdrawal"
+  vars:
+    question: "What should processooor be set to for relayed withdrawal?"
+    context: file://helpers/context-withdrawal-relayer.js
+  assert:
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /entrypointAddress|Entrypoint.*address/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions entrypointAddress' : 'Missing entrypointAddress for relayed withdrawal' };

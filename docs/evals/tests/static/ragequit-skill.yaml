@@ -1,46 +1,47 @@
 # Static checks for the ragequit skill file.
-# Validates that SKILL.md contains required ragequit-related content.
+# The custom provider reads the skill file content; assertions check for required patterns.
 
-- description: "Ragequit skill mentions public exit"
-  vars: {}
+- description: "Ragequit skill mentions public exit or public on-chain"
+  vars:
+    skillPath: "privacy-pools-ragequit/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-ragequit/SKILL.md'),
-          'utf-8'
-        );
-        const has = /public/i.test(content);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found "public" reference' : 'Missing "public" (public exit)' };
+    - type: icontains-any
+      value:
+        - "public exit"
+        - "public on-chain"
 
 - description: "Ragequit skill mentions original depositor restriction"
-  vars: {}
+  vars:
+    skillPath: "privacy-pools-ragequit/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-ragequit/SKILL.md'),
-          'utf-8'
-        );
-        const has = /original depositor|OnlyOriginalDepositor/i.test(content);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Found original depositor restriction' : 'Missing "original depositor" or "OnlyOriginalDepositor"' };
+    - type: icontains-any
+      value:
+        - "original depositor"
+        - "OnlyOriginalDepositor"
 
 - description: "Ragequit skill mentions mutual exclusivity with private withdrawal"
-  vars: {}
+  vars:
+    skillPath: "privacy-pools-ragequit/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-ragequit/SKILL.md'),
-          'utf-8'
-        );
-        const hasCannot = /cannot/i.test(content);
-        const hasPrivately = /privately withdrawn|private withdrawal/i.test(content);
-        const pass = hasCannot && hasPrivately;
-        return { pass, score: pass ? 1 : 0, reason: pass ? 'Found mutual exclusivity language' : `Missing: ${!hasCannot ? '"cannot" ' : ''}${!hasPrivately ? '"privately withdrawn"' : ''}` };
+    - type: icontains
+      value: "cannot"
+    - type: icontains-any
+      value:
+        - "privately withdrawn"
+        - "private withdrawal"
+
+- description: "Ragequit skill mentions NullifierAlreadySpent"
+  vars:
+    skillPath: "privacy-pools-ragequit/SKILL.md"
+  assert:
+    - type: contains
+      value: "NullifierAlreadySpent"
+
+- description: "Ragequit skill mentions unconditional availability (no ASP)"
+  vars:
+    skillPath: "privacy-pools-ragequit/SKILL.md"
+  assert:
+    - type: icontains-any
+      value:
+        - "unconditional"
+        - "no ASP"

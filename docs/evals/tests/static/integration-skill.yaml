@@ -1,58 +1,61 @@
 # Static checks for the integration skill file.
-# Validates that SKILL.md contains required content for integrators.
+# The custom provider reads the skill file content; assertions check for required patterns.
 
 - description: "Integration skill mentions relayed withdrawal path"
-  vars: {}
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-integration/SKILL.md'),
-          'utf-8'
-        );
-        const hasRelay = /relay/i.test(content);
-        return { pass: hasRelay, score: hasRelay ? 1 : 0, reason: hasRelay ? 'Found relay reference' : 'Missing "relay" or "relayed withdrawal" reference' };
+    - type: icontains
+      value: "relay"
 
-- description: "Integration skill links to deposit docs"
-  vars: {}
+- description: "Integration skill references deposit skill or deposit docs"
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-integration/SKILL.md'),
-          'utf-8'
-        );
-        const hasDeposit = /deposit/i.test(content);
-        return { pass: hasDeposit, score: hasDeposit ? 1 : 0, reason: hasDeposit ? 'Found deposit reference' : 'Missing deposit docs link' };
+    - type: contains-any
+      value:
+        - "privacy-pools-deposit"
+        - "/protocol/deposit"
 
-- description: "Integration skill links to withdraw docs"
-  vars: {}
+- description: "Integration skill references withdraw skill or withdrawal docs"
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-integration/SKILL.md'),
-          'utf-8'
-        );
-        const hasWithdraw = /withdraw/i.test(content);
-        return { pass: hasWithdraw, score: hasWithdraw ? 1 : 0, reason: hasWithdraw ? 'Found withdraw reference' : 'Missing withdraw docs link' };
+    - type: contains-any
+      value:
+        - "privacy-pools-withdraw"
+        - "/protocol/withdrawal"
 
 - description: "Integration skill links to ragequit docs"
-  vars: {}
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
   assert:
-    - type: javascript
-      value: |
-        const fs = require('fs');
-        const path = require('path');
-        const content = fs.readFileSync(
-          path.resolve(__dirname, '../../../../static/agent-skills/privacy-pools-integration/SKILL.md'),
-          'utf-8'
-        );
-        const hasRagequit = /ragequit/i.test(content);
-        return { pass: hasRagequit, score: hasRagequit ? 1 : 0, reason: hasRagequit ? 'Found ragequit reference' : 'Missing ragequit docs link' };
+    - type: icontains
+      value: "ragequit"
+
+- description: "Integration skill mentions startBlock for event scans"
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
+  assert:
+    - type: icontains-any
+      value:
+        - "startBlock"
+        - "deploymentBlock"
+
+- description: "Integration skill mentions ASP root parity check"
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
+  assert:
+    - type: icontains-any
+      value:
+        - "ASP root"
+        - "latestRoot"
+
+- description: "Integration skill mentions mnemonic or pool account model"
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
+  assert:
+    - type: icontains-any
+      value:
+        - "mnemonic"
+        - "pool account"
