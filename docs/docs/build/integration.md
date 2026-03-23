@@ -3,6 +3,8 @@ sidebar_label: Frontend Integration
 sidebar_position: 2
 title: Frontend Integration
 slug: /build/integration
+description: Step-by-step guide for integrating Privacy Pools deposits, withdrawals, and ragequits into a frontend or dapp.
+keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integration]
 ---
 
 # Frontend Integration

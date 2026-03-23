@@ -3,6 +3,8 @@ sidebar_label: Contributing
 sidebar_position: 5
 title: Contributing
 slug: /build/contributing
+description: How to set up the Privacy Pools monorepo, run tests, and contribute to the project.
+keywords: [privacy pools, contributing, monorepo, testing, development]
 ---
 
 # Contributing

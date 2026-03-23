@@ -3,6 +3,8 @@ sidebar_label: Agent & Backend Integration
 sidebar_position: 3
 title: Agent & Backend Integration
 slug: /build/agents
+description: Discovery and usage guide for autonomous agents and backend services integrating with Privacy Pools.
+keywords: [privacy pools, agent, backend, LLM, skills, automation, CLAUDE.md]
 ---
 
 # Agent & Backend Integration

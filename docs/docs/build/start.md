@@ -2,6 +2,8 @@
 sidebar_label: Start Here
 sidebar_position: 1
 title: Start Here
+description: Choose the right integration path for your Privacy Pools project.
+keywords: [privacy pools, getting started, integration, frontend, agent, backend]
 ---
 
 # Start Here

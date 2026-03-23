@@ -16,4 +16,4 @@ tests:
   - tests/qa/deposit-qa.yaml
   - tests/qa/withdrawal-qa.yaml
   - tests/qa/ragequit-qa.yaml
-  - tests/qa/roots-qa.yaml
+  - tests/qa/relayer-quote-qa.yaml
