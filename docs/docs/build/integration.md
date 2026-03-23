@@ -21,7 +21,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 This is the shortest path from zero to a working deposit-and-withdraw loop. Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
 
 1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
-2. **Initialize SDK and contract helpers.** Create a `DataService` pointed at the pool address and your RPC provider, passing the deployment `startBlock` so event scans skip genesis. Create a `ContractInteractionsService` with the signer's private key for write operations.
+2. **Initialize SDK and contract helpers.** Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block. Create a `ContractInteractionsService` for write operations via `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)`.
 3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Scan on-chain events via `DataService.getDeposits`, `DataService.getWithdrawals`, and `DataService.getRagequits` to reconstruct the account's current commitments and balances.
 4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.depositETH` (or `depositERC20` for token deposits after calling `approveERC20`), and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
 5. **Perform the relayed withdrawal.**
@@ -30,6 +30,70 @@ This is the shortest path from zero to a working deposit-and-withdraw loop. Each
    3. **Build the withdrawal proof.** Generate the ZK proof using the verified ASP root, the pool state root, and the relayer-provided context.
    4. **Submit via relayer.** Send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets.
 6. **Refresh state after withdrawal.** Re-scan events to pick up the new change commitment. Insert it into local account state before generating another proof.
+
+### Quick Start Code
+
+```typescript
+import {
+  PrivacyPoolSDK,
+  DataService,
+  Circuits,
+  generateMasterKeys,
+  generateDepositSecrets,
+  hashPrecommitment,
+} from "@0xbow/privacy-pools-core-sdk";
+import { sepolia } from "viem/chains";
+
+// 1. Initialize SDK with circuit artifacts
+const sdk = new PrivacyPoolSDK(new Circuits());
+
+// 2. Create DataService for reading on-chain events
+const dataService = new DataService([
+  {
+    chainId: 11155111,
+    privacyPoolAddress: "0x..." as `0x${string}`, // from /deployments
+    startBlock: 123456n,                           // from /deployments
+    rpcUrl: "https://sepolia.infura.io/v3/YOUR_KEY",
+  },
+]);
+
+// 3. Create ContractInteractionsService for write operations
+const contracts = sdk.createContractInstance(
+  "https://sepolia.infura.io/v3/YOUR_KEY",
+  sepolia,
+  "0x..." as `0x${string}`, // Entrypoint address from /deployments
+  "0x..." as `0x${string}`, // signer private key
+);
+
+// 4. Generate account keys from a mnemonic
+const keys = generateMasterKeys("your twelve word mnemonic phrase ...");
+
+// 5. Derive deposit secrets and compute precommitment
+const scope = await contracts.getScope("0x..." as `0x${string}`); // pool address
+const { nullifier, secret } = generateDepositSecrets(keys, scope, 0n);
+const precommitment = hashPrecommitment(nullifier, secret);
+
+// 6. Deposit ETH into the pool
+const depositTx = await contracts.depositETH(
+  10000000000000000n, // 0.01 ETH in wei
+  precommitment,
+);
+await depositTx.wait();
+
+// 7. Fetch deposit events to confirm and reconstruct state
+const deposits = await dataService.getDeposits({
+  chainId: 11155111,
+  address: "0x..." as `0x${string}`, // pool address
+  scope,
+  deploymentBlock: 123456n,
+});
+
+// 8. Withdrawal: generate proof and submit via relayer
+//    See /reference/sdk for proveWithdrawal() and /protocol/withdrawal
+//    for the full relayed withdrawal flow via https://fastrelay.xyz
+```
+
+See [SDK Utilities](/reference/sdk) for the full API surface.
 
 ## Integration Checklist
 
@@ -122,7 +186,7 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, se
 - `X-Pool-Scope` must be a decimal bigint string.
 - `stateRoot` should come from `contracts.getStateRoot(poolAddress)` / pool `currentRoot()`, not from `Entrypoint.latestRoot()`.
 - `onchainMtRoot` must equal `Entrypoint.latestRoot()` exactly before proof generation/submission.
-- When reconstructing state from events, initialize `DataService` with the deployment `startBlock` and use direct RPC.
+- When reconstructing state from events, include the deployment `startBlock` in your `ChainConfig` entries so `DataService` scans from the correct block.
 - `withdrawalAmount` must be `> 0` and `<=` commitment value.
 - Check `minimumDepositAmount` before submitting deposit transactions.
 - If you explicitly implement direct withdrawal, `withdrawal.processooor` must equal `msg.sender`, so the pool pays the signer.

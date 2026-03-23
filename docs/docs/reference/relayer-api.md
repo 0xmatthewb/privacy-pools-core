@@ -114,6 +114,10 @@ Returns a fee quote for a relayed withdrawal. When `recipient` is included, the 
 | `gasPrice` | `string` | Current gas price used for the quote. |
 | `detail.relayTxCost.gas` | `string` | Estimated gas units for the relay transaction. |
 | `detail.relayTxCost.eth` | `string` | Estimated gas cost in wei. |
+| `detail.extraGasFundAmount.gas` | `string` | Gas units for the extra native-gas drop. Only present when `extraGas: true`. |
+| `detail.extraGasFundAmount.eth` | `string` | Cost of the extra gas drop in wei. Only present when `extraGas: true`. |
+| `detail.extraGasTxCost.gas` | `string` | Gas units for the extra-gas transfer transaction. Only present when `extraGas: true`. |
+| `detail.extraGasTxCost.eth` | `string` | Cost of the extra-gas transfer in wei. Only present when `extraGas: true`. |
 | `feeCommitment` | `object` | Signed fee commitment (only present when `recipient` is provided). |
 
 ### Quote Lifecycle
@@ -173,7 +177,7 @@ Submits a relayed withdrawal to the relayer for on-chain execution.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `chainId` | `number` | Yes | Target chain ID. |
-| `scope` | `string` | Yes | Pool scope as a **decimal** bigint string (not hex). |
+| `scope` | `string \| number` | Yes | Pool scope as a **decimal** bigint string (not hex). `number` is also accepted but string is recommended for large values that exceed `Number.MAX_SAFE_INTEGER`. |
 | `withdrawal` | `object` | Yes | The `Withdrawal` struct. `processooor` must be the Entrypoint address. `data` is ABI-encoded `RelayData`. |
 | `proof` | `object` | Yes | ZK proof. `pi_a` / `pi_c`: 3-element string arrays. `pi_b`: 3x2-element string array. Extra fields like `protocol` and `curve` are accepted and ignored. |
 | `publicSignals` | `string[]` | Yes | Exactly 8 elements. |
@@ -247,7 +251,7 @@ Returns relayer configuration for a specific chain and asset. Use this to check 
 | `minWithdrawAmount` | `string` | Minimum withdrawal amount (in token smallest unit). |
 | `feeReceiverAddress` | `string` | Address that receives the relay fee. Use this as the `feeRecipient` in `RelayData`. |
 | `assetAddress` | `string` | Asset address. |
-| `maxGasPrice` | `string` | Maximum gas price the relayer will accept. |
+| `maxGasPrice` | `string \| null` | Maximum gas price the relayer will accept. `null` when not configured for the chain. |
 
 ### Minimum Withdrawal Validation
 

@@ -20,8 +20,28 @@ For production integration guidance, see [Frontend Integration](/build/integrati
 
 Main SDK class providing high-level protocol interaction.
 
+### Constructor
+
+`PrivacyPoolSDK` requires a `CircuitsInterface` implementation for proof generation.
+The SDK exports a concrete `Circuits` class that satisfies this interface:
+
+```typescript
+import { PrivacyPoolSDK, Circuits } from "@0xbow/privacy-pools-core-sdk";
+
+const circuits = new Circuits();
+const sdk = new PrivacyPoolSDK(circuits);
+```
+
+### `Circuits`
+
+The `Circuits` class is the concrete implementation of `CircuitsInterface` used internally by the SDK for generating and verifying Groth16 proofs (commitment and withdrawal circuits). Import it from the SDK package and pass it to the `PrivacyPoolSDK` constructor as shown above.
+
+### Methods
+
 ```tsx
 class PrivacyPoolSDK {
+  constructor(circuits: CircuitsInterface);
+
   createContractInstance(
     rpcUrl: string,
     chain: Chain,
@@ -134,6 +154,7 @@ class DataService {
       chunkDelayMs?: number;
       retryOnFailure?: boolean;
       maxRetries?: number;
+      retryBaseDelayMs?: number;
     }>,
   );
 
@@ -219,7 +240,7 @@ interface AssetConfig {
 }
 
 interface TransactionResponse {
-  hash: string;
+  hash: string;  // hex transaction hash
   wait: () => Promise<void>;
 }
 
@@ -329,11 +350,13 @@ const dataService = new DataService([
   { chainId, rpcUrl, privacyPoolAddress, startBlock }
 ]);
 
-const accounts = await AccountService.initializeWithEvents(
+const { account, errors } = await AccountService.initializeWithEvents(
   dataService,
   { mnemonic },
   pools // array of PoolInfo
 );
+// account  — AccountService instance with reconstructed pool state
+// errors   — PoolEventsError[] for any pools whose event fetch failed
 ```
 
 The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search.
