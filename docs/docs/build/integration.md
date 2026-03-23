@@ -22,7 +22,11 @@ This is the shortest path from zero to a working deposit-and-withdraw loop. Each
 2. **Initialize SDK and contract helpers.** Create a `DataService` pointed at the pool address and your RPC provider, passing the deployment `startBlock` so event scans skip genesis. Create a `ContractInteractionsService` with the signer's private key for write operations.
 3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Scan on-chain events via `DataService.getDeposits`, `DataService.getWithdrawals`, and `DataService.getRagequits` to reconstruct the account's current commitments and balances.
 4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.depositETH` (or `depositERC20` for token deposits after calling `approveERC20`), and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
-5. **Perform the relayed withdrawal.** Fetch ASP roots via `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and verify `onchainMtRoot` equals `Entrypoint.latestRoot()`. Request a relayer quote from `POST /relayer/quote` (the quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and proof `context`), then build the withdrawal proof, and submit via `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets.
+5. **Perform the relayed withdrawal.**
+   1. **Fetch ASP root and verify parity.** Call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and confirm that `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly.
+   2. **Request a relayer quote.** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`.
+   3. **Build the withdrawal proof.** Generate the ZK proof using the verified ASP root, the pool state root, and the relayer-provided context.
+   4. **Submit via relayer.** Send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets.
 6. **Refresh state after withdrawal.** Re-scan events to pick up the new change commitment. Insert it into local account state before generating another proof.
 
 ## Integration Checklist

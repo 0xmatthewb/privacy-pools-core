@@ -12,7 +12,7 @@ keywords:
   - integration
 ---
 
-Revert reason names are taken directly from the Solidity interface definitions in the contracts package.
+Revert reason names are taken directly from the Solidity interface definitions in the contracts package. This page covers integrator-facing errors. Admin and governance errors (pool registration, fee configuration, IPFS CID validation, etc.) are omitted.
 
 ## Contract Revert Reasons
 
@@ -31,7 +31,19 @@ These errors are defined in `IPrivacyPool.sol` and triggered during deposit, wit
 | `InvalidCommitment` | `ragequit` | The commitment hash from the proof is not present in the pool's state tree. |
 | `OnlyOriginalDepositor` | `ragequit` | `depositors[label] != msg.sender`. Only the address that made the original deposit can call ragequit for that commitment. |
 | `InvalidDepositValue` | `deposit` | Deposit value is `>= type(uint128).max`. |
+| `ScopeMismatch` | `withdraw` | The scope encoded in the proof does not match the pool's `SCOPE()`. Usually caused by submitting to the wrong pool contract. |
 | `PoolIsDead` | `deposit`, pool admin | The pool has been permanently suspended by the Entrypoint. |
+
+### Pool Variant Errors
+
+These errors are defined in `IPrivacyPoolSimple` (native-asset pools) and `IPrivacyPoolComplex` (ERC-20 pools).
+
+| Error | Pool Type | Description |
+|-------|-----------|-------------|
+| `InsufficientValue` | Native asset | `msg.value` is less than the required deposit amount. |
+| `FailedToSendNativeAsset` | Native asset | ETH transfer to the depositor or ragequitter failed (e.g. the recipient is a contract that reverts on `receive`). |
+| `NativeAssetNotAccepted` | ERC-20 | ETH was sent (`msg.value > 0`) to a pool that only accepts ERC-20 tokens. |
+| `NativeAssetNotSupported` | ERC-20 | Attempted to deploy or configure an ERC-20 pool with the native asset address. |
 
 ### Entrypoint Errors
 
@@ -46,6 +58,9 @@ These errors are defined in `IEntrypoint.sol` and triggered during relay, deposi
 | `MinimumDepositAmount` | `deposit` | `value < minimumDepositAmount` for the asset. |
 | `PrecommitmentAlreadyUsed` | `deposit` | The precommitment hash has already been used in a previous deposit. Increment your deposit index and recompute the precommitment. |
 | `NativeAssetTransferFailed` | `relay` | ETH transfer to the recipient or fee recipient failed. |
+| `NoRootsAvailable` | `latestRoot` | No ASP root has been published yet. Called `latestRoot()` before the first `updateRoot` transaction. Wait for the ASP to push an initial root. |
+| `InvalidPoolState` | `relay` | Post-relay balance integrity check failed. The pool's asset balance is less than expected after processing the withdrawal. |
+| `NativeAssetNotAccepted` | `receive` | ETH was sent directly to the Entrypoint contract. The Entrypoint does not accept plain ETH transfers; use `deposit()` with `msg.value` instead. |
 | `AssetMismatch` | admin | Pool asset does not match the registered asset. |
 
 ### State Errors
@@ -55,6 +70,7 @@ These errors are defined in `IState.sol` and triggered by internal state operati
 | Error | Triggered By | Description |
 |-------|-------------|-------------|
 | `NullifierAlreadySpent` | `withdraw`, `ragequit` | The commitment's nullifier has already been spent. This commitment was already exited via withdrawal or ragequit. Withdrawal and ragequit are mutually exclusive on the same commitment. |
+| `NotYetRagequitteable` | `ragequit` | The waiting period after deposit has not elapsed. The commitment cannot be ragequit until the on-chain waiting period expires. |
 | `OnlyEntrypoint` | internal | A function restricted to the Entrypoint was called by another address. |
 | `MaxTreeDepthReached` | `deposit` | The state Merkle tree has reached its maximum capacity. |
 
@@ -92,6 +108,16 @@ These are two separate Merkle trees with different sources and validation rules:
 ### Using Hex for X-Pool-Scope
 
 The `X-Pool-Scope` header must be a decimal string. Hex-encoded scope values will not match any pool (the API treats the header as a literal string lookup), and the API returns 404 rather than a validation error.
+
+```ts
+// Wrong — hex string, API returns 404
+const scope = '0x1a2b3c';
+headers['X-Pool-Scope'] = scope;
+
+// Right — decimal string
+const scope = 1715004n; // or whatever the pool scope is
+headers['X-Pool-Scope'] = scope.toString(); // "1715004"
+```
 
 ### Scanning Events from Genesis
 

@@ -20,7 +20,7 @@ slug: /build/contributing
 - `contracts`: [Solidity smart contracts](/layers/contracts)
 - `circuits`: [Zero-knowledge circuits](/layers/zk) in Circom
 - `sdk`: [TypeScript SDK](/reference/sdk) for interacting with the protocol
-- `relayer`: Note relayer service
+- `relayer`: Relay service for privacy-preserving withdrawals
 
 ## Installation
 
@@ -185,6 +185,14 @@ ENTRYPOINT_ADDRESS=
 WITHDRAWAL_VERIFIER_ADDRESS=
 RAGEQUIT_VERIFIER_ADDRESS=
 ```
+
+### SDK
+
+The SDK ships a `.env.example` with an optional `HYPERSYNC_API_KEY`. No `.env` is required to build or run the test suite.
+
+### Circuits
+
+No `.env` file is required. Circom compilation and tests run without environment configuration.
 
 ### Relayer
 
