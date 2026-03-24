@@ -21,7 +21,7 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 
 **Purpose:** End-to-end integration planning for Privacy Pools.
 
-**When to use:** Starting a new integration, onboarding to the protocol, or planning the full deposit-to-withdrawal flow for a frontend or backend.
+**When to use:** Starting a new integration, onboarding to the protocol, or planning the full deposit-to-withdrawal flow.
 
 **Skill file:** [`/agent-skills/privacy-pools-integration/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md)
 

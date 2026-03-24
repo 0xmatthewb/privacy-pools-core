@@ -7,7 +7,7 @@ Route all Privacy Pools tasks through the docs below.
 ## Key Docs
 
 - Frontend integration guide: `docs/docs/build/integration.md`
-- Agent and backend integration: `docs/docs/build/agents.md`
+- Agent integration: `docs/docs/build/agents.md`
 - Deployments and start blocks: `docs/docs/deployments.md`
 - Skill library: `docs/docs/build/skills.md`
 

@@ -1,15 +1,15 @@
 ---
-sidebar_label: Agent & Backend Integration
+sidebar_label: Agent Integration
 sidebar_position: 3
-title: Agent & Backend Integration
+title: Agent Integration
 slug: /build/agents
-description: Entry points and usage guide for autonomous agents and backend services integrating with Privacy Pools.
-keywords: [privacy pools, agent, backend, LLM, skills, automation, CLAUDE.md]
+description: Entry points, skill files, and workflows for AI coding agents integrating with Privacy Pools.
+keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
 This page links the docs, skill files, and repo entry points agents should start from.
 
-For Node or backend runtimes, initialize SDK circuits with `new Circuits({ browser: false })`. Browser-embedded agents can use the default loader. Circuit artifacts are integrity-checked before use.
+For Node.js runtimes, initialize SDK circuits with `new Circuits({ browser: false })`. Browser-embedded agents can use the default loader. Circuit artifacts are integrity-checked before use.
 
 ## Reference Table
 

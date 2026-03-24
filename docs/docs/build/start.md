@@ -3,7 +3,7 @@ sidebar_label: Start Here
 sidebar_position: 1
 title: Start Here
 description: Choose the right integration path for your Privacy Pools project.
-keywords: [privacy pools, getting started, integration, frontend, agent, backend]
+keywords: [privacy pools, getting started, integration, frontend, agent]
 ---
 
 Pick the path that matches what you are building.
@@ -19,16 +19,16 @@ You are building a wallet, dapp, or any user-facing interface that deposits, wit
 3. [SDK Utilities](/reference/sdk) -- types and functions
 4. [Protocol flows](/protocol/deposit) -- deposit, withdrawal, and ragequit mechanics
 
-## Agent or Backend Integration
+## Agent Integration
 
-You are building an autonomous agent, backend service, or LLM-powered tool that interacts with Privacy Pools programmatically.
+You are using an AI coding agent or LLM-powered tool to integrate Privacy Pools.
 
 **Read order:**
 
-1. [Agent & Backend Integration](/build/agents) -- entry points and workflows
+1. [Agent Integration](/build/agents) -- entry points and workflows
 2. [Skill Library](/build/skills) -- task-specific skill files for agents
 3. [Deployments](/deployments) -- chain addresses and `startBlock` values
-4. [Frontend Integration](/build/integration) -- the same happy-path rules apply to backends
+4. [Frontend Integration](/build/integration) -- the same integration rules apply
 
 ## Contributing
 
