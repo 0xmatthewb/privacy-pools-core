@@ -1,7 +1,7 @@
 ---
-sidebar_label: Agent Integration
+sidebar_label: Agent Workflows
 sidebar_position: 3
-title: Agent Integration
+title: Agent Workflows
 slug: /build/agents
 description: Entry points, skill files, and workflows for AI coding agents integrating with Privacy Pools.
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]

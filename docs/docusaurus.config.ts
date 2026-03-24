@@ -256,7 +256,7 @@ const config: Config = {
           title: "For AI Agents",
           items: [
             { label: "Skill Library", to: "/build/skills" },
-            { label: "Agent Integration", to: "/build/agents" },
+            { label: "Agent Workflows", to: "/build/agents" },
             { label: "llms.txt", href: "https://docs.privacypools.com/llms.txt" },
             { label: "llms-full.txt", href: "https://docs.privacypools.com/llms-full.txt" },
           ],

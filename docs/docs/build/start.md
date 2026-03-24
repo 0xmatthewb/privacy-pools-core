@@ -21,13 +21,13 @@ You are building a wallet, dapp, or any user-facing interface that deposits, wit
 | 3 | [SDK Utilities](/reference/sdk) | Types and functions |
 | 4 | [Protocol flows](/protocol/deposit) | Deposit, withdrawal, and ragequit mechanics |
 
-## Agent Integration
+## Agent Workflows
 
 You are using an AI coding agent or LLM-powered tool to integrate Privacy Pools.
 
 | # | Page | Covers |
 |---|------|--------|
-| 1 | [Agent Integration](/build/agents) | Entry points and workflows |
+| 1 | [Agent Workflows](/build/agents) | Entry points and workflows |
 | 2 | [Skill Library](/build/skills) | Task-specific skill files for agents |
 | 3 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
 | 4 | [Frontend Integration](/build/integration) | The same integration rules apply |
