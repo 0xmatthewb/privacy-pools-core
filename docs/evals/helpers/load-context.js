@@ -10,11 +10,10 @@ function loadDocs(/** @type {string[]} */ relativePaths) {
   return relativePaths
     .map((p) => {
       const resolved = path.resolve(docsRoot, p.trim());
-      try {
-        return fs.readFileSync(resolved, 'utf-8');
-      } catch (err) {
-        return `[ERROR loading ${resolved}: ${err.message}]`;
+      if (!fs.existsSync(resolved)) {
+        throw new Error(`Missing docs context: ${resolved}`);
       }
+      return fs.readFileSync(resolved, 'utf-8');
     })
     .join('\n\n---\n\n');
 }

@@ -8,13 +8,30 @@
   assert:
     - type: javascript
       value: |
-        const out = String(vars.output || output);
-        const triggers = [/amount/i, /recipient/i, /relayer/i];
-        const count = triggers.filter(r => r.test(out)).length;
-        const pass = count >= 2;
-        return { pass, score: pass ? 1 : 0, reason: pass ? `Mentions ${count} invalidation triggers` : `Only mentions ${count}/2 required invalidation triggers (amount, recipient, relayer)` };
+        const text = String(vars.output || output);
+        const required = [
+          /amount/i,
+          /recipient/i,
+          /relayer/i,
+          /extra\s*gas|extraGas/i,
+          /60 seconds|TTL|expiration/i,
+        ];
+        const passed = required.every((re) => re.test(text));
+        return {
+          pass: passed,
+          score: passed ? 1 : 0,
+          reason: passed
+            ? 'Mentions amount, recipient, relayer, extraGas, and expiration'
+            : 'Missing one or more relayer quote invalidation triggers',
+        };
     - type: javascript
       value: |
-        const out = String(vars.output || output);
-        const has = /expir|TTL|timeout/i.test(out);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions expiration' : 'Missing expiration/TTL/timeout reference' };
+        const text = String(vars.output || output);
+        const hasRequote = /re-quote|discard/i.test(text);
+        return {
+          pass: hasRequote,
+          score: hasRequote ? 1 : 0,
+          reason: hasRequote
+            ? 'Mentions re-quoting after a change'
+            : 'Missing re-quote or discard guidance',
+        };

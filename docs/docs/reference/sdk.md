@@ -354,6 +354,17 @@ interface RagequitEvent {
 
 Pool accounts are reconstructed from on-chain events with `AccountService`. When initialized from `{ mnemonic }`, the SDK may also return `legacyAccount` so migrated histories can be reconciled. Retry failed scopes with `{ service: account }` only for non-migration retries. If the original restore depended on `legacyAccount`, rerun the failed scopes with `{ mnemonic }` so legacy discovery runs again.
 
+For advanced event-collection flows, `AccountService` also accepts `poolConcurrency` in its constructor to limit how many pools are fetched in parallel while collecting events with `getEvents()`. The default is `2`.
+
+```typescript
+const accountService = new AccountService(dataService, {
+  mnemonic,
+  poolConcurrency: 4,
+});
+```
+
+`initializeWithEvents(...)` does not expose a `poolConcurrency` override; it uses the default internally.
+
 ```typescript
 import { AccountService, DataService } from "@0xbow/privacy-pools-core-sdk";
 

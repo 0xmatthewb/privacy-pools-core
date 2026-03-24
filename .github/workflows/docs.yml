@@ -32,6 +32,16 @@ jobs:
           cd docs
           yarn install --frozen-lockfile
 
+      - name: Check generated agent artifacts
+        run: |
+          cd docs
+          yarn check:agent-artifacts
+
+      - name: Run static evals
+        run: |
+          cd docs
+          yarn eval:static
+
       - name: Build website
         run: |
           cd docs

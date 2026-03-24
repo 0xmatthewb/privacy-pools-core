@@ -107,6 +107,8 @@ const retry = await AccountService.initializeWithEvents(
 
 Mnemonic-based initialization may also return `legacyAccount` during restores for migrated users.
 
+For advanced event-collection flows, the `AccountService` constructor also accepts `poolConcurrency` to limit how many pools are fetched in parallel while collecting events with `getEvents()`. The default is `2`.
+
 ### Contract Interactions
 
 ```typescript

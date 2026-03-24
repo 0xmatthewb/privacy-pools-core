@@ -6,13 +6,24 @@
     question: "What should I persist after a successful deposit?"
     context: file://helpers/context-deposit.js
   assert:
-    - type: icontains
-      value: "label"
     - type: javascript
       value: |
-        const output = String(vars.output || output);
-        const has = /committedValue|committed value/i.test(output);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions committedValue' : 'Missing committedValue or committed value' };
+        const text = String(vars.output || output);
+        const required = [
+          /label/i,
+          /committedValue|committed value/i,
+          /nullifier/i,
+          /secret/i,
+          /depositIndex|deposit index/i,
+        ];
+        const passed = required.filter((re) => re.test(text)).length === required.length;
+        return {
+          pass: passed,
+          score: passed ? 1 : 0,
+          reason: passed
+            ? 'Mentions label, committedValue, nullifier, secret, and depositIndex'
+            : 'Missing one or more required deposit persistence fields',
+        };
 
 - description: "Knows raw amount differs from committed value due to vetting fee"
   vars:
@@ -21,6 +32,15 @@
   assert:
     - type: javascript
       value: |
-        const out = String(vars.output || output);
-        const has = /vetting.*fee|vettingFeeBPS|fee.*deducted/i.test(out);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions vetting fee' : 'Missing vetting fee / vettingFeeBPS reference' };
+        const text = String(vars.output || output);
+        const hasCommittedValue = /committedValue|committed value/i.test(text);
+        const hasVettingFee = /vettingFeeBPS|vetting fee|post-fee/i.test(text);
+        const hasRawAmount = /raw deposit amount|raw amount|original amount/i.test(text);
+        const passed = hasCommittedValue && hasVettingFee && hasRawAmount;
+        return {
+          pass: passed,
+          score: passed ? 1 : 0,
+          reason: passed
+            ? 'Mentions committedValue, raw amount, and vetting fee'
+            : 'Missing committedValue, raw amount, or vetting fee reference',
+        };

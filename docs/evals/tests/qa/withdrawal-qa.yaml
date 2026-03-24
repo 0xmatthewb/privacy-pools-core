@@ -6,15 +6,24 @@
     question: "What is the difference between state root and ASP root?"
     context: file://helpers/context-withdrawal-asp.js
   assert:
-    - type: icontains
-      value: "state root"
-    - type: icontains
-      value: "ASP root"
     - type: javascript
       value: |
-        const out = String(vars.output || output);
-        const has = /[Mm]erkle/i.test(out);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions Merkle' : 'Missing Merkle tree reference' };
+        const text = String(vars.output || output);
+        const required = [
+          /state root/i,
+          /ASP root/i,
+          /currentRoot/i,
+          /latestRoot/i,
+        ];
+        const hasTreeContents = /commitment hashes|approved labels/i.test(text);
+        const passed = required.every((re) => re.test(text)) && hasTreeContents;
+        return {
+          pass: passed,
+          score: passed ? 1 : 0,
+          reason: passed
+            ? 'Distinguishes the pool currentRoot from the ASP latestRoot and tree contents'
+            : 'Missing state root, ASP root, or tree-content distinction',
+        };
 
 - description: "Knows processooor must be entrypointAddress for relayed withdrawal"
   vars:
@@ -23,6 +32,15 @@
   assert:
     - type: javascript
       value: |
-        const out = String(vars.output || output);
-        const has = /entrypointAddress|Entrypoint.*address/i.test(out);
-        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions entrypointAddress' : 'Missing entrypointAddress for relayed withdrawal' };
+        const text = String(vars.output || output);
+        const hasProcessooor = /processooor/i.test(text);
+        const hasEntrypoint = /entrypointAddress|Entrypoint.*address/i.test(text);
+        const hasRelay = /relay/i.test(text);
+        const passed = hasProcessooor && hasEntrypoint && hasRelay;
+        return {
+          pass: passed,
+          score: passed ? 1 : 0,
+          reason: passed
+            ? 'Mentions processooor, entrypointAddress, and relayed withdrawal'
+            : 'Missing processooor, entrypointAddress, or relayed withdrawal reference',
+        };
