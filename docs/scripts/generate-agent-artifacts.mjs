@@ -205,7 +205,7 @@ ${skillList}
 
 ## Workflow Rules
 
-- Use relayed withdrawals via \`fastrelay.xyz\` as the standard app withdrawal path because that is the privacy-preserving withdrawal path. Do not design normal frontend flows around direct withdrawal.
+- Use relayed withdrawals as the standard app withdrawal path: \`fastrelay.xyz\` on production chains and \`testnet-relayer.privacypools.com\` on published testnets. Do not design normal frontend flows around direct withdrawal.
 - If a task explicitly implements the advanced direct path, \`PrivacyPool.withdraw()\` requires \`processooor == msg.sender\`, so funds go to the signer. The relay path instead uses \`Entrypoint.relay()\` with \`processooor = entrypointAddress\` and recipient routing encoded in \`withdrawal.data\`.
 - Frontends should use mnemonic-backed pool accounts reconstructed from on-chain events. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI where raw secrets can be exposed.
 - Only expose private withdrawal from approved non-zero pool accounts, and resolve plus validate the recipient before quote or proof generation.

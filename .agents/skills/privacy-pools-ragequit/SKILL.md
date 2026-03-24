@@ -27,7 +27,7 @@ Implement the ragequit (public exit) flow for Privacy Pools. Ragequit allows a d
 
 ## Key Steps
 
-1. **Generate commitment proof.** Use `sdk.proveCommitment()` with the commitment data for the target pool account.
+1. **Generate commitment proof.** Call `sdk.proveCommitment(value, label, nullifier, secret)` with the target pool account's commitment fields.
 2. **Call ragequit.** Submit `contracts.ragequit(commitmentProof, privacyPoolAddress)`.
 3. **Handle the on-chain event.** Confirm the transaction settled and update local state to reflect the spent nullifier.
 

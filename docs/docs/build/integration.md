@@ -22,7 +22,7 @@ This is the shortest path from zero to a working deposit-and-withdraw loop. Each
 
 1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
 2. **Initialize SDK and contract helpers.** Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block. Create a `ContractInteractionsService` for write operations via `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)`.
-3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Reconstruct pool state via `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` — this scans on-chain events and returns an `AccountService` with the account's current commitments and balances (see [SDK Utilities](/reference/sdk#account-reconstruction) for the full return type).
+3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Reconstruct pool state via `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` — this scans on-chain events and returns `{ account, legacyAccount?, errors }` so migration-aware restores can reconcile older note histories when needed (see [SDK Utilities](/reference/sdk#account-reconstruction) for the full return type).
 4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.depositETH` (or `depositERC20` for token deposits after calling `approveERC20`), and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
 5. **Perform the relayed withdrawal.**
    1. **Fetch ASP root and verify parity.** Call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and confirm that `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly.
@@ -90,7 +90,7 @@ const deposits = await dataService.getDeposits({
 
 // 8. Withdrawal: generate proof and submit via relayer
 //    See /reference/sdk for proveWithdrawal() and /protocol/withdrawal
-//    for the full relayed withdrawal flow via https://fastrelay.xyz
+//    for the full relayed withdrawal flow via the production or testnet relayer host
 ```
 
 See [SDK Utilities](/reference/sdk) for the full API surface.
@@ -139,6 +139,7 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. Feature-detect this at runtime based on wallet capability.
 - Compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing.
+- If account reconstruction returns `legacyAccount`, keep it long enough to reconcile migrated commitments for older users. If only some scopes fail, retry those scopes with `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)`.
 - If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
 
 ### Deposit UX

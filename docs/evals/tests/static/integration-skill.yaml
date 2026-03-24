@@ -59,3 +59,22 @@
       value:
         - "mnemonic"
         - "pool account"
+
+- description: "Integration skill differentiates production and testnet relayer hosts"
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
+  assert:
+    - type: contains
+      value: "fastrelay.xyz"
+    - type: contains
+      value: "testnet-relayer.privacypools.com"
+
+- description: "Integration skill mentions migration-aware recovery"
+  vars:
+    skillPath: "privacy-pools-integration/SKILL.md"
+  assert:
+    - type: icontains-any
+      value:
+        - "legacyAccount"
+        - "migration"
+        - "legacy"

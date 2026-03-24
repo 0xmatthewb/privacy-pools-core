@@ -11,6 +11,8 @@ keywords: [privacy pools, agent, backend, LLM, skills, automation, CLAUDE.md]
 
 Privacy Pools provides structured entry points for autonomous agents and backend services. This page explains how to discover and use them.
 
+If an agent generates proofs in Node or another backend runtime, initialize SDK circuits with `new Circuits({ browser: false })` so artifacts load from disk. Browser-embedded agents can use the default fetch-based loader. In both cases, downloaded circuit artifacts are SHA-256 integrity checked before use.
+
 ## Reference Table
 
 | Resource | URL | Purpose |

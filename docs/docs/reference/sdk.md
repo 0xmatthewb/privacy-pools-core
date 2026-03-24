@@ -15,6 +15,10 @@ keywords:
 For production integration guidance, see [Frontend Integration](/build/integration).
 :::
 
+:::note Branch Status
+This page tracks the current `docs-ai` branch, which includes the published npm `1.2.0` SDK changes plus later branch fixes such as `getStateRoot()` reading the pool's `currentRoot()`.
+:::
+
 
 ## `PrivacyPoolSDK`
 
@@ -28,13 +32,21 @@ The SDK exports a concrete `Circuits` class that satisfies this interface:
 ```typescript
 import { PrivacyPoolSDK, Circuits } from "@0xbow/privacy-pools-core-sdk";
 
-const circuits = new Circuits();
+// Browser / frontend
+const browserCircuits = new Circuits();
+
+// Node / backend
+const nodeCircuits = new Circuits({ browser: false });
+
+const circuits = typeof window === "undefined" ? nodeCircuits : browserCircuits;
 const sdk = new PrivacyPoolSDK(circuits);
 ```
 
 ### `Circuits`
 
-The `Circuits` class is the concrete implementation of `CircuitsInterface` used internally by the SDK for generating and verifying Groth16 proofs (commitment and withdrawal circuits). Import it from the SDK package and pass it to the `PrivacyPoolSDK` constructor as shown above.
+The `Circuits` class is the concrete implementation of `CircuitsInterface` used internally by the SDK for generating and verifying Groth16 proofs (commitment and withdrawal circuits). Use the default `new Circuits()` in browser environments. In Node or backend contexts, pass `{ browser: false }` so artifacts load from disk rather than `fetch`. You can also override `baseUrl` when serving artifacts from a custom location.
+
+Every downloaded circuit artifact (`wasm`, `vkey`, and `zkey`) is verified against a registered SHA-256 digest before use, including when `baseUrl` is overridden.
 
 ### Methods
 
@@ -219,6 +231,8 @@ function generateMerkleProof(
 ): LeanIMTMerkleProof<bigint>;
 ```
 
+`generateMasterKeys` preserves the full 32-byte HD private-key entropy by deriving mnemonic seeds as `bigint` values rather than JavaScript `number`s.
+
 ## Integration Types
 
 Subset most relevant to the methods above and the integration guides.
@@ -258,6 +272,14 @@ interface Commitment {
   };
 }
 
+interface PoolAccount {
+  label: Hash;
+  deposit: AccountCommitment;
+  children: AccountCommitment[];
+  ragequit?: RagequitEvent;
+  isMigrated?: boolean;
+}
+
 interface AccountCommitment {
   hash: Hash;
   value: bigint;
@@ -267,6 +289,7 @@ interface AccountCommitment {
   blockNumber: bigint;
   timestamp?: bigint;
   txHash: Hex;
+  isMigration?: boolean;
 }
 
 interface WithdrawalProofInput {
@@ -341,7 +364,7 @@ interface RagequitEvent {
 
 ## Account Reconstruction
 
-Pool accounts are reconstructed from on-chain events using a mnemonic. The SDK provides `AccountService` for this:
+Pool accounts are reconstructed from on-chain events with `AccountService`. The mnemonic path builds the current bigint-safe account view and may also return a legacy recovery view so older histories can be reconciled during key-migration restores. The retry path accepts an existing `AccountService` so failed scopes can be retried without rescanning everything.
 
 ```typescript
 import { AccountService, DataService } from "@0xbow/privacy-pools-core-sdk";
@@ -350,15 +373,23 @@ const dataService = new DataService([
   { chainId, rpcUrl, privacyPoolAddress, startBlock }
 ]);
 
-const { account, errors } = await AccountService.initializeWithEvents(
+const { account, legacyAccount, errors } = await AccountService.initializeWithEvents(
   dataService,
   { mnemonic },
   pools // array of PoolInfo
 );
-// account  — AccountService instance with reconstructed pool state
-// errors   — PoolEventsError[] for any pools whose event fetch failed
+// account       — current bigint-safe AccountService instance
+// legacyAccount — optional legacy AccountService for migration-aware restores
+// errors        — PoolEventsError[] for any pools whose event fetch failed
+
+const retry = await AccountService.initializeWithEvents(
+  dataService,
+  { service: account },
+  failedPools
+);
+// retry.account — updated AccountService after retrying only the missing scopes
 ```
 
-The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search.
+The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search. On mnemonic-based initialization, the SDK also scans the legacy derivation path and discovers migrated commitments before continuing with safe-key deposits and withdrawals.
 
-After initialization, refresh ASP review status across every loaded chain/scope combination to determine which accounts are eligible for private withdrawal.
+After initialization, refresh ASP review status across every loaded chain/scope combination to determine which accounts are eligible for private withdrawal. Persist zero-value change commitments for history alignment, but do not treat them as spendable balances.

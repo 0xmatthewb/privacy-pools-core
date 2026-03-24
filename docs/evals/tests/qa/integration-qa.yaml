@@ -23,3 +23,22 @@
         const out = String(vars.output || output);
         const has = /mnemonic|pool account/i.test(out);
         return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions mnemonic or pool account' : 'Missing mnemonic or pool account reference' };
+
+- description: "Uses the published testnet relayer host for Sepolia-style guidance"
+  vars:
+    question: "Which relayer host should I use on published testnets like Sepolia?"
+    context: file://helpers/context-withdrawal-relayer.js
+  assert:
+    - type: icontains
+      value: "testnet-relayer.privacypools.com"
+
+- description: "Mentions migration-aware recovery for older mnemonic restores"
+  vars:
+    question: "How should I handle older mnemonic-based account restores in the SDK?"
+    context: file://helpers/context-deposit-withdrawal.js
+  assert:
+    - type: javascript
+      value: |
+        const out = String(vars.output || output);
+        const has = /legacyAccount|migration|legacy/i.test(out);
+        return { pass: has, score: has ? 1 : 0, reason: has ? 'Mentions migration-aware recovery' : 'Missing legacy or migration recovery guidance' };

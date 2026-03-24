@@ -198,13 +198,13 @@ Always verify ASP root parity before submitting: `BigInt(onchainMtRoot) === Entr
 
 ### Change Commitment Refresh
 
-After a partial withdrawal, a new zero-value or reduced-value change commitment is inserted into the state tree. Before generating the next withdrawal proof from the same pool account:
+After a withdrawal, a new zero-value or reduced-value change commitment may be inserted into the state tree. Before generating the next withdrawal proof from the same pool account:
 
 1. Re-fetch state tree leaves from the [ASP API](/reference/asp-api) or reconstruct via `DataService`
 2. Rebuild the Merkle proof with the updated leaf set
 3. Verify the reconstructed root matches the pool's `currentRoot()`
 
-Using stale leaves after a partial withdrawal will produce an invalid state root.
+Persist zero-value change commitments for account-history reconstruction, but do not surface them as spendable balances. Using stale leaves after a withdrawal will produce an invalid state root.
 
 ### Context Generation
 

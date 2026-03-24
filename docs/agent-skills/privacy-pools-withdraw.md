@@ -12,7 +12,7 @@ Implement the relayed withdrawal flow for Privacy Pools. This is the privacy-pre
 4. **Verify ASP root parity.** Confirm `BigInt(onchainMtRoot) === Entrypoint.latestRoot()` before proceeding.
 5. **Request relayer quote.** Call `POST /relayer/quote` on the review step. The quote returns a signed `feeCommitment` valid for approximately 60 seconds, along with `withdrawalData`.
 6. **Generate withdrawal proof.** Build the withdrawal object with `processooor = entrypointAddress` and set `withdrawal.data` to the relayer quote's `withdrawalData`. The proof `context` is derived from this same `withdrawalData`. Generate the ZK proof.
-7. **Submit via relayer.** Call `POST /relayer/request` before the quote expires. The relayer submits via `Entrypoint.relay()`.
+7. **Submit via relayer.** Call `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on published testnets. The relayer submits via `Entrypoint.relay()`.
 8. **Verify and update state.** Confirm the transaction settled. Insert the change commitment back into the pool account tree.
 
 ## Quote Lifecycle

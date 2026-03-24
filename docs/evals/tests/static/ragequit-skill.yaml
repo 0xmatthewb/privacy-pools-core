@@ -45,3 +45,10 @@
       value:
         - "unconditional"
         - "no ASP"
+
+- description: "Ragequit skill documents the positional proveCommitment signature"
+  vars:
+    skillPath: "privacy-pools-ragequit/SKILL.md"
+  assert:
+    - type: contains
+      value: "proveCommitment(value, label, nullifier, secret)"

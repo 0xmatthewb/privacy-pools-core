@@ -127,9 +127,9 @@ When using `DataService` for event reconstruction, always initialize with the de
 
 Each precommitment hash can only be used once. If a deposit transaction fails or is dropped, increment the deposit index and compute a new precommitment rather than retrying with the same one. The contract will revert with `PrecommitmentAlreadyUsed`.
 
-### Forgetting to Refresh After Partial Withdrawal
+### Forgetting to Refresh After a Withdrawal
 
-After a partial withdrawal, a new change commitment is inserted into the state tree. Before generating the next withdrawal proof, re-fetch state tree leaves and rebuild the Merkle proof. Using stale leaves will produce an invalid state root.
+After a withdrawal, a new reduced-value or zero-value change commitment may be inserted into the state tree. Before generating the next withdrawal proof, re-fetch state tree leaves and rebuild the Merkle proof. Persist zero-value change commitments for history reconstruction, but do not treat them as spendable balances. Using stale leaves will produce an invalid state root.
 
 ### Using Raw Event Value Instead of Committed Value
 
