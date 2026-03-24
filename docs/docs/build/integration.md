@@ -12,7 +12,8 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 1. [Deployments](/deployments): chain-specific addresses and `startBlock`
 2. [SDK Utilities](/reference/sdk): SDK types and functions
 3. [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit): protocol behavior
-4. [Skill Library](/build/skills): task-specific agent skill files for each integration workflow
+4. [UX Patterns](/build/ux-patterns): account management, deposit/withdrawal/ragequit frontend patterns
+5. [Skill Library](/build/skills): task-specific agent skill files
 
 ## Minimal Frontend Recipe
 
@@ -154,106 +155,13 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 8. Resolve the final recipient before review, fetch relayer details plus `minWithdrawAmount`, and request the relayer quote on the review step. Discard the quote whenever amount, recipient, relayer, or optional gas-token-drop settings change.
 9. Keep ragequit separate and clearly public.
 
-## Frontend Defaults
+## Next Steps
 
-- Track each deposit and each post-withdrawal change commitment inside the same pool-account tree.
-- Disable withdraw CTAs unless wallet is connected, account state is loaded, at least one relayer is available, and there is at least one approved non-zero pool account.
-- Filter withdraw selectors to approved non-zero accounts for the active chain/scope and pick a sensible default account automatically.
-- Parse confirmed receipts and persist them in pool-account state. This avoids exposing raw note material in copy/paste or clipboard flows.
-- Gate wallet-signature derivation by wallet capability; many smart/contract wallets should use manual mnemonic onboarding instead.
-- After a successful private withdrawal, insert the new change commitment back into local account state before allowing another spend.
-- Do not log recovery phrases, signatures, nullifiers, secrets, or raw note material to analytics or error tracking.
-- Handle wallet rejections and user cancellations gracefully without retry loops or error telemetry.
-
-## Recommended UX Details
-
-### Account and Recovery
-
-- Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. Feature-detect this at runtime based on wallet capability.
-- Compare two signatures of the same payload before deriving. If they differ, use manual mnemonic onboarding. Require the recovery phrase to be saved before continuing.
-- If account reconstruction returns `legacyAccount`, keep it during restores for migrated users.
-  - If some scopes fail during a legacy restore, retry those scopes with `AccountService.initializeWithEvents(dataService, { mnemonic }, failedPools)` so legacy discovery runs again.
-  - For non-migration retries, use `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)` instead.
-- If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
-
-### Deposit UX
-
-- If you expose `Use max`, reserve gas for native-asset deposits and account for vetting-fee math before populating the amount field.
-- If the wallet supports batching, collapse approval + deposit into one action. The same pattern extends to stake-then-deposit flows for alternative input tokens as long as the final deposited asset and expected amount are explicit in the review UI.
-- Parse the confirmed `Deposited` event immediately and store the resulting pool account locally rather than waiting for a later rescan.
-- Tell the user that confirmed deposits may take time to appear in activity views or become ASP-approved.
-
-For the full deposit protocol mechanics, see [Deposit](/protocol/deposit).
-
-### Private Withdrawal UX
-
-- Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution. Display reverse ENS alongside the resolved address. Unresolved input must block submit.
-- Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`. If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
-- Use `GET /{chainId}/public/deposits-larger-than` to show an anonymity-set estimate while the user edits the amount.
-- Request the signed `feeCommitment` only after the final recipient is known on review.
-- Request the relayer quote only when the review screen opens, keep a visible countdown, and if the quote refreshes because inputs changed or time elapsed, require the user to confirm again.
-- Treat `extraGas` as an optional gas-token drop for supported non-native assets. Quote invalidation and fee display must include it.
-- If proof generation takes noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof`.
-
-For the full withdrawal protocol mechanics, see [Withdrawal](/protocol/withdrawal).
-
-### Ragequit UX
-
-- Keep ragequit on its own action path with a clear warning that it is a public exit.
-- Ragequit returns the full balance to the original depositor address. It does not send funds to a separate recipient.
-
-For the full ragequit protocol mechanics, see [Ragequit](/protocol/ragequit).
-
-## API Hosts
-
-| Service | Network scope | Base URL |
-|---|---|---|
-| ASP API | Production EVM chains | `https://api.0xbow.io` |
-| ASP API | Published testnets | `https://dw.0xbow.io` |
-| Relayer API | Production EVM chains | `https://fastrelay.xyz` |
-| Relayer API | Published testnets | `https://testnet-relayer.privacypools.com` |
-
-ASP API docs: `https://api.0xbow.io/api-docs`
-
-`request.0xbow.io` is a partner-only host and does not serve public `mt-roots` / `mt-leaves` endpoints.
-For public ASP reads, use `api.0xbow.io` (mainnet chains) or `dw.0xbow.io` (testnet chains).
-
-## Critical API Endpoints
-
-| Endpoint | Purpose |
+| Topic | Page |
 |---|---|
-| `GET /{chainId}/public/mt-roots` | Fetch ASP `mtRoot` and `onchainMtRoot` (requires decimal `X-Pool-Scope`) |
-| `GET /{chainId}/public/mt-leaves` | Fetch ASP labels and state tree leaves for proof construction (requires decimal `X-Pool-Scope`) |
-| `POST /relayer/quote` | Get relay fee quote and signed `feeCommitment` |
-| `GET /relayer/details` | Fetch relayer config (`feeReceiverAddress`, fee bounds, asset support) |
-| `POST /relayer/request` | Submit relayed withdrawal before quote expiry |
-
-## Required Safety Checks
-
-| Check | Requirement |
-|---|---|
-| `X-Pool-Scope` header | Must be a decimal bigint string, not hex |
-| State root source | Read from `IPrivacyPool.currentRoot()`, not `Entrypoint.latestRoot()` |
-| ASP root parity | `onchainMtRoot` must equal `Entrypoint.latestRoot()` exactly before proof generation |
-| Event scan start | Include the deployment `startBlock` in `ChainConfig` entries |
-| Withdrawal amount | Must be `> 0` and `<=` commitment value |
-| Deposit minimum | Check `minimumDepositAmount` before submitting deposits |
-| Relayed withdrawal | `withdrawal.processooor` must equal the Entrypoint address; recipient and fee routing come from `withdrawal.data` |
-| Quote TTL | `feeCommitment` expires in ~60s; keep quote and request near-contiguous; re-quote on form changes |
-| Post-withdrawal | Refresh leaves before generating the next proof |
-| Receipt timeout | Use a generous `waitForTransactionReceipt` timeout (production uses 300s) |
-
-## Common Failure Modes
-
-| Error | Typical cause | Immediate action |
-|---|---|---|
-| `IncorrectASPRoot` | ASP root mismatch (`onchainMtRoot` parity not satisfied) | Re-fetch `mt-roots` + `mt-leaves`, use `onchainMtRoot`, regenerate proof |
-| `MERKLE_ERROR` | Leaf missing from provided leaves (wrong scope/pool or stale data) | Verify scope and pool, refresh leaves, rebuild Merkle proofs |
-| `InvalidProcessooor` | Relayed withdrawal payload built with the wrong `processooor` | Rebuild the withdrawal with `processooor = entrypointAddress` and refresh the relayer quote if needed |
-| `NullifierAlreadySpent` | Commitment already exited via withdrawal or ragequit | Stop retrying that commitment and select another spendable commitment |
-| `PrecommitmentAlreadyUsed` | Duplicate deposit precommitment / index reuse | Increment deposit index, recompute secrets/precommitment, resubmit |
-| `ContextMismatch` | Wrong `withdrawal.data` or `processooor` caused the context hash to differ | Rebuild the `Withdrawal` object and re-derive context |
-| `UnknownStateRoot` | State root expired from the 64-slot circular buffer | Re-fetch the pool's `currentRoot()` and regenerate the proof |
-| `InvalidTreeDepth` | Tree depth exceeds circuit maximum | Use `32n` for both state and ASP tree depth |
-| `InvalidDepositValue` | Deposit value exceeds `type(uint128).max` | Reduce the deposit amount |
+| UX patterns for accounts, deposits, withdrawals, and ragequit | [UX Patterns](/build/ux-patterns) |
+| ASP API endpoints, hosts, and response shapes | [ASP API Reference](/reference/asp-api) |
+| Relayer quote, request, and details endpoints | [Relayer API Reference](/reference/relayer-api) |
+| Contract errors, safety checks, and common mistakes | [Errors and Constraints](/reference/errors) |
+| SDK types, methods, and account reconstruction | [SDK Utilities](/reference/sdk) |
 
