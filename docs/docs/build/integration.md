@@ -7,8 +7,6 @@ description: Step-by-step guide for integrating Privacy Pools deposits, withdraw
 keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integration]
 ---
 
-# Frontend Integration
-
 ## Key References
 
 1. [Deployments](/deployments): chain-specific addresses and `startBlock`

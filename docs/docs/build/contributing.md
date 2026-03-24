@@ -7,8 +7,6 @@ description: How to set up the Privacy Pools monorepo, run tests, and contribute
 keywords: [privacy pools, contributing, monorepo, testing, development]
 ---
 
-# Contributing
-
 ## Prerequisites
 
 - Node.js (v20 or later)

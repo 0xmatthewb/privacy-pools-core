@@ -6,8 +6,6 @@ description: Choose the right integration path for your Privacy Pools project.
 keywords: [privacy pools, getting started, integration, frontend, agent, backend]
 ---
 
-# Start Here
-
 Pick the path that matches what you are building.
 
 ## Frontend or App Integration

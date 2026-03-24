@@ -7,8 +7,6 @@ description: Task-specific skill files that agents can load for Privacy Pools in
 keywords: [privacy pools, skills, agent, deposit, withdrawal, ragequit, SKILL.md]
 ---
 
-# Skill Library
-
 Skills are focused, task-specific instruction files that agents can load to complete Privacy Pools integration work. Each skill contains the context, rules, and references an agent needs for a single workflow.
 
 ## How to Use Skills

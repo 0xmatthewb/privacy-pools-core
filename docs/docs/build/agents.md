@@ -7,8 +7,6 @@ description: Entry points and usage guide for autonomous agents and backend serv
 keywords: [privacy pools, agent, backend, LLM, skills, automation, CLAUDE.md]
 ---
 
-# Agent & Backend Integration
-
 This page links the docs, skill files, and repo entry points agents should start from.
 
 For Node or backend runtimes, initialize SDK circuits with `new Circuits({ browser: false })`. Browser-embedded agents can use the default loader. Circuit artifacts are integrity-checked before use.
