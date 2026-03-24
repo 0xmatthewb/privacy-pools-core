@@ -17,7 +17,7 @@ Privacy Pools supports two withdrawal paths, but frontend integrations should bu
 1. **Relayed Withdrawal**: A relayer submits `Entrypoint.relay()` for the user. This is the privacy-preserving frontend path.
 2. **Direct Withdrawal**: The user submits `PrivacyPool.withdraw()` directly. This is an advanced non-private signer-only path.
 
-Both paths require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership. This page documents both paths, but frontend integrations should treat relayed withdrawal as the standard app flow.
+Both paths require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership. Frontend integrations should treat relayed withdrawal as the standard app flow.
 
 :::info Integration
 For production integration guidance, see [Frontend Integration](/build/integration).

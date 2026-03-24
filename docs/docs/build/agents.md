@@ -36,11 +36,11 @@ The [Skill Library](/build/skills) provides four task-specific skill files that 
 | `privacy-pools-withdraw` | [`/agent-skills/privacy-pools-withdraw/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md) | Relayed withdrawal implementation |
 | `privacy-pools-ragequit` | [`/agent-skills/privacy-pools-ragequit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md) | Ragequit (public exit) implementation |
 
-Each skill is a self-contained markdown document with structured sections (purpose, instructions, references) that agents can parse without special tooling.
+Each skill is a markdown file with task-specific instructions and references.
 
-## Skill Discovery Convention
+## Skill File Locations
 
-The `.agents/skills/` directory at the repository root follows the emerging convention for agent-discoverable skill files:
+The repo-local skill files live under `.agents/skills/`:
 
 ```
 .agents/
@@ -90,8 +90,8 @@ done
 For agents that ingest a single document, two corpus files are available:
 
 - [`llms.txt`](https://docs.privacypools.com/llms.txt) -- lightweight site index with page titles and URLs. Good for quick orientation or retrieval-augmented pipelines that fetch pages on demand.
-- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt) -- complete corpus with all docs pages inlined. Highest-value content loads first. Best when the agent can consume the full context in one pass.
+- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt) -- complete corpus with all docs pages inlined. Best when the agent can consume the full context in one pass.
 
 Individual skill files can also be fetched directly by URL (e.g., `https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md`) without loading the full corpus.
 
-IDE-based agents such as Cursor, Copilot, and Windsurf can discover skill files from the `.agents/skills/` directory at the repository root. Each subdirectory contains a `SKILL.md` that the agent can load as workspace context.
+IDE-based agents such as Cursor, Copilot, and Windsurf can discover skill files from the `.agents/skills/` directory at the repository root.

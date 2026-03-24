@@ -13,7 +13,7 @@ Skills are focused, task-specific instruction files that agents can load to comp
 
 ## How to Use Skills
 
-Load the skill file for the task you are working on. Each skill is a self-contained markdown document hosted at a stable URL. Agents can fetch and read the skill directly, or human developers can point their agent session at the relevant skill.
+Load the skill file for the task you are working on. Each skill is available at a hosted URL and as a repo-local file.
 
 Skills complement the docs -- they do not replace them. For the full integration guide, see [Frontend Integration](/build/integration). For SDK and API reference, see the [Reference](/reference/sdk) pages.
 
