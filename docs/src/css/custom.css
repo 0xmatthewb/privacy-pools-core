@@ -586,8 +586,24 @@ html[data-theme="dark"] .header-github-link::before {
   filter: invert(1);
 }
 
-.header-github-link:hover {
-  opacity: 0.7;
+.navbar__items .header-github-link {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  transition: background-color var(--pp-transition);
+}
+
+.navbar__items .header-github-link:hover {
+  background: var(--ifm-color-emphasis-200) !important;
+}
+
+/* Consistent spacing for right-side navbar items */
+.navbar__items--right {
+  gap: 0.375rem;
 }
 
 /* Hide external-link icon on navbar items */
@@ -1387,6 +1403,23 @@ html[data-theme="dark"] .theme-doc-toc-mobile ul[class*="tableOfContents"] {
     --ifm-h2-font-size: 1.25rem;
   }
 
+  /* Show color-mode toggle + search in navbar at tablet/mobile */
+  div[class*="colorModeToggle"] {
+    display: flex !important;
+    flex-shrink: 0;
+  }
+
+  .navbar__items--right {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Pull search back into normal flex flow (Docusaurus makes it absolute) */
+  div[class*="navbarSearchContainer"] {
+    position: static !important;
+  }
+
   /* Search button on mobile — match Copy page width */
   button.aa-DetachedSearchButton {
     min-width: 140px;
@@ -1412,6 +1445,17 @@ html[data-theme="dark"] .theme-doc-toc-mobile ul[class*="tableOfContents"] {
     gap: 1rem;
     flex-wrap: wrap;
     justify-content: center;
+  }
+}
+
+/* On small mobile, hide GitHub + toggle from navbar (they live in the sidebar) */
+@media (max-width: 576px) {
+  .navbar__items .header-github-link {
+    display: none !important;
+  }
+
+  div[class*="colorModeToggle"] {
+    display: none !important;
   }
 }
 
