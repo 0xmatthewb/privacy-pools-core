@@ -17,6 +17,8 @@
     "check:agent-artifacts": "yarn generate:agent-artifacts && git -C .. diff --exit-code -- AGENTS.md CLAUDE.md .agents/skills docs/static/agent-skills docs/agent-skills/manifest.json",
     "eval:static": "promptfoo eval -c evals/promptfooconfig.static.yaml",
     "eval:qa": "promptfoo eval -c evals/promptfooconfig.qa.yaml",
+    "eval:qa:openai": "promptfoo eval -c evals/promptfooconfig.qa.openai.yaml",
+    "eval:qa:anthropic": "promptfoo eval -c evals/promptfooconfig.qa.anthropic.yaml",
     "eval": "yarn eval:static && yarn eval:qa"
   },
   "dependencies": {

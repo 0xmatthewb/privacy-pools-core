@@ -1,12 +1,11 @@
 # Privacy Pools - QA evaluation against docs context
 # Tests LLM answers to protocol questions using docs as context.
-# Run: yarn eval:qa
-# Requires OPENAI_API_KEY and ANTHROPIC_API_KEY env vars.
+# Run: yarn eval:qa:anthropic
+# Requires ANTHROPIC_API_KEY env var.
 
-description: "Privacy Pools - QA evaluation against docs context"
+description: "Privacy Pools - QA evaluation against docs context (Anthropic)"
 
 providers:
-  - id: openai:responses:gpt-5.4
   - id: anthropic:messages:claude-opus-4-6
 
 prompts:
