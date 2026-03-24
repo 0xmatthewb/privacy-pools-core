@@ -21,7 +21,7 @@ Implement the deposit flow for Privacy Pools, covering ETH and ERC20 assets.
 
 ## Key Steps
 
-1. **Set up account.** Create or load a mnemonic-backed pool account. Derive deposit secrets from mnemonic, scope, and depositIndex. If account recovery returns `legacyAccount`, keep it around until migrated commitments have been reconciled.
+1. **Set up account.** Create or load a mnemonic-backed pool account. Derive deposit secrets from mnemonic, scope, and depositIndex. If account recovery returns `legacyAccount`, keep it during restores for migrated users.
 2. **Compute precommitment.** Hash the nullifier and secret to produce the precommitment value.
 3. **Check minimum deposit.** Query `getAssetConfig` for `minimumDepositAmount`. Reject deposits below this threshold.
 4. **Approve token (ERC20 only).** Call `token.approve(entrypointAddress, amount)` before depositing ERC20 assets.

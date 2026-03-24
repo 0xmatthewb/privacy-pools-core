@@ -24,7 +24,7 @@ Plan and implement an end-to-end Privacy Pools integration, covering deposit, wi
 ## Key Concepts
 
 - **Relayed withdrawal is the standard path.** Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on published testnets via `Entrypoint.relay()`. Direct `PrivacyPool.withdraw()` is an advanced escape hatch, not a default UX.
-- **Mnemonic-backed pool accounts.** Reconstruct pool accounts from on-chain events using a mnemonic seed. `AccountService.initializeWithEvents(...)` can also return `legacyAccount` for migration-aware restores. Never expose raw secrets in clipboard or copy/paste flows.
+- **Mnemonic-backed pool accounts.** Reconstruct pool accounts from on-chain events using a mnemonic seed. `AccountService.initializeWithEvents(...)` may also return `legacyAccount` during restores for migrated users. Never expose raw secrets in clipboard or copy/paste flows.
 - **ASP root parity.** Before generating a withdrawal proof, verify that the ASP root matches the on-chain value from `Entrypoint.latestRoot()`.
 - **Post-fee accounting.** The `committedValue` from the `Deposited` event reflects the post-vetting-fee amount. Always use this value, not the raw deposit `amount`.
 

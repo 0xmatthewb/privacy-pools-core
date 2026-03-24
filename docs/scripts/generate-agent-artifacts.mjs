@@ -207,7 +207,7 @@ ${skillList}
 
 - Use relayed withdrawals as the standard app withdrawal path: \`fastrelay.xyz\` on production chains and \`testnet-relayer.privacypools.com\` on published testnets. Do not design normal frontend flows around direct withdrawal.
 - If a task explicitly implements the advanced direct path, \`PrivacyPool.withdraw()\` requires \`processooor == msg.sender\`, so funds go to the signer. The relay path instead uses \`Entrypoint.relay()\` with \`processooor = entrypointAddress\` and recipient routing encoded in \`withdrawal.data\`.
-- Frontends should use mnemonic-backed pool accounts reconstructed from on-chain events. If \`AccountService.initializeWithEvents(...)\` returns \`legacyAccount\`, keep it available during migration-aware restores for older users. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI where raw secrets can be exposed.
+- Frontends should use mnemonic-backed pool accounts reconstructed from on-chain events. If \`AccountService.initializeWithEvents(...)\` returns \`legacyAccount\`, keep it during restores for migrated users. Never expose raw secrets in clipboard or copy/paste flows.
 - Only expose private withdrawal from approved non-zero pool accounts, and resolve plus validate the recipient before quote or proof generation.
 - Request relayer quotes on the review step. If amount, recipient, relayer, or optional gas-token drop changes, or the quote expires, re-quote and require reconfirmation.
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload twice. Require a backup step. Otherwise fall back to manual mnemonic create/load and sanitize recovery phrase input.

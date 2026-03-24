@@ -133,7 +133,7 @@ After a successful deposit, parse the `Deposited` event and persist the followin
 | `nullifier` | Locally generated | Required to reconstruct the commitment and generate proofs |
 | `secret` | Locally generated | Required to reconstruct the commitment and generate proofs |
 
-Store these in mnemonic-backed account state rather than surfacing raw secrets to the user. This keeps secret-bearing notes out of copy/paste flows, clipboard surfaces, and other XSS-prone UI.
+Store these in mnemonic-backed account state rather than surfacing raw secrets to the user. This avoids exposing raw secrets in copy/paste or clipboard flows.
 
 ### Account and Recovery
 

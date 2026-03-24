@@ -105,7 +105,7 @@ const retry = await AccountService.initializeWithEvents(
 );
 ```
 
-Mnemonic-based initialization may also return `legacyAccount` so older note histories can be reconciled during migration-aware restores.
+Mnemonic-based initialization may also return `legacyAccount` during restores for migrated users.
 
 ### Contract Interactions
 
