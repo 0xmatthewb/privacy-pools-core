@@ -11,10 +11,6 @@ keywords:
   - integration
 ---
 
-:::info Integration
-For production integration guidance, see [Frontend Integration](/build/integration).
-:::
-
 ## `PrivacyPoolSDK`
 
 Main SDK class providing high-level protocol interaction.

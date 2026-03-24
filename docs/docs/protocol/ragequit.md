@@ -14,10 +14,6 @@ keywords:
 
 Ragequit allows the original depositor to publicly reclaim their funds at any time, regardless of [ASP](/layers/asp) approval status. The contract enforces no ASP-related checks — only that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. It is the protocol's public exit path. Use the privacy-preserving [withdrawal](/protocol/withdrawal) path when recipient privacy matters.
 
-:::info Integration
-For production integration guidance, see [Frontend Integration](/build/integration).
-:::
-
 ## Protocol Flow
 
 ```mermaid

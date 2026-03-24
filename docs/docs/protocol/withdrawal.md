@@ -15,10 +15,6 @@ Frontend integrations should use relayed withdrawal. A relayer submits `Entrypoi
 
 The pool contract also exposes direct `PrivacyPool.withdraw()`, but that is a non-private contract-level path. Keep it out of normal frontend UX.
 
-:::info Integration
-For production integration guidance, see [Frontend Integration](/build/integration).
-:::
-
 Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()`, while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
 
 ## Recommended Frontend Flow

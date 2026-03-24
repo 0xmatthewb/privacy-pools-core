@@ -134,11 +134,10 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs. A deposit is approved when its `label` appears in the current ASP leaves returned by `GET /{chainId}/public/mt-leaves`. Treat deposits as pending until the label is present.
 5. Build withdrawal proofs with two roots: read the pool state root from `IPrivacyPool.currentRoot()` and use ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
-6. Build the app's withdrawal UX around relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. This is the privacy-preserving withdrawal path and should be the only user-facing withdrawal action.
+6. Build the app's withdrawal UX around relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. Do not surface direct `PrivacyPool.withdraw()` in frontend UX.
 7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval (label present in ASP leaves).
 8. Resolve the final recipient before review, fetch relayer details plus `minWithdrawAmount`, and request the relayer quote on the review step. Discard the quote whenever amount, recipient, relayer, or optional gas-token-drop settings change.
-9. Keep private withdrawals on the relayed `Entrypoint.relay()` path. Do not surface direct `PrivacyPool.withdraw()` in frontend UX.
-10. Keep ragequit separate and clearly public.
+9. Keep ragequit separate and clearly public.
 
 ## Frontend Defaults
 
@@ -163,7 +162,7 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 ### Deposit UX
 
 - If you expose `Use max`, reserve gas for native-asset deposits and account for vetting-fee math before populating the amount field.
-- If the wallet supports batching, collapsing approval + deposit into one action is a good upgrade. The same pattern can extend to stake-then-deposit flows for alternative input tokens as long as the final deposited asset and expected amount are explicit in the review UI.
+- If the wallet supports batching, collapse approval + deposit into one action. The same pattern extends to stake-then-deposit flows for alternative input tokens as long as the final deposited asset and expected amount are explicit in the review UI.
 - Parse the confirmed `Deposited` event immediately and store the resulting pool account locally rather than waiting for a later rescan.
 - Tell the user that confirmed deposits may take time to appear in activity views or become ASP-approved.
 
@@ -171,9 +170,9 @@ For the full deposit protocol mechanics, see [Deposit](/protocol/deposit).
 
 ### Private Withdrawal UX
 
-- Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution. Displaying reverse ENS alongside the resolved address is helpful. Unresolved input must block submit.
+- Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution. Display reverse ENS alongside the resolved address. Unresolved input must block submit.
 - Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`. If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
-- `GET /{chainId}/public/deposits-larger-than` is useful for showing an anonymity-set estimate while the user edits the amount.
+- Use `GET /{chainId}/public/deposits-larger-than` to show an anonymity-set estimate while the user edits the amount.
 - Request the signed `feeCommitment` only after the final recipient is known on review.
 - Request the relayer quote only when the review screen opens, keep a visible countdown, and if the quote refreshes because inputs changed or time elapsed, require the user to confirm again.
 - Treat `extraGas` as an optional gas-token drop for supported non-native assets. Quote invalidation and fee display must include it.
@@ -201,8 +200,6 @@ ASP API docs: `https://api.0xbow.io/api-docs`
 
 `request.0xbow.io` is a partner-only host and does not serve public `mt-roots` / `mt-leaves` endpoints.
 For public ASP reads, use `api.0xbow.io` (mainnet chains) or `dw.0xbow.io` (testnet chains).
-
-OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, see the [Skill Library](/build/skills) or the individual skill files for [deposits](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md), [withdrawals](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md), and [ragequit](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md).
 
 ## Critical API Endpoints
 
@@ -241,11 +238,3 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, se
 | `InvalidTreeDepth` | Tree depth exceeds circuit maximum | Use `32n` for both state and ASP tree depth |
 | `InvalidDepositValue` | Deposit value exceeds `type(uint128).max` | Reduce the deposit amount |
 
-## Reference Map
-
-| What you need | Where to find it |
-|---|---|
-| Chain addresses and start blocks | [Deployments](/deployments) |
-| Protocol flows | [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit) |
-| SDK API and types | [SDK Utilities](/reference/sdk) |
-| Task-specific agent skills | [Skill Library](/build/skills) |
