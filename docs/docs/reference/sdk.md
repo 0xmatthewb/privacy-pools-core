@@ -125,22 +125,22 @@ interface ContractInteractionsService {
 }
 ```
 
-`getStateRoot(poolAddress)` returns the pool state-tree root from `currentRoot()`. This is distinct from the ASP root: for `WithdrawalProofInput.aspRoot`, use ASP `onchainMtRoot` and verify it against `Entrypoint.latestRoot()`.
+`ContractInteractionsService.getStateRoot(poolAddress)` exists on the service, but withdrawal proofs should use the pool state root from `IPrivacyPool.currentRoot()`. Treat the ASP root separately: use `onchainMtRoot` for `WithdrawalProofInput.aspRoot` and verify it against `Entrypoint.latestRoot()`.
 
-`ContractInteractionsService` always requires a `privateKey` in its constructor, even for read-only methods like `getScope()` and `getStateRoot()`. If you need scope or state root without a signer (e.g., for `DataService` workflows), read them directly from the pool contract via a viem `PublicClient`:
+`ContractInteractionsService` always requires a `privateKey` in its constructor, even for read-only methods like `getScope()` and `getStateRoot()`. If you need scope or the pool state root without a signer (e.g., for `DataService` workflows), read them directly from the pool contract via a viem `PublicClient`:
 
 ```typescript
 import { createPublicClient, http } from "viem";
 const client = createPublicClient({ transport: http(rpcUrl) });
-const scope = await client.readContract({
+const stateRoot = await client.readContract({
   address: privacyPoolAddress,
-  abi: [{ name: "SCOPE", type: "function", inputs: [],
+  abi: [{ name: "currentRoot", type: "function", inputs: [],
           outputs: [{ type: "uint256" }], stateMutability: "view" }],
-  functionName: "SCOPE",
+  functionName: "currentRoot",
 });
 ```
 
-For frontend dapps with browser wallets, use the contract ABIs from the contracts package with your own viem `WalletClient`. The SDK's crypto functions (`generateMasterKeys`, `hashPrecommitment`, etc.) work in any environment.
+Use the same pattern with `SCOPE()` when you only need scope resolution. For frontend dapps with browser wallets, use your own viem `WalletClient` with the contract ABI for the method you are calling. The SDK's crypto functions (`generateMasterKeys`, `hashPrecommitment`, etc.) work in any environment.
 
 ## `DataService`
 
@@ -352,7 +352,7 @@ interface RagequitEvent {
 
 ## Account Reconstruction
 
-Pool accounts are reconstructed from on-chain events with `AccountService`. When initialized from `{ mnemonic }`, the SDK may also return `legacyAccount` so migrated histories can be reconciled. To retry failed scopes later, pass `{ service: account }`.
+Pool accounts are reconstructed from on-chain events with `AccountService`. When initialized from `{ mnemonic }`, the SDK may also return `legacyAccount` so migrated histories can be reconciled. Retry failed scopes with `{ service: account }` only for non-migration retries. If the original restore depended on `legacyAccount`, rerun the failed scopes with `{ mnemonic }` so legacy discovery runs again.
 
 ```typescript
 import { AccountService, DataService } from "@0xbow/privacy-pools-core-sdk";
@@ -376,6 +376,13 @@ const retry = await AccountService.initializeWithEvents(
   failedPools
 );
 // retry.account — updated AccountService after retrying only the missing scopes
+
+const migratedRetry = await AccountService.initializeWithEvents(
+  dataService,
+  { mnemonic },
+  failedPools
+);
+// migratedRetry.account / migratedRetry.legacyAccount — rerun failed migrated scopes
 ```
 
 The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search. On mnemonic-based initialization, it also scans the legacy derivation path before continuing with current-key deposits and withdrawals.

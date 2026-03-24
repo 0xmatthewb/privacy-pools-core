@@ -5,6 +5,7 @@ import { Withdrawal, WithdrawalProof } from "../../src/types/withdrawal.js";
 import { CommitmentProof } from "../../src/types/commitment.js";
 import { ContractError } from "../../src/errors/base.error.js";
 import { Hash } from "../../src/types/commitment.js";
+import { IEntrypointABI } from "../../src/abi/IEntrypoint.js";
 import { IPrivacyPoolABI } from "../../src/abi/IPrivacyPool.js";
 
 const mockPublicClient = {
@@ -231,7 +232,7 @@ describe("ContractInteractionsService", () => {
     );
   });
 
-  it("should get state root from the privacy pool currentRoot", async () => {
+  it("should get the latest root from the entrypoint contract", async () => {
     const expectedRoot = BigInt(123456789);
     mockPublicClient.readContract.mockResolvedValue(expectedRoot);
 
@@ -241,8 +242,8 @@ describe("ContractInteractionsService", () => {
     expect(mockPublicClient.readContract).toHaveBeenCalledWith(
       expect.objectContaining({
         address: mockPoolAddress,
-        abi: IPrivacyPoolABI,
-        functionName: "currentRoot",
+        abi: IEntrypointABI,
+        functionName: "latestRoot",
       }),
     );
   });

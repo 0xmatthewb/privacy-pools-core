@@ -23,7 +23,7 @@ Both paths require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commi
 For production integration guidance, see [Frontend Integration](/build/integration).
 :::
 
-Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()` (via SDK `contracts.getStateRoot(poolAddress)`), while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
+Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()`, while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
 
 ## Withdrawal Types Comparison
 
@@ -189,7 +189,7 @@ Withdrawal proofs carry two separate Merkle roots with different sources and val
 
 | | State Root | ASP Root |
 |---|-----------|----------|
-| **Read from** | `contracts.getStateRoot(poolAddress)` (pool `currentRoot()`) | ASP API `onchainMtRoot` from `GET /{chainId}/public/mt-roots` |
+| **Read from** | Pool `currentRoot()` | ASP API `onchainMtRoot` from `GET /{chainId}/public/mt-roots` |
 | **On-chain validation** | Must be one of the last 64 known roots (circular buffer) | Must exactly equal `Entrypoint.latestRoot()` |
 | **Tree contents** | Commitment hashes | Approved labels |
 | **Error on mismatch** | `UnknownStateRoot` | `IncorrectASPRoot` |

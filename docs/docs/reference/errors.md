@@ -100,7 +100,7 @@ These are two separate Merkle trees with different sources and validation rules:
 
 | | State Root | ASP Root |
 |---|-----------|----------|
-| **Source** | `contracts.getStateRoot(poolAddress)` which reads pool `currentRoot()` | ASP API `onchainMtRoot` from `GET /{chainId}/public/mt-roots` |
+| **Source** | Pool `currentRoot()` read directly from `IPrivacyPool` | ASP API `onchainMtRoot` from `GET /{chainId}/public/mt-roots` |
 | **On-chain check** | Must be one of the last 64 known roots | Must exactly equal `Entrypoint.latestRoot()` |
 | **Contains** | Commitment hashes | Approved labels |
 | **Error on mismatch** | `UnknownStateRoot` | `IncorrectASPRoot` |

@@ -21,7 +21,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 This is the shortest path from zero to a working deposit-and-withdraw loop. Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
 
 1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
-2. **Initialize SDK and contract helpers.** Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block. Create a `ContractInteractionsService` for write operations via `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)`.
+2. **Initialize SDK and contract helpers.** Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block. In browser dapps, use a viem `WalletClient` plus the relevant contract ABI for writes. Reserve `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` for backend or server-side signers.
 3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Reconstruct pool state via `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` — this scans on-chain events and returns `{ account, legacyAccount?, errors }` so restores can reconcile migrated histories when needed (see [SDK Utilities](/reference/sdk#account-reconstruction) for the full return type).
 4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.depositETH` (or `depositERC20` for token deposits after calling `approveERC20`), and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
 5. **Perform the relayed withdrawal.**
@@ -42,6 +42,7 @@ import {
   generateDepositSecrets,
   hashPrecommitment,
 } from "@0xbow/privacy-pools-core-sdk";
+import { createPublicClient, http } from "viem";
 import { sepolia } from "viem/chains";
 
 // 1. Initialize SDK with circuit artifacts
@@ -57,7 +58,14 @@ const dataService = new DataService([
   },
 ]);
 
-// 3. Create ContractInteractionsService for write operations
+// 3. Read on-chain data with a PublicClient
+const publicClient = createPublicClient({
+  chain: sepolia,
+  transport: http("https://sepolia.infura.io/v3/YOUR_KEY"),
+});
+
+// 4. Server-side signer example only.
+//    Browser dapps should use a WalletClient plus the relevant ABI instead.
 const contracts = sdk.createContractInstance(
   "https://sepolia.infura.io/v3/YOUR_KEY",
   sepolia,
@@ -65,22 +73,32 @@ const contracts = sdk.createContractInstance(
   "0x..." as `0x${string}`, // signer private key
 );
 
-// 4. Generate account keys from a mnemonic
+// 5. Generate account keys from a mnemonic
 const keys = generateMasterKeys("your twelve word mnemonic phrase ...");
 
-// 5. Derive deposit secrets and compute precommitment
-const scope = await contracts.getScope("0x..." as `0x${string}`); // pool address
+// 6. Derive deposit secrets and compute precommitment
+const scope = await publicClient.readContract({
+  address: "0x..." as `0x${string}`, // pool address
+  abi: [{
+    name: "SCOPE",
+    type: "function",
+    inputs: [],
+    outputs: [{ type: "uint256" }],
+    stateMutability: "view",
+  }],
+  functionName: "SCOPE",
+});
 const { nullifier, secret } = generateDepositSecrets(keys, scope, 0n);
 const precommitment = hashPrecommitment(nullifier, secret);
 
-// 6. Deposit ETH into the pool
+// 7. Deposit ETH into the pool
 const depositTx = await contracts.depositETH(
   10000000000000000n, // 0.01 ETH in wei
   precommitment,
 );
 await depositTx.wait();
 
-// 7. Fetch deposit events to confirm and reconstruct state
+// 8. Fetch deposit events to confirm and reconstruct state
 const deposits = await dataService.getDeposits({
   chainId: 11155111,
   address: "0x..." as `0x${string}`, // pool address
@@ -88,7 +106,7 @@ const deposits = await dataService.getDeposits({
   deploymentBlock: 123456n,
 });
 
-// 8. Withdrawal: generate proof and submit via relayer
+// 9. Withdrawal: generate proof and submit via relayer
 //    See /reference/sdk for proveWithdrawal() and /protocol/withdrawal
 //    for the full relayed withdrawal flow via the production or testnet relayer host
 ```
@@ -115,7 +133,7 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 2. If wallet onboarding is supported, derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice, and require a backup step. If the wallet path cannot guarantee deterministic signing, fall back to manual mnemonic create/load.
 3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs. A deposit is approved when its `label` appears in the current ASP leaves returned by `GET /{chainId}/public/mt-leaves`. Treat deposits as pending until the label is present.
-5. Build withdrawal proofs with two roots: `contracts.getStateRoot(poolAddress)` for the pool state root and ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
+5. Build withdrawal proofs with two roots: read the pool state root from `IPrivacyPool.currentRoot()` and use ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
 6. Build the app's withdrawal UX around relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. This is the privacy-preserving withdrawal path and should be the standard withdrawal action.
 7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval (label present in ASP leaves).
 8. Resolve the final recipient before review, fetch relayer details plus `minWithdrawAmount`, and request the relayer quote on the review step. Discard the quote whenever amount, recipient, relayer, or optional gas-token-drop settings change.
@@ -139,7 +157,7 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. Feature-detect this at runtime based on wallet capability.
 - Compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing.
-- If account reconstruction returns `legacyAccount`, keep it during restores for migrated users. If only some scopes fail, retry those scopes with `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)`.
+- If account reconstruction returns `legacyAccount`, keep it during restores for migrated users. If some scopes fail during that restore, retry those scopes with `AccountService.initializeWithEvents(dataService, { mnemonic }, failedPools)`. Otherwise, retry failed non-migration scopes with `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)`.
 - If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
 
 ### Deposit UX
@@ -199,7 +217,7 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, se
 ## Required Safety Checks
 
 - `X-Pool-Scope` must be a decimal bigint string.
-- `stateRoot` should come from `contracts.getStateRoot(poolAddress)` / pool `currentRoot()`, not from `Entrypoint.latestRoot()`.
+- `stateRoot` should come from the pool contract's `currentRoot()`, not from `Entrypoint.latestRoot()`.
 - `onchainMtRoot` must equal `Entrypoint.latestRoot()` exactly before proof generation/submission.
 - When reconstructing state from events, include the deployment `startBlock` in your `ChainConfig` entries so `DataService` scans from the correct block.
 - `withdrawalAmount` must be `> 0` and `<=` commitment value.
@@ -220,7 +238,7 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, se
 | `NullifierAlreadySpent` | Commitment already exited via withdrawal or ragequit | Stop retrying that commitment and select another spendable commitment |
 | `PrecommitmentAlreadyUsed` | Duplicate deposit precommitment / index reuse | Increment deposit index, recompute secrets/precommitment, resubmit |
 | `ContextMismatch` | Wrong `withdrawal.data` or `processooor` caused the context hash to differ | Rebuild the `Withdrawal` object and re-derive context |
-| `UnknownStateRoot` | State root expired from the 64-slot circular buffer | Re-fetch state root via `contracts.getStateRoot(poolAddress)` and regenerate proof |
+| `UnknownStateRoot` | State root expired from the 64-slot circular buffer | Re-fetch the pool's `currentRoot()` and regenerate the proof |
 | `InvalidTreeDepth` | Tree depth exceeds circuit maximum | Use `32n` for both state and ASP tree depth |
 | `InvalidDepositValue` | Deposit value exceeds `type(uint128).max` | Reduce the deposit amount |
 

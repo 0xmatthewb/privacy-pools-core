@@ -17,12 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated mnemonic-based key derivation to use bigint-safe seed handling for the active account path
 
-## [1.1.2] - 2026-03-09
-
-### Fixed
-
-- Fixed `getStateRoot()` to read `currentRoot()` from the privacy pool contract
-
 ## [1.1.1] - 2026-03-08
 
 ### Fixed

@@ -82,13 +82,20 @@ Returns the current ASP tree root for a pool.
 
 ```typescript
 import { createPublicClient, http } from "viem";
-import { IEntrypointABI } from "@0xbow/privacy-pools-core-sdk";
+
+const entrypointAbi = [{
+  name: "latestRoot",
+  type: "function",
+  inputs: [],
+  outputs: [{ type: "uint256" }],
+  stateMutability: "view",
+}] as const;
 
 const aspRoot = BigInt(onchainMtRoot);
 const client = createPublicClient({ chain, transport: http(rpcUrl) });
 const onChainLatest = await client.readContract({
   address: entrypointAddress,
-  abi: IEntrypointABI,
+  abi: entrypointAbi,
   functionName: "latestRoot",
 });
 if (aspRoot !== onChainLatest) {

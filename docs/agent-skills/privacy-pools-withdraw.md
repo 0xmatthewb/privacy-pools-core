@@ -24,7 +24,7 @@ Implement the relayed withdrawal flow for Privacy Pools. This is the privacy-pre
 
 ## State Root vs ASP Root
 
-- **State root:** Read from `contracts.getStateRoot(poolAddress)` which calls `currentRoot()` on the pool contract. Used in the state Merkle proof.
+- **State root:** Read directly from the pool contract's `currentRoot()`. Used in the state Merkle proof.
 - **ASP root:** Read from `Entrypoint.latestRoot()`. Must match `onchainMtRoot` from the ASP API. Used in the ASP Merkle proof.
 - These are different roots from different trees. Do not mix them.
 
