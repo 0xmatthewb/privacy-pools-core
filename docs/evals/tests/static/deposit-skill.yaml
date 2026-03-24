@@ -48,3 +48,13 @@
   assert:
     - type: contains
       value: "PrecommitmentAlreadyUsed"
+
+- description: "Deposit skill mentions migration-aware recovery"
+  vars:
+    skillPath: "privacy-pools-deposit/SKILL.md"
+  assert:
+    - type: icontains-any
+      value:
+        - "legacyAccount"
+        - "migration"
+        - "legacy"

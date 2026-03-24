@@ -56,3 +56,12 @@
   assert:
     - type: icontains
       value: "feeCommitment"
+
+- description: "Withdraw skill differentiates production and testnet relayer hosts"
+  vars:
+    skillPath: "privacy-pools-withdraw/SKILL.md"
+  assert:
+    - type: contains
+      value: "fastrelay.xyz"
+    - type: contains
+      value: "testnet-relayer.privacypools.com"

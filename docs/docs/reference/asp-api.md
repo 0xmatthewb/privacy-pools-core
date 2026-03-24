@@ -81,8 +81,16 @@ Returns the current ASP tree root for a pool.
 **Root parity check:** The proof's `aspRoot` must exactly match `Entrypoint.latestRoot()`. Always verify:
 
 ```typescript
+import { createPublicClient, http } from "viem";
+import { IEntrypointABI } from "@0xbow/privacy-pools-core-sdk";
+
 const aspRoot = BigInt(onchainMtRoot);
-const onChainLatest = await entrypoint.latestRoot(); // or via SDK
+const client = createPublicClient({ chain, transport: http(rpcUrl) });
+const onChainLatest = await client.readContract({
+  address: entrypointAddress,
+  abi: IEntrypointABI,
+  functionName: "latestRoot",
+});
 if (aspRoot !== onChainLatest) {
   throw new Error("ASP root mismatch — re-fetch and retry");
 }
