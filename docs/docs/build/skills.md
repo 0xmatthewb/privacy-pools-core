@@ -17,40 +17,9 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 
 ## Available Skills
 
-### privacy-pools-integration
-
-**Purpose:** End-to-end integration planning for Privacy Pools.
-
-**When to use:** Starting a new integration, onboarding to the protocol, or planning the full deposit-to-withdrawal flow.
-
-**Skill file:** [`/agent-skills/privacy-pools-integration/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md)
-
----
-
-### privacy-pools-deposit
-
-**Purpose:** Deposit flow implementation.
-
-**When to use:** Implementing the deposit path: secret generation, precommitment, transaction submission, and event tracking.
-
-**Skill file:** [`/agent-skills/privacy-pools-deposit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md)
-
----
-
-### privacy-pools-withdraw
-
-**Purpose:** Relayed withdrawal implementation.
-
-**When to use:** Implementing the private withdrawal path: ASP root verification, relayer quoting, proof generation, and relay submission.
-
-**Skill file:** [`/agent-skills/privacy-pools-withdraw/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md)
-
----
-
-### privacy-pools-ragequit
-
-**Purpose:** Ragequit (public exit) implementation.
-
-**When to use:** Implementing the ragequit public exit: commitment proof, on-chain exit, and depositor-only access control.
-
-**Skill file:** [`/agent-skills/privacy-pools-ragequit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md)
+| Skill | When to use | Link |
+|---|---|---|
+| **Integration** | Starting a new integration, onboarding to the protocol, or planning the full deposit-to-withdrawal flow | [View skill](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md) |
+| **Deposit** | Implementing the deposit path: secret generation, precommitment, transaction submission, and event tracking | [View skill](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md) |
+| **Withdrawal** | Implementing the private withdrawal path: ASP root verification, relayer quoting, proof generation, and relay submission | [View skill](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md) |
+| **Ragequit** | Implementing the ragequit public exit: commitment proof, on-chain exit, and depositor-only access control | [View skill](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md) |

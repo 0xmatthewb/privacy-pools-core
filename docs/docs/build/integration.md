@@ -18,16 +18,35 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 
 Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
 
-1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
-2. **Initialize SDK and contract helpers.** Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block. In browser dapps, use a viem `WalletClient` plus the relevant contract ABI for writes. Reserve `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` for server-side signers.
-3. **Bootstrap account state.** Generate or restore a mnemonic-backed account using `generateMasterKeys`. Reconstruct pool state via `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` — this scans on-chain events and returns `{ account, legacyAccount?, errors }` so restores can reconcile migrated histories when needed (see [SDK Utilities](/reference/sdk#account-reconstruction) for the full return type).
-4. **Deposit.** Derive deposit secrets from the account, call `ContractInteractionsService.depositETH` (or `depositERC20` for token deposits after calling `approveERC20`), and persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state. Wait for ASP approval before attempting withdrawal.
-5. **Perform the relayed withdrawal.**
-   1. **Fetch ASP root and verify parity.** Call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and confirm that `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly.
-   2. **Request a relayer quote.** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`.
-   3. **Build the withdrawal proof.** Generate the ZK proof using the verified ASP root, the pool state root, and the relayer-provided context.
-   4. **Submit via relayer.** Send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets.
-6. **Refresh state after withdrawal.** Re-scan events to pick up the new change commitment. Insert it into local account state before generating another proof.
+1. **Load deployment data**
+   - Read chain-specific contract addresses and `startBlock` from [Deployments](/deployments)
+   - You need: `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope
+
+2. **Initialize SDK and contract helpers**
+   - Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block
+   - In browser dapps, use a viem `WalletClient` plus the relevant contract ABI for writes
+   - Reserve `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` for server-side signers
+
+3. **Bootstrap account state**
+   - Generate or restore a mnemonic-backed account using `generateMasterKeys`
+   - Reconstruct pool state via `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)`
+   - Returns `{ account, legacyAccount?, errors }` so restores can reconcile migrated histories (see [SDK Utilities](/reference/sdk#account-reconstruction))
+
+4. **Deposit**
+   - Derive deposit secrets from the account
+   - Call `ContractInteractionsService.depositETH` (or `depositERC20` after `approveERC20`)
+   - Persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state
+   - Wait for ASP approval before attempting withdrawal
+
+5. **Perform the relayed withdrawal**
+   1. **Fetch ASP root and verify parity:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
+   2. **Request a relayer quote:** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`
+   3. **Build the withdrawal proof:** generate the ZK proof using the verified ASP root, pool state root, and relayer-provided context
+   4. **Submit via relayer:** send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets
+
+6. **Refresh state after withdrawal**
+   - Re-scan events to pick up the new change commitment
+   - Insert it into local account state before generating another proof
 
 ### Quick Start Code
 
@@ -211,16 +230,18 @@ For public ASP reads, use `api.0xbow.io` (mainnet chains) or `dw.0xbow.io` (test
 
 ## Required Safety Checks
 
-- `X-Pool-Scope` must be a decimal bigint string.
-- `stateRoot` should come from the pool contract's `currentRoot()`, not from `Entrypoint.latestRoot()`.
-- `onchainMtRoot` must equal `Entrypoint.latestRoot()` exactly before proof generation/submission.
-- When reconstructing state from events, include the deployment `startBlock` in your `ChainConfig` entries so `DataService` scans from the correct block.
-- `withdrawalAmount` must be `> 0` and `<=` commitment value.
-- Check `minimumDepositAmount` before submitting deposit transactions.
-- For relayed withdrawal, `withdrawal.processooor` must equal the Entrypoint address, and recipient plus fee routing comes from `withdrawal.data`.
-- Relayer `feeCommitment` has a short TTL (~60s); quote and request should be near-contiguous, and quote invalidation should be tied to form changes.
-- After partial withdrawals, refresh leaves before generating the next proof.
-- Use a generous `waitForTransactionReceipt` timeout — the production frontend uses 300 seconds (5 minutes) for deposit, withdrawal, and ragequit confirmations.
+| Check | Requirement |
+|---|---|
+| `X-Pool-Scope` header | Must be a decimal bigint string, not hex |
+| State root source | Read from `IPrivacyPool.currentRoot()`, not `Entrypoint.latestRoot()` |
+| ASP root parity | `onchainMtRoot` must equal `Entrypoint.latestRoot()` exactly before proof generation |
+| Event scan start | Include the deployment `startBlock` in `ChainConfig` entries |
+| Withdrawal amount | Must be `> 0` and `<=` commitment value |
+| Deposit minimum | Check `minimumDepositAmount` before submitting deposits |
+| Relayed withdrawal | `withdrawal.processooor` must equal the Entrypoint address; recipient and fee routing come from `withdrawal.data` |
+| Quote TTL | `feeCommitment` expires in ~60s; keep quote and request near-contiguous; re-quote on form changes |
+| Post-withdrawal | Refresh leaves before generating the next proof |
+| Receipt timeout | Use a generous `waitForTransactionReceipt` timeout (production uses 300s) |
 
 ## Common Failure Modes
 

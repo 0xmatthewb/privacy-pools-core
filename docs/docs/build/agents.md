@@ -53,7 +53,9 @@ The repo-local skill files live under `.agents/skills/`:
       SKILL.md
 ```
 
-Both locations contain identical content. `.agents/skills/` exists for IDE agents that scan the repo locally; `docs/static/agent-skills/` is the source for the hosted docs site at `https://docs.privacypools.com/agent-skills/<name>/SKILL.md`.
+Both locations contain identical content:
+- `.agents/skills/`: for IDE agents that scan the repo locally
+- `docs/static/agent-skills/`: source for the hosted docs site at `https://docs.privacypools.com/agent-skills/<name>/SKILL.md`
 
 ## Agent-Specific Workflows
 
