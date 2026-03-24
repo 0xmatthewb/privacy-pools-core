@@ -161,7 +161,7 @@ function renderClaudeMd(skills) {
   const skillList = skills
     .map(
       (s) =>
-        `- **${s.name}** -- ${s.description}  \n  Skill file: \`docs/static/agent-skills/${s.name}/SKILL.md\``
+        `- **${s.name}** -- ${s.description}  \n  Skill file: \`.agents/skills/${s.name}/SKILL.md\``
     )
     .join("\n");
 

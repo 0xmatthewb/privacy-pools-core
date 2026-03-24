@@ -35,13 +35,13 @@ Route all Privacy Pools tasks through the docs below.
 ## Available Skills
 
 - **privacy-pools-integration** -- End-to-end Privacy Pools integration planning  
-  Skill file: `docs/static/agent-skills/privacy-pools-integration/SKILL.md`
+  Skill file: `.agents/skills/privacy-pools-integration/SKILL.md`
 - **privacy-pools-deposit** -- Deposit flow implementation for Privacy Pools  
-  Skill file: `docs/static/agent-skills/privacy-pools-deposit/SKILL.md`
+  Skill file: `.agents/skills/privacy-pools-deposit/SKILL.md`
 - **privacy-pools-withdraw** -- Relayed withdrawal implementation for Privacy Pools  
-  Skill file: `docs/static/agent-skills/privacy-pools-withdraw/SKILL.md`
+  Skill file: `.agents/skills/privacy-pools-withdraw/SKILL.md`
 - **privacy-pools-ragequit** -- Ragequit (public exit) implementation for Privacy Pools  
-  Skill file: `docs/static/agent-skills/privacy-pools-ragequit/SKILL.md`
+  Skill file: `.agents/skills/privacy-pools-ragequit/SKILL.md`
 
 ## Workflow Rules
 

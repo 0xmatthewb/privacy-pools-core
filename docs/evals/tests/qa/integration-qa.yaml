@@ -35,7 +35,7 @@
 - description: "Mentions migration-aware recovery for older mnemonic restores"
   vars:
     question: "How should I handle older mnemonic-based account restores in the SDK?"
-    context: file://helpers/context-deposit-withdrawal.js
+    context: file://helpers/context-integration-sdk.js
   assert:
     - type: javascript
       value: |
