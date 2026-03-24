@@ -962,11 +962,6 @@ html[data-theme="dark"] .pagination-nav__link:hover {
   color: var(--ifm-font-color-base);
 }
 
-/* Keep the color-mode toggle visible on mobile */
-div[class*="colorModeToggle"] {
-  display: flex !important;
-}
-
 /* "Edit this page" link */
 .theme-edit-this-page {
   margin-top: 2.5rem;
