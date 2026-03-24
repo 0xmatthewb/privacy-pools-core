@@ -18,11 +18,11 @@ For Node or backend runtimes, initialize SDK circuits with `new Circuits({ brows
 | Resource | URL | Purpose |
 |---|---|---|
 | [Skill Library](/build/skills) | `/build/skills` | Task-specific skill files for integration, deposit, withdrawal, and ragequit |
-| [Frontend Integration](/build/integration) | `/build/integration` | Production integration happy path and safety checks |
+| [Frontend Integration](/build/integration) | `/build/integration` | Production integration guide and safety checks |
 | [Deployments](/deployments) | `/deployments` | Chain-specific contract addresses and `startBlock` values |
 | [llms.txt](https://docs.privacypools.com/llms.txt) | Hosted | Lightweight site index for crawlers and retrieval systems |
 | [llms-full.txt](https://docs.privacypools.com/llms-full.txt) | Hosted | Complete LLM corpus with all docs pages |
-| `CLAUDE.md` | Repo root | Claude Code config; auto-loaded locally, routes to canonical docs |
+| `CLAUDE.md` | Repo root | Claude Code guide for repo-specific workflows |
 | `AGENTS.md` | Repo root | Build commands, security constraints, and repo structure for coding agents |
 
 ## Skill Library

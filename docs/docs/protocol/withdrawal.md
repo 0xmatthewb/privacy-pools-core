@@ -1,6 +1,6 @@
 ---
 title: Withdrawal
-description: "Relayed withdrawal is the recommended production path; this page also covers advanced direct withdrawal, proof generation, nullifier-spend checks, fee handling, and state transition behavior."
+description: "Relayed withdrawal is the recommended production path, with sections on advanced direct withdrawal, proof generation, nullifier-spend checks, fee handling, and state transitions."
 keywords:
   - privacy pools
   - withdrawal
