@@ -18,7 +18,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 
 ## Minimal Frontend Recipe
 
-This is the shortest path from zero to a working deposit-and-withdraw loop. Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
+Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
 
 1. **Load deployment data.** Read the chain-specific contract addresses and `startBlock` from [Deployments](/deployments). You need the `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope.
 2. **Initialize SDK and contract helpers.** Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block. In browser dapps, use a viem `WalletClient` plus the relevant contract ABI for writes. Reserve `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` for backend or server-side signers.
@@ -121,9 +121,7 @@ See [SDK Utilities](/reference/sdk) for the full API surface.
 |---|---|---|
 | Ethereum mainnet | `1` | `1_250_000` |
 | Optimism | `10` | `12_000_000` |
-| Base | `8453` | `6_000_000` |
 | Arbitrum One | `42161` | `48_000_000` |
-| BNB Chain | `56` | `10_000_000` |
 
 Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRetries`, and `retryBaseDelayMs`. See [SDK Utilities](/reference/sdk) for the full `LogFetchConfig` type.
 
