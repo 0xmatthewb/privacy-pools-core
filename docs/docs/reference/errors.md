@@ -31,7 +31,6 @@ These errors are defined in `IPrivacyPool.sol` and triggered during deposit, wit
 | `InvalidCommitment` | `ragequit` | The commitment hash from the proof is not present in the pool's state tree. |
 | `OnlyOriginalDepositor` | `ragequit` | `depositors[label] != msg.sender`. Only the address that made the original deposit can call ragequit for that commitment. |
 | `InvalidDepositValue` | `deposit` | Deposit value is `>= type(uint128).max`. |
-| `ScopeMismatch` | — | Defined in the interface but not currently reverted by pool contracts. Reserved for future use. |
 | `PoolIsDead` | `deposit`, pool admin | The pool has been permanently suspended by the Entrypoint. |
 
 ### Pool Variant Errors

@@ -14,10 +14,6 @@ keywords:
 
 The Association Set Provider (ASP) publishes an HTTP API that integrators use to fetch Merkle tree data for withdrawal proofs. The ASP is operated by 0xbow and serves both approved labels (the ASP tree) and state tree leaves (commitment hashes) for each pool.
 
-:::caution Engineer Confirmation Needed
-The ASP API response shapes documented here are based on observed behavior and SDK integration patterns. The live API may diverge from the published Swagger schema on some endpoints (`mt-roots`, event listings, `pool-info`). Use the concrete response shapes below when parsing responses, and test against the live API before shipping.
-:::
-
 ## Base URLs
 
 | Environment | Host |
@@ -76,7 +72,7 @@ Returns the current ASP tree root for a pool.
 |-------|------|-------------|
 | `mtRoot` | `string` | Latest ASP Merkle root from the ASP database (decimal bigint string). May be ahead of on-chain if a new root has not been pushed yet. |
 | `createdAt` | `string` | ISO 8601 timestamp of this root. |
-| `onchainMtRoot` | `string` | The root value currently committed on-chain via `Entrypoint.latestRoot()`. Use this value as the proof's `aspRoot`. |
+| `onchainMtRoot` | `string \| null` | The root value currently committed on-chain via `Entrypoint.latestRoot()`. Use this value as the proof's `aspRoot`. `null` when no root has been pushed on-chain for the pool yet. |
 
 **Root parity check:** The proof's `aspRoot` must exactly match `Entrypoint.latestRoot()`. Always verify:
 
@@ -178,7 +174,8 @@ Returns all chains with their entrypoint contract addresses and deployment start
       "fromBlock": 22167294,
       "chainId": "1"
     }
-  }
+  },
+  "cacheTimestamp": "2026-03-24T17:44:00.772Z"
 }
 ```
 
@@ -196,11 +193,13 @@ Returns the number of deposits above a given amount threshold for a pool. Useful
 
 ```json
 {
-  "eligibleDeposits": 42,
-  "totalDeposits": 150,
-  "percentage": 28,
-  "rank": 5,
-  "uniqueAmountsAbove": 12
+  "eligibleDeposits": 518,
+  "totalDeposits": 2859,
+  "percentage": 18.12,
+  "amount": "1000000000000000000",
+  "scope": "4916574638117198869413701114161172350986437430914933850166949084132905299523",
+  "rank": 189,
+  "uniqueAmountsAbove": 189
 }
 ```
 
@@ -208,7 +207,9 @@ Returns the number of deposits above a given amount threshold for a pool. Useful
 |-------|------|-------------|
 | `eligibleDeposits` | `number` | Count of deposits at or above the threshold. |
 | `totalDeposits` | `number` | Total deposit count in the pool. |
-| `percentage` | `number` | `eligibleDeposits / totalDeposits * 100`. |
+| `percentage` | `number` | `eligibleDeposits / totalDeposits * 100` (may be fractional). |
+| `amount` | `string` | Echo of the queried amount threshold (decimal bigint string). |
+| `scope` | `string` | Echo of the pool scope used for the query (decimal bigint string). |
 | `rank` | `number` | Ordinal rank of the queried amount among unique deposit amounts. |
 | `uniqueAmountsAbove` | `number` | Count of distinct deposit amounts above the threshold. |
 

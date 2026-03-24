@@ -190,9 +190,18 @@ Submits a relayed withdrawal to the relayer for on-chain execution.
   "success": true,
   "txHash": "0x...",
   "timestamp": 1744676669549,
-  "requestId": "uuid"
+  "requestId": "uuid",
+  "txSwap": "0x..."
 }
 ```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | `boolean` | `true` when the relay transaction was broadcast. |
+| `txHash` | `string` | Transaction hash of the relay call. |
+| `timestamp` | `number` | Unix timestamp (ms) of the response. |
+| `requestId` | `string` | UUID for this relay request. |
+| `txSwap` | `string \| undefined` | Transaction hash of the Uniswap swap for the native-gas drop. Only present when `extraGas` was `true` and the swap succeeded. |
 
 **Failure response (HTTP 200):**
 
