@@ -1,13 +1,13 @@
 ---
 title: Commitment Circuit
-description: "Interface and behavior of the commitment circuit used to derive commitment and nullifier hashes from deposit inputs."
+description: "Interface and behavior of the commitment circuit used to derive commitment and nullifier hashes for ragequit proofs."
 keywords:
   - privacy pools
   - commitment circuit
   - circom
   - poseidon
   - nullifier hash
-  - deposit proof
+  - ragequit proof
   - zk
 ---
 

@@ -26,7 +26,7 @@ The Privacy Pools protocol is built on three core contracts:
    - `PrivacyPoolComplex`: Handles ERC20 tokens
    - Both inherit from base `PrivacyPool` and `State` contracts
 3. **Verifiers**
-   - `CommitmentVerifier`: Validates [ragequit](/protocol/ragequit) proofs
+   - `RagequitVerifier`: Validates [ragequit](/protocol/ragequit) proofs
    - `WithdrawalVerifier`: Validates [withdrawal](/protocol/withdrawal) proofs
    - Both implement Groth16 verification
 
