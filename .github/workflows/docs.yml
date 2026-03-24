@@ -8,6 +8,11 @@ on:
   pull_request:
     paths:
       - "docs/**"
+      - ".agents/**"
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "docs/agent-skills/**"
+      - "docs/scripts/generate-agent-artifacts.mjs"
     branches:
       - dev
 

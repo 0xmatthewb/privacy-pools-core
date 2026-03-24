@@ -1,9 +1,9 @@
 # Static checks for the ragequit skill file.
-# The custom provider reads the skill file content; assertions check for required patterns.
+# The custom provider reads the repo-local hosted copy; assertions check for required patterns.
 
 - description: "Ragequit skill mentions public exit or public on-chain"
   vars:
-    skillPath: "privacy-pools-ragequit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-ragequit/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -12,7 +12,7 @@
 
 - description: "Ragequit skill mentions original depositor restriction"
   vars:
-    skillPath: "privacy-pools-ragequit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-ragequit/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -21,7 +21,7 @@
 
 - description: "Ragequit skill mentions mutual exclusivity with private withdrawal"
   vars:
-    skillPath: "privacy-pools-ragequit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-ragequit/SKILL.md"
   assert:
     - type: icontains
       value: "cannot"
@@ -32,14 +32,14 @@
 
 - description: "Ragequit skill mentions NullifierAlreadySpent"
   vars:
-    skillPath: "privacy-pools-ragequit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-ragequit/SKILL.md"
   assert:
     - type: contains
       value: "NullifierAlreadySpent"
 
 - description: "Ragequit skill mentions unconditional availability (no ASP)"
   vars:
-    skillPath: "privacy-pools-ragequit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-ragequit/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -48,7 +48,7 @@
 
 - description: "Ragequit skill documents the positional proveCommitment signature"
   vars:
-    skillPath: "privacy-pools-ragequit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-ragequit/SKILL.md"
   assert:
     - type: contains
       value: "proveCommitment(value, label, nullifier, secret)"

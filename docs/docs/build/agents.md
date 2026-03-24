@@ -55,6 +55,8 @@ The repo-local skill files live under `.agents/skills/`:
       SKILL.md
 ```
 
+The hosted copies are generated from `docs/static/agent-skills/`.
+
 The same skill files are hosted at `https://docs.privacypools.com/agent-skills/<name>/SKILL.md`.
 
 ## Agent-Specific Workflows

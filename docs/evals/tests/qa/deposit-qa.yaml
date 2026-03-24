@@ -16,7 +16,7 @@
           /secret/i,
           /depositIndex|deposit index/i,
         ];
-        const passed = required.filter((re) => re.test(text)).length === required.length;
+        const passed = required.every((re) => re.test(text));
         return {
           pass: passed,
           score: passed ? 1 : 0,

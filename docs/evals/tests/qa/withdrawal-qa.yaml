@@ -16,7 +16,8 @@
           /latestRoot/i,
         ];
         const hasTreeContents = /commitment hashes|approved labels/i.test(text);
-        const passed = required.every((re) => re.test(text)) && hasTreeContents;
+        const hasParity = /exactly equal|parity|onchainMtRoot/i.test(text);
+        const passed = required.every((re) => re.test(text)) && hasTreeContents && hasParity;
         return {
           pass: passed,
           score: passed ? 1 : 0,

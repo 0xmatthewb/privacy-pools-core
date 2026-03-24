@@ -1,9 +1,9 @@
 # Static checks for the deposit skill file.
-# The custom provider reads the skill file content; assertions check for required patterns.
+# The custom provider reads the repo-local hosted copy; assertions check for required patterns.
 
 - description: "Deposit skill mentions minimum deposit"
   vars:
-    skillPath: "privacy-pools-deposit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -12,21 +12,21 @@
 
 - description: "Deposit skill mentions Deposited event"
   vars:
-    skillPath: "privacy-pools-deposit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
   assert:
     - type: contains
       value: "Deposited"
 
 - description: "Deposit skill mentions label"
   vars:
-    skillPath: "privacy-pools-deposit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
   assert:
     - type: contains
       value: "label"
 
 - description: "Deposit skill mentions committedValue"
   vars:
-    skillPath: "privacy-pools-deposit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -35,7 +35,7 @@
 
 - description: "Deposit skill mentions vetting fee"
   vars:
-    skillPath: "privacy-pools-deposit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -44,14 +44,14 @@
 
 - description: "Deposit skill mentions PrecommitmentAlreadyUsed error"
   vars:
-    skillPath: "privacy-pools-deposit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
   assert:
     - type: contains
       value: "PrecommitmentAlreadyUsed"
 
 - description: "Deposit skill mentions migration-aware recovery"
   vars:
-    skillPath: "privacy-pools-deposit/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
   assert:
     - type: icontains-any
       value:

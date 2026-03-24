@@ -1,0 +1,153 @@
+# Static checks for the agent-facing docs and repo entry points.
+
+- description: "AGENTS.md points agents to the key docs and mirrored skills"
+  vars:
+    filePath: "AGENTS.md"
+  assert:
+    - type: javascript
+      value: |
+        const text = String(output);
+        const required = [
+          'docs/docs/build/integration.md',
+          'docs/docs/build/agents.md',
+          'docs/docs/build/skills.md',
+          'docs/docs/deployments.md',
+          '.agents/skills/',
+          'docs/static/agent-skills/',
+          'privacy-pools-integration',
+          'privacy-pools-deposit',
+          'privacy-pools-withdraw',
+          'privacy-pools-ragequit',
+        ];
+        const missing = required.filter((value) => !text.includes(value));
+        return {
+          pass: missing.length === 0,
+          score: missing.length === 0 ? 1 : 0,
+          reason: missing.length === 0
+            ? 'AGENTS.md covers the expected entry points'
+            : `Missing: ${missing.join(', ')}`,
+        };
+
+- description: "CLAUDE.md keeps the agent workflow concise and current"
+  vars:
+    filePath: "CLAUDE.md"
+  assert:
+    - type: javascript
+      value: |
+        const text = String(output);
+        const required = [
+          'docs/docs/build/integration.md',
+          'docs/docs/build/agents.md',
+          'docs/docs/build/skills.md',
+          'fastrelay.xyz',
+          'testnet-relayer.privacypools.com',
+          'startBlock',
+          'PrivacyPool.withdraw()',
+        ];
+        const missing = required.filter((value) => !text.includes(value));
+        return {
+          pass: missing.length === 0,
+          score: missing.length === 0 ? 1 : 0,
+          reason: missing.length === 0
+            ? 'CLAUDE.md covers the expected workflow rules'
+            : `Missing: ${missing.join(', ')}`,
+        };
+
+- description: "Agent discovery page covers the repo-local and hosted skill locations"
+  vars:
+    filePath: "docs/docs/build/agents.md"
+  assert:
+    - type: javascript
+      value: |
+        const text = String(output);
+        const required = [
+          'CLAUDE.md',
+          'AGENTS.md',
+          '.agents/skills/',
+          'docs/static/agent-skills/',
+          'privacy-pools-integration',
+          'privacy-pools-deposit',
+          'privacy-pools-withdraw',
+          'privacy-pools-ragequit',
+          'llms.txt',
+          'llms-full.txt',
+        ];
+        const missing = required.filter((value) => !text.includes(value));
+        return {
+          pass: missing.length === 0,
+          score: missing.length === 0 ? 1 : 0,
+          reason: missing.length === 0
+            ? 'Agent discovery page covers the expected surfaces'
+            : `Missing: ${missing.join(', ')}`,
+        };
+
+- description: "Skill library page lists the supported workflows and local skill paths"
+  vars:
+    filePath: "docs/docs/build/skills.md"
+  assert:
+    - type: javascript
+      value: |
+        const text = String(output);
+        const required = [
+          'privacy-pools-integration',
+          'privacy-pools-deposit',
+          'privacy-pools-withdraw',
+          'privacy-pools-ragequit',
+          '.agents/skills/privacy-pools-integration/SKILL.md',
+          '.agents/skills/privacy-pools-deposit/SKILL.md',
+          '.agents/skills/privacy-pools-withdraw/SKILL.md',
+          '.agents/skills/privacy-pools-ragequit/SKILL.md',
+        ];
+        const missing = required.filter((value) => !text.includes(value));
+        return {
+          pass: missing.length === 0,
+          score: missing.length === 0 ? 1 : 0,
+          reason: missing.length === 0
+            ? 'Skill library page lists the expected skills'
+            : `Missing: ${missing.join(', ')}`,
+        };
+
+- description: "Agent skill manifest stays aligned with the documented workflows"
+  vars:
+    filePath: "docs/agent-skills/manifest.json"
+  assert:
+    - type: javascript
+      value: |
+        const manifest = JSON.parse(String(output));
+        const expected = {
+          'privacy-pools-integration': {
+            docsRoutes: ['/build/integration', '/build/start', '/protocol/deposit', '/protocol/withdrawal', '/protocol/ragequit', '/deployments'],
+            readOrder: ['/build/integration', '/protocol/deposit', '/protocol/withdrawal', '/protocol/ragequit', '/deployments'],
+          },
+          'privacy-pools-deposit': {
+            docsRoutes: ['/protocol/deposit', '/reference/sdk', '/reference/errors', '/deployments'],
+            readOrder: ['/protocol/deposit', '/reference/sdk', '/deployments'],
+          },
+          'privacy-pools-withdraw': {
+            docsRoutes: ['/protocol/withdrawal', '/reference/relayer-api', '/reference/asp-api', '/reference/sdk', '/reference/errors', '/deployments'],
+            readOrder: ['/protocol/withdrawal', '/reference/relayer-api', '/reference/asp-api', '/reference/sdk', '/deployments'],
+          },
+          'privacy-pools-ragequit': {
+            docsRoutes: ['/protocol/ragequit', '/reference/sdk', '/reference/errors', '/deployments'],
+            readOrder: ['/protocol/ragequit', '/reference/sdk', '/deployments'],
+          },
+        };
+
+        const byName = new Map((manifest.skills || []).map((skill) => [skill.name, skill]));
+        const missingSkills = Object.keys(expected).filter((name) => !byName.has(name));
+        const mismatched = Object.entries(expected).filter(([name, config]) => {
+          const skill = byName.get(name);
+          if (!skill) return false;
+          const docsRoutes = config.docsRoutes.every((route) => skill.docsRoutes.includes(route));
+          const readOrder = JSON.stringify(skill.readOrder) === JSON.stringify(config.readOrder);
+          return !docsRoutes || !readOrder;
+        });
+
+        const passed = (manifest.skills || []).length === Object.keys(expected).length && missingSkills.length === 0 && mismatched.length === 0;
+        return {
+          pass: passed,
+          score: passed ? 1 : 0,
+          reason: passed
+            ? 'Manifest covers the expected skills and routes'
+            : `Missing skills: ${missingSkills.join(', ')}; mismatched: ${mismatched.map(([name]) => name).join(', ')}`,
+        };

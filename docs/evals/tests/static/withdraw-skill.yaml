@@ -1,16 +1,16 @@
 # Static checks for the withdraw skill file.
-# The custom provider reads the skill file content; assertions check for required patterns.
+# The custom provider reads the repo-local hosted copy; assertions check for required patterns.
 
 - description: "Withdraw skill mentions Entrypoint.relay"
   vars:
-    skillPath: "privacy-pools-withdraw/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: icontains
       value: "Entrypoint.relay"
 
 - description: "Withdraw skill mentions processooor or entrypointAddress"
   vars:
-    skillPath: "privacy-pools-withdraw/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -19,7 +19,7 @@
 
 - description: "Withdraw skill mentions both state root and ASP root"
   vars:
-    skillPath: "privacy-pools-withdraw/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: icontains
       value: "state root"
@@ -28,7 +28,7 @@
 
 - description: "Withdraw skill mentions quote re-quoting or expiration"
   vars:
-    skillPath: "privacy-pools-withdraw/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -38,28 +38,28 @@
 
 - description: "Withdraw skill mentions change commitment"
   vars:
-    skillPath: "privacy-pools-withdraw/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: icontains
       value: "change commitment"
 
 - description: "Withdraw skill mentions withdrawalData"
   vars:
-    skillPath: "privacy-pools-withdraw/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: icontains
       value: "withdrawalData"
 
 - description: "Withdraw skill mentions feeCommitment"
   vars:
-    skillPath: "privacy-pools-withdraw/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: icontains
       value: "feeCommitment"
 
 - description: "Withdraw skill differentiates production and testnet relayer hosts"
   vars:
-    skillPath: "privacy-pools-withdraw/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: contains
       value: "fastrelay.xyz"

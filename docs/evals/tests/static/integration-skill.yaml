@@ -1,16 +1,16 @@
 # Static checks for the integration skill file.
-# The custom provider reads the skill file content; assertions check for required patterns.
+# The custom provider reads the repo-local hosted copy; assertions check for required patterns.
 
 - description: "Integration skill mentions relayed withdrawal path"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: icontains
       value: "relay"
 
 - description: "Integration skill references deposit skill or deposit docs"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: contains-any
       value:
@@ -19,7 +19,7 @@
 
 - description: "Integration skill references withdraw skill or withdrawal docs"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: contains-any
       value:
@@ -28,14 +28,14 @@
 
 - description: "Integration skill links to ragequit docs"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: icontains
       value: "ragequit"
 
 - description: "Integration skill mentions startBlock for event scans"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -44,7 +44,7 @@
 
 - description: "Integration skill mentions ASP root parity check"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -53,7 +53,7 @@
 
 - description: "Integration skill mentions mnemonic or pool account model"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: icontains-any
       value:
@@ -62,7 +62,7 @@
 
 - description: "Integration skill differentiates production and testnet relayer hosts"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: contains
       value: "fastrelay.xyz"
@@ -71,7 +71,7 @@
 
 - description: "Integration skill mentions migration-aware recovery"
   vars:
-    skillPath: "privacy-pools-integration/SKILL.md"
+    filePath: "docs/static/agent-skills/privacy-pools-integration/SKILL.md"
   assert:
     - type: icontains-any
       value:

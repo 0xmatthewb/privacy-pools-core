@@ -1,19 +1,21 @@
-# Privacy Pools - Static skill and docs validation
-# Checks that skill files contain required strings/patterns.
+# Privacy Pools - Static agent surface validation
+# Checks that agent-facing files contain required strings/patterns.
 # Run: yarn eval:static
 
-description: "Privacy Pools - Static skill and docs validation"
+description: "Privacy Pools - Static agent surface validation"
 
 providers:
-  # Custom provider that reads the skill file path from the prompt
+  # Custom provider that reads a repo-relative file path from the prompt
   # and returns its content as the output for assertion checks.
-  - id: file://helpers/skill-provider.js
+  - id: file://helpers/repo-file-provider.js
 
 prompts:
-  - "{{skillPath}}"
+  - "{{filePath}}"
 
 tests:
   - tests/static/integration-skill.yaml
   - tests/static/deposit-skill.yaml
   - tests/static/withdraw-skill.yaml
   - tests/static/ragequit-skill.yaml
+  - tests/static/agent-surface.yaml
+  - tests/static/skill-mirrors.yaml

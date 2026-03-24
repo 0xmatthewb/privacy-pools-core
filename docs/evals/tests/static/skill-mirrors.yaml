@@ -1,0 +1,57 @@
+# Static checks that the repo-local and hosted skill files stay identical.
+
+- description: "Integration skill mirror stays in sync"
+  vars:
+    filePath: ".agents/skills/privacy-pools-integration/SKILL.md|||docs/static/agent-skills/privacy-pools-integration/SKILL.md"
+  assert:
+    - type: javascript
+      value: |
+        const { left, right } = JSON.parse(String(output));
+        const pass = left === right;
+        return {
+          pass,
+          score: pass ? 1 : 0,
+          reason: pass ? 'Integration skill mirror matches' : 'Integration skill mirror differs',
+        };
+
+- description: "Deposit skill mirror stays in sync"
+  vars:
+    filePath: ".agents/skills/privacy-pools-deposit/SKILL.md|||docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
+  assert:
+    - type: javascript
+      value: |
+        const { left, right } = JSON.parse(String(output));
+        const pass = left === right;
+        return {
+          pass,
+          score: pass ? 1 : 0,
+          reason: pass ? 'Deposit skill mirror matches' : 'Deposit skill mirror differs',
+        };
+
+- description: "Withdraw skill mirror stays in sync"
+  vars:
+    filePath: ".agents/skills/privacy-pools-withdraw/SKILL.md|||docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
+  assert:
+    - type: javascript
+      value: |
+        const { left, right } = JSON.parse(String(output));
+        const pass = left === right;
+        return {
+          pass,
+          score: pass ? 1 : 0,
+          reason: pass ? 'Withdraw skill mirror matches' : 'Withdraw skill mirror differs',
+        };
+
+- description: "Ragequit skill mirror stays in sync"
+  vars:
+    filePath: ".agents/skills/privacy-pools-ragequit/SKILL.md|||docs/static/agent-skills/privacy-pools-ragequit/SKILL.md"
+  assert:
+    - type: javascript
+      value: |
+        const { left, right } = JSON.parse(String(output));
+        const pass = left === right;
+        return {
+          pass,
+          score: pass ? 1 : 0,
+          reason: pass ? 'Ragequit skill mirror matches' : 'Ragequit skill mirror differs',
+        };
