@@ -55,9 +55,7 @@ The repo-local skill files live under `.agents/skills/`:
       SKILL.md
 ```
 
-The hosted copies are generated from `docs/static/agent-skills/`.
-
-The same skill files are hosted at `https://docs.privacypools.com/agent-skills/<name>/SKILL.md`.
+Both locations contain identical content. `.agents/skills/` exists for IDE agents that scan the repo locally; `docs/static/agent-skills/` is the source for the hosted docs site at `https://docs.privacypools.com/agent-skills/<name>/SKILL.md`.
 
 ## Agent-Specific Workflows
 
@@ -78,7 +76,7 @@ Codex reads `AGENTS.md` at the repository root for build commands, repo structur
 2. Load the relevant skill from `.agents/skills/<name>/SKILL.md`.
 3. Use [Deployments](/deployments) for authoritative addresses and start blocks.
 
-For user-scoped installation, Codex discovers skills under `$CODEX_HOME/skills` (default: `~/.codex/skills`):
+For user-scoped installation, Codex discovers skills under `$CODEX_HOME/skills` (default: `~/.codex/skills`). Run from the repository root:
 
 ```bash
 for skill in privacy-pools-integration privacy-pools-deposit privacy-pools-withdraw privacy-pools-ragequit; do

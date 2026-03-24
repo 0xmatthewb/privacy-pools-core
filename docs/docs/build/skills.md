@@ -15,7 +15,7 @@ Skills are focused, task-specific instruction files that agents can load to comp
 
 Load the skill file for the task you are working on. Each skill is available at a hosted URL and as a repo-local file.
 
-Skills complement the docs -- they do not replace them. For the full integration guide, see [Frontend Integration](/build/integration). For SDK and API reference, see the [Reference](/reference/sdk) pages.
+Skills provide focused workflow instructions. For detailed API reference, parameter explanations, and error handling, see [Frontend Integration](/build/integration) and the [Reference](/reference/sdk) pages.
 
 ## Available Skills
 

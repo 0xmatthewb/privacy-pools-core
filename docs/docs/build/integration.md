@@ -154,7 +154,9 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. Feature-detect this at runtime based on wallet capability.
 - Compare two signatures of the same payload before deriving. If they differ, use manual mnemonic onboarding. Require the recovery phrase to be saved before continuing.
-- If account reconstruction returns `legacyAccount`, keep it during restores for migrated users. If some scopes fail during that restore, retry those scopes with `AccountService.initializeWithEvents(dataService, { mnemonic }, failedPools)`. Otherwise, retry failed non-migration scopes with `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)`.
+- If account reconstruction returns `legacyAccount`, keep it during restores for migrated users.
+  - If some scopes fail during a legacy restore, retry those scopes with `AccountService.initializeWithEvents(dataService, { mnemonic }, failedPools)` so legacy discovery runs again.
+  - For non-migration retries, use `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)` instead.
 - If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
 
 ### Deposit UX
