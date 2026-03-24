@@ -1,4 +1,4 @@
-name: Deploy docs
+name: Docs
 
 on:
   push:
@@ -13,16 +13,11 @@ on:
       - "CLAUDE.md"
       - "docs/agent-skills/**"
       - "docs/scripts/generate-agent-artifacts.mjs"
-    branches:
-      - dev
 
 jobs:
-  deploy-docs:
-    name: Deploy docs
+  validate:
+    name: Validate docs
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.ref_name == 'main' && 'Prod' || 'Dev' }}
-
     steps:
       - uses: actions/checkout@v4
 
@@ -52,17 +47,92 @@ jobs:
           cd docs
           yarn build
 
+      - name: Run QA evals (OpenAI)
+        if: env.OPENAI_API_KEY != ''
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          cd docs
+          yarn eval:qa:openai
+
+      - name: Run QA evals (Anthropic)
+        if: env.ANTHROPIC_API_KEY != ''
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd docs
+          yarn eval:qa:anthropic
+
+  deploy:
+    name: Deploy docs
+    needs: validate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name == 'main' && 'Prod' || 'Dev' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: |
+          cd docs
+          yarn install --frozen-lockfile
+
+      - name: Build website
+        run: |
+          cd docs
+          yarn build
+
       - uses: amondnet/vercel-action@v25
         id: vercel-deployment
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          vercel-org-id: ${{ secrets.ORG_ID}} # Required
-          scope: ${{ secrets.ORG_ID}} # Required
-          vercel-args: '--prod'
-          vercel-project-id: ${{ secrets.PROJECT_ID}} # Required
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          scope: ${{ secrets.ORG_ID }}
+          vercel-args: ${{ github.ref_name == 'main' && '--prod' || '' }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+
+  preview:
+    name: Preview docs
+    needs: validate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: |
+          cd docs
+          yarn install --frozen-lockfile
+
+      - name: Build website
+        run: |
+          cd docs
+          yarn build
+
+      - uses: amondnet/vercel-action@v25
+        id: vercel-deployment
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          scope: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
 
       - name: Comment PR
-        if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
