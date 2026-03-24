@@ -244,7 +244,7 @@ interface TransactionResponse {
 
 interface Commitment {
   hash: Hash;              // Commitment hash
-  nullifierHash: Hash;     // Poseidon(nullifier, secret) — the precommitment hash, not Poseidon(nullifier)
+  nullifierHash: Hash;     // Precommitment hash: Poseidon(nullifier, secret). Note: the circuit's nullifierHash is Poseidon(nullifier) — different value.
   preimage: {
     value: bigint;         // Committed value
     label: bigint;         // Commitment label

@@ -177,7 +177,7 @@ Submits a relayed withdrawal to the relayer for on-chain execution.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `chainId` | `number` | Yes | Target chain ID. |
-| `scope` | `string \| number` | Yes | Pool scope as a **decimal** bigint string (not hex). `number` is also accepted but string is recommended for large values that exceed `Number.MAX_SAFE_INTEGER`. |
+| `scope` | `string \| number` | Yes | Pool scope as a **decimal** bigint string (not hex). Always use string — most scopes exceed JavaScript's safe integer limit (`2^53 - 1`). |
 | `withdrawal` | `object` | Yes | The `Withdrawal` struct. `processooor` must be the Entrypoint address. `data` is ABI-encoded `RelayData`. |
 | `proof` | `object` | Yes | ZK proof. `pi_a` / `pi_c`: 3-element string arrays. `pi_b`: 3x2-element string array. Extra fields like `protocol` and `curve` are accepted and ignored. |
 | `publicSignals` | `string[]` | Yes | Exactly 8 elements. |

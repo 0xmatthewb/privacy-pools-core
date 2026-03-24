@@ -47,7 +47,7 @@ The Privacy Pools protocol is built on three core contracts:
 
 ## State management basics
 
-Each Privacy Pools maintains:
+Each Privacy Pool maintains:
 
 1. **Tree State**
    - Lean Incremental Merkle Tree (LeanIMT) for commitments
