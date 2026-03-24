@@ -27,7 +27,7 @@ You are building an autonomous agent, backend service, or LLM-powered tool that 
 
 **Read order:**
 
-1. [Agent & Backend Integration](/build/agents) -- entry points, discovery, and conventions
+1. [Agent & Backend Integration](/build/agents) -- entry points and workflows
 2. [Skill Library](/build/skills) -- task-specific skill files for agents
 3. [Deployments](/deployments) -- chain addresses and `startBlock` values
 4. [Frontend Integration](/build/integration) -- the same happy-path rules apply to backends
@@ -40,4 +40,4 @@ You want to work on the Privacy Pools core codebase: contracts, circuits, SDK, r
 
 1. [Contributing](/build/contributing) -- repo structure, local setup, build and test commands
 2. [Contracts](/layers/contracts) and [ZK Circuits](/layers/zk) -- layer-specific reference
-3. [SDK Utilities](/reference/sdk) -- SDK internals
+3. [SDK Utilities](/reference/sdk) -- SDK reference

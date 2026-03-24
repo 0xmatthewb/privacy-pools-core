@@ -3,13 +3,13 @@ sidebar_label: Agent & Backend Integration
 sidebar_position: 3
 title: Agent & Backend Integration
 slug: /build/agents
-description: Discovery and usage guide for autonomous agents and backend services integrating with Privacy Pools.
+description: Entry points and usage guide for autonomous agents and backend services integrating with Privacy Pools.
 keywords: [privacy pools, agent, backend, LLM, skills, automation, CLAUDE.md]
 ---
 
 # Agent & Backend Integration
 
-Privacy Pools provides structured entry points for autonomous agents and backend services. This page explains how to discover and use them.
+This page links the docs, skill files, and repo entry points agents should start from.
 
 For Node or backend runtimes, initialize SDK circuits with `new Circuits({ browser: false })`. Browser-embedded agents can use the default loader. Circuit artifacts are integrity-checked before use.
 
@@ -21,7 +21,7 @@ For Node or backend runtimes, initialize SDK circuits with `new Circuits({ brows
 | [Frontend Integration](/build/integration) | `/build/integration` | Production integration happy path and safety checks |
 | [Deployments](/deployments) | `/deployments` | Chain-specific contract addresses and `startBlock` values |
 | [llms.txt](https://docs.privacypools.com/llms.txt) | Hosted | Lightweight site index for crawlers and retrieval systems |
-| [llms-full.txt](https://docs.privacypools.com/llms-full.txt) | Hosted | Complete LLM corpus with all docs pages; highest-value content loads first |
+| [llms-full.txt](https://docs.privacypools.com/llms-full.txt) | Hosted | Complete LLM corpus with all docs pages |
 | `CLAUDE.md` | Repo root | Claude Code config; auto-loaded locally, routes to canonical docs |
 | `AGENTS.md` | Repo root | Build commands, security constraints, and repo structure for coding agents |
 
