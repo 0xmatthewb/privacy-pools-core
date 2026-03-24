@@ -112,7 +112,7 @@ struct RelayData {
 
 ### Quote Lifecycle
 
-The relayer's `feeCommitment` expires approximately **60 seconds** after the quote response. The entire flow -- get quote, generate proof, submit relay request -- must complete within this window.
+The relayer's `feeCommitment` expires approximately **60 seconds** after the quote response. The entire flow (get quote, generate proof, submit relay request) must complete within this window.
 
 Request the quote late in the flow (on the review step), and discard it whenever any of the following change:
 

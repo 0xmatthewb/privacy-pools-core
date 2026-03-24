@@ -162,11 +162,11 @@ class DataService {
 }
 ```
 
-`DataService` is fully standalone -- it does not require `PrivacyPoolSDK` or a private key. It only needs an RPC URL. Use it for read-only event scanning and account reconstruction in contexts where a signer is not available (e.g., indexers, dashboards, or pre-login state reconstruction).
+`DataService` is fully standalone. It does not require `PrivacyPoolSDK` or a private key. It only needs an RPC URL. Use it for read-only event scanning and account reconstruction in contexts where a signer is not available (e.g., indexers, dashboards, or pre-login state reconstruction).
 
-`DataService` fetches logs in chunked, rate-limited ranges. Always initialize it with the deployment `startBlock` from the [Deployments](/deployments) page rather than `0n` -- scanning from genesis works but is unnecessarily slow and may hit RPC provider limits. Use the optional second constructor argument when you need per-chain fetch overrides (chunk size, concurrency, delay, retries). It also preserves zero-value withdrawal events so account reconstruction stays correct for full-withdrawal chains, even though zero-value change commitments are not spendable.
+`DataService` fetches logs in chunked, rate-limited ranges. Always initialize it with the deployment `startBlock` from the [Deployments](/deployments) page rather than `0n`. Scanning from genesis works but is unnecessarily slow and may hit RPC provider limits. Use the optional second constructor argument when you need per-chain fetch overrides (chunk size, concurrency, delay, retries). It also preserves zero-value withdrawal events so account reconstruction stays correct for full-withdrawal chains, even though zero-value change commitments are not spendable.
 
-`getWithdrawals` and `getRagequits` accept an optional `fromBlock` parameter for incremental fetching. `getDeposits` does not have this parameter -- it always fetches from the configured `startBlock`.
+`getWithdrawals` and `getRagequits` accept an optional `fromBlock` parameter for incremental fetching. `getDeposits` does not have this parameter; it always fetches from the configured `startBlock`.
 
 ## Crypto Utilities
 

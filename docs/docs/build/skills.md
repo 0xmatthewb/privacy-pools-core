@@ -31,7 +31,7 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 
 **Purpose:** Deposit flow implementation.
 
-**When to use:** Implementing the deposit path -- secret generation, precommitment, transaction submission, and event tracking.
+**When to use:** Implementing the deposit path: secret generation, precommitment, transaction submission, and event tracking.
 
 **Skill file:** [`/agent-skills/privacy-pools-deposit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md)
 
@@ -41,7 +41,7 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 
 **Purpose:** Relayed withdrawal implementation.
 
-**When to use:** Implementing the private withdrawal path -- ASP root verification, relayer quoting, proof generation, and relay submission.
+**When to use:** Implementing the private withdrawal path: ASP root verification, relayer quoting, proof generation, and relay submission.
 
 **Skill file:** [`/agent-skills/privacy-pools-withdraw/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md)
 
@@ -51,6 +51,6 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 
 **Purpose:** Ragequit (public exit) implementation.
 
-**When to use:** Implementing the ragequit public exit -- commitment proof, on-chain exit, and depositor-only access control.
+**When to use:** Implementing the ragequit public exit: commitment proof, on-chain exit, and depositor-only access control.
 
 **Skill file:** [`/agent-skills/privacy-pools-ragequit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md)

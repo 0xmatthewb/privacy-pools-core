@@ -67,7 +67,7 @@ Returns a fee quote for a relayed withdrawal. When `recipient` is included, the 
 | `extraGas` | `boolean` | Yes | When `true`, requests an additional native gas-token drop as part of the withdrawal. Only supported for non-native assets. Native-asset quotes must use `false`. |
 | `recipient` | `string` | No | Final recipient address. When provided, the response includes a signed `feeCommitment`. Omit for a fee estimate only. |
 
-**Response (without recipient -- fee estimate only):**
+**Response (without recipient, fee estimate only):**
 
 ```json
 {
@@ -83,7 +83,7 @@ Returns a fee quote for a relayed withdrawal. When `recipient` is included, the 
 }
 ```
 
-**Response (with recipient -- includes signed commitment):**
+**Response (with recipient, includes signed commitment):**
 
 ```json
 {
@@ -122,7 +122,7 @@ Returns a fee quote for a relayed withdrawal. When `recipient` is included, the 
 
 ### Quote Lifecycle
 
-The `feeCommitment` expires approximately **60 seconds** after the quote response. The full flow -- quote, proof generation, relay request -- must complete within this window. Proof generation typically takes 5--15 seconds in Node.js.
+The `feeCommitment` expires approximately **60 seconds** after the quote response. The full flow (quote, proof generation, relay request) must complete within this window. Proof generation typically takes 5 to 15 seconds in Node.js.
 
 **Re-quote triggers:** Discard the quote and request a new one whenever any of the following change:
 

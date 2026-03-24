@@ -14,28 +14,30 @@ You are building a wallet, dapp, or any user-facing interface that deposits, wit
 
 **Read order:**
 
-1. [Frontend Integration](/build/integration) -- wallet connection, deposit, relayed withdrawal, ragequit
-2. [Deployments](/deployments) -- chain addresses and `startBlock` values
-3. [SDK Utilities](/reference/sdk) -- types and functions
-4. [Protocol flows](/protocol/deposit) -- deposit, withdrawal, and ragequit mechanics
+| # | Page | Covers |
+|---|------|--------|
+| 1 | [Frontend Integration](/build/integration) | Wallet connection, deposit, relayed withdrawal, ragequit |
+| 2 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
+| 3 | [SDK Utilities](/reference/sdk) | Types and functions |
+| 4 | [Protocol flows](/protocol/deposit) | Deposit, withdrawal, and ragequit mechanics |
 
 ## Agent Integration
 
 You are using an AI coding agent or LLM-powered tool to integrate Privacy Pools.
 
-**Read order:**
-
-1. [Agent Integration](/build/agents) -- entry points and workflows
-2. [Skill Library](/build/skills) -- task-specific skill files for agents
-3. [Deployments](/deployments) -- chain addresses and `startBlock` values
-4. [Frontend Integration](/build/integration) -- the same integration rules apply
+| # | Page | Covers |
+|---|------|--------|
+| 1 | [Agent Integration](/build/agents) | Entry points and workflows |
+| 2 | [Skill Library](/build/skills) | Task-specific skill files for agents |
+| 3 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
+| 4 | [Frontend Integration](/build/integration) | The same integration rules apply |
 
 ## Contributing
 
 You want to work on the Privacy Pools core codebase: contracts, circuits, SDK, relayer, or documentation.
 
-**Read order:**
-
-1. [Contributing](/build/contributing) -- repo structure, local setup, build and test commands
-2. [Contracts](/layers/contracts) and [ZK Circuits](/layers/zk) -- layer-specific reference
-3. [SDK Utilities](/reference/sdk) -- SDK reference
+| # | Page | Covers |
+|---|------|--------|
+| 1 | [Contributing](/build/contributing) | Repo structure, local setup, build and test commands |
+| 2 | [Contracts](/layers/contracts) and [ZK Circuits](/layers/zk) | Layer-specific reference |
+| 3 | [SDK Utilities](/reference/sdk) | SDK reference |

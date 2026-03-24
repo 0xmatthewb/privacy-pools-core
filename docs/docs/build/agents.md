@@ -87,8 +87,8 @@ done
 
 For agents that ingest a single document, two corpus files are available:
 
-- [`llms.txt`](https://docs.privacypools.com/llms.txt) -- lightweight site index with page titles and URLs. Good for quick orientation or retrieval-augmented pipelines that fetch pages on demand.
-- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt) -- complete corpus with all docs pages inlined. Best when the agent can consume the full context in one pass.
+- [`llms.txt`](https://docs.privacypools.com/llms.txt): lightweight site index with page titles and URLs. Good for quick orientation or retrieval-augmented pipelines that fetch pages on demand.
+- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt): complete corpus with all docs pages inlined. Best when the agent can consume the full context in one pass.
 
 Individual skill files can also be fetched directly by URL (e.g., `https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md`) without loading the full corpus.
 
