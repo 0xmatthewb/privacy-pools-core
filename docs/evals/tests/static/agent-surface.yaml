@@ -81,7 +81,7 @@
             : `Missing: ${missing.join(', ')}`,
         };
 
-- description: "Skill library page lists the supported workflows and local skill paths"
+- description: "Skill library page lists the supported workflows with hosted URLs"
   vars:
     filePath: "docs/docs/build/skills.md"
   assert:
@@ -93,10 +93,10 @@
           'privacy-pools-deposit',
           'privacy-pools-withdraw',
           'privacy-pools-ragequit',
-          '.agents/skills/privacy-pools-integration/SKILL.md',
-          '.agents/skills/privacy-pools-deposit/SKILL.md',
-          '.agents/skills/privacy-pools-withdraw/SKILL.md',
-          '.agents/skills/privacy-pools-ragequit/SKILL.md',
+          'agent-skills/privacy-pools-integration/SKILL.md',
+          'agent-skills/privacy-pools-deposit/SKILL.md',
+          'agent-skills/privacy-pools-withdraw/SKILL.md',
+          'agent-skills/privacy-pools-ragequit/SKILL.md',
         ];
         const missing = required.filter((value) => !text.includes(value));
         return {

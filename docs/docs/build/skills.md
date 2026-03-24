@@ -11,7 +11,7 @@ Skills are focused, task-specific instruction files that agents can load to comp
 
 ## How to Use Skills
 
-Load the skill file for the task you are working on. Each skill is available at a hosted URL and as a repo-local file.
+Load the skill file for the task you are working on.
 
 Skills provide focused workflow instructions. For detailed API reference, parameter explanations, and error handling, see [Frontend Integration](/build/integration) and the [Reference](/reference/sdk) pages.
 
@@ -24,7 +24,6 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 **When to use:** Starting a new integration, onboarding to the protocol, or planning the full deposit-to-withdrawal flow for a frontend or backend.
 
 **Skill file:** [`/agent-skills/privacy-pools-integration/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md)
-**Local:** `.agents/skills/privacy-pools-integration/SKILL.md`
 
 ---
 
@@ -35,7 +34,6 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 **When to use:** Implementing the deposit path -- secret generation, precommitment, transaction submission, and event tracking.
 
 **Skill file:** [`/agent-skills/privacy-pools-deposit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md)
-**Local:** `.agents/skills/privacy-pools-deposit/SKILL.md`
 
 ---
 
@@ -46,7 +44,6 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 **When to use:** Implementing the private withdrawal path -- ASP root verification, relayer quoting, proof generation, and relay submission.
 
 **Skill file:** [`/agent-skills/privacy-pools-withdraw/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md)
-**Local:** `.agents/skills/privacy-pools-withdraw/SKILL.md`
 
 ---
 
@@ -57,4 +54,3 @@ Skills provide focused workflow instructions. For detailed API reference, parame
 **When to use:** Implementing the ragequit public exit -- commitment proof, on-chain exit, and depositor-only access control.
 
 **Skill file:** [`/agent-skills/privacy-pools-ragequit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md)
-**Local:** `.agents/skills/privacy-pools-ragequit/SKILL.md`
