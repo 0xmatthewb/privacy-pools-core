@@ -54,9 +54,9 @@ Skills complement the docs -- they do not replace them. For the full integration
 
 ### privacy-pools-ragequit
 
-**Purpose:** Ragequit (emergency public exit) implementation.
+**Purpose:** Ragequit (public exit) implementation.
 
-**When to use:** Implementing the ragequit fallback -- commitment proof, on-chain exit, and depositor-only access control.
+**When to use:** Implementing the ragequit public exit -- commitment proof, on-chain exit, and depositor-only access control.
 
 **Skill file:** [`/agent-skills/privacy-pools-ragequit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md)
 **Local:** `.agents/skills/privacy-pools-ragequit/SKILL.md`

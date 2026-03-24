@@ -22,7 +22,7 @@ Implement the ragequit (public exit) flow for Privacy Pools. Ragequit allows a d
 ## When to Use
 
 - The ASP has not approved the deposit (or has removed the label).
-- The user needs an emergency exit from the pool.
+- The user wants a public exit back to the original depositor address.
 - The user explicitly prefers a public, non-private exit.
 
 ## Key Steps

@@ -133,14 +133,14 @@ After a successful deposit, parse the `Deposited` event and persist the followin
 | `nullifier` | Locally generated | Required to reconstruct the commitment and generate proofs |
 | `secret` | Locally generated | Required to reconstruct the commitment and generate proofs |
 
-Store these in mnemonic-backed account state rather than surfacing raw secrets to the user. This avoids exposing raw secrets in copy/paste or clipboard flows.
+Store these in mnemonic-backed account state rather than surfacing raw deposit secrets to the user. This avoids exposing raw deposit secrets in copy/paste or clipboard flows.
 
 ### Account and Recovery
 
 Frontends should use mnemonic-backed pool accounts. Deposit secrets (`nullifier`, `secret`) are derived deterministically from the mnemonic, pool scope, and a sequential deposit index, so accounts can be fully reconstructed from the mnemonic and on-chain events.
 
-- If offering wallet-signature onboarding, gate it by wallet capability: sign the same EIP-712 payload twice and compare. If signatures differ, fall back to manual mnemonic setup.
-- Always require a backup step before the user can deposit.
+- If offering wallet-signature onboarding, gate it by wallet capability: sign the same EIP-712 payload twice and compare. If signatures differ, use manual mnemonic setup.
+- Require the user to save the recovery phrase before the first deposit.
 - For manual recovery phrase entry, sanitize whitespace, newlines, and commas, and validate the checksum before use.
 
 ### Precommitment Uniqueness

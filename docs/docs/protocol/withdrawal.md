@@ -1,23 +1,19 @@
 ---
 title: Withdrawal
-description: "Relayed withdrawal is the recommended production path, with sections on advanced direct withdrawal, proof generation, nullifier-spend checks, fee handling, and state transitions."
+description: "Relayed withdrawal is the frontend production path. This page covers quote lifecycle, proof generation, state roots, and the contract-level direct call that frontends should not expose."
 keywords:
   - privacy pools
   - withdrawal
   - relayer
-  - direct withdrawal
   - nullifier
   - proof verification
   - fees
 ---
 
 
-Privacy Pools supports two withdrawal paths, but frontend integrations should build their normal withdrawal UX around the relayed flow:
+Frontend integrations should use relayed withdrawal. A relayer submits `Entrypoint.relay()` for the user, which preserves recipient privacy and matches the production app flow.
 
-1. **Relayed Withdrawal**: A relayer submits `Entrypoint.relay()` for the user. This is the privacy-preserving frontend path.
-2. **Direct Withdrawal**: The user submits `PrivacyPool.withdraw()` directly. This is an advanced non-private signer-only path.
-
-Both paths require [zero-knowledge proofs](/layers/zk/withdrawal) to prove commitment ownership. Frontend integrations should treat relayed withdrawal as the standard app flow.
+The pool contract also exposes direct `PrivacyPool.withdraw()`, but that is a non-private contract-level path. Keep it out of normal frontend UX.
 
 :::info Integration
 For production integration guidance, see [Frontend Integration](/build/integration).
@@ -25,54 +21,7 @@ For production integration guidance, see [Frontend Integration](/build/integrati
 
 Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()`, while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
 
-## Withdrawal Types Comparison
-
-| Aspect | Direct Withdrawal | Relayed Withdrawal |
-| --- | --- | --- |
-| Contract Call | `PrivacyPool.withdraw()` | `Entrypoint.relay()` |
-| Who receives pool payout | `processooor` (the signer) | Entrypoint |
-| Recipient Rules | `processooor` must equal `msg.sender`, so funds go to the signer | Final recipient comes from `RelayData`; Entrypoint routes funds after pool withdrawal |
-| Privacy Outcome | Non-private | Privacy-preserving frontend path |
-| Frontend Use | Not a normal app flow | Standard app withdrawal flow |
-
-### Protocol Flow - Direct Withdrawal (Advanced)
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant SDK
-    participant Pool
-    participant Entrypoint
-
-    Note over User: Has: nullifier, secret,<br/>label, value
-    User->>SDK: Prepare withdrawal(amount)
-
-    activate SDK
-    Note over SDK: Generate:<br/>newNullifier, newSecret
-    SDK->>SDK: Compute remaining value
-    SDK->>SDK: Generate Withdrawal proof
-    SDK-->>User: withdrawalProof
-    deactivate SDK
-
-    User->>Pool: withdraw(withdrawal, proof)
-
-    activate Pool
-    Pool->>Pool: Verify processooor == msg.sender
-    Pool->>Entrypoint: Check proof uses latest ASP root
-    Pool->>Pool: Verify proof
-
-
-    Pool->>Pool: Update state<br/>Record spent nullifier
-    Pool->>User: Transfer amount
-
-    Pool-->>User: Emit Withdrawn
-    deactivate Pool
-
-    Note over User: Store new secrets<br/>for remaining balance
-
-```
-
-### Protocol Flow - Relayed Withdrawal (Recommended production default)
+## Recommended Frontend Flow
 
 ```mermaid
 sequenceDiagram
@@ -120,12 +69,22 @@ sequenceDiagram
 
 ```
 
-### Withdrawal Data Structure
+## Contract-Level Direct Withdrawal
+
+`PrivacyPool.withdraw()` still exists at the contract layer, but it is not the recommended frontend path:
+
+- `withdrawal.processooor` must equal `msg.sender`
+- the pool pays the signer directly
+- recipient privacy is lost compared with the relayed flow
+
+Keep it documented for protocol completeness and error handling, not as a user-facing UX option.
+
+## Withdrawal Data Structure
 
 ```solidity
 struct Withdrawal {
-    address processooor;    // Direct: tx signer (msg.sender), Relayed: Entrypoint address
-    bytes data;             // Direct: empty, Relayed: ABI-encoded RelayData
+    address processooor;    // Relayed: Entrypoint address, Direct: tx signer (msg.sender)
+    bytes data;             // Relayed: ABI-encoded RelayData, Direct: empty
 }
 
 struct RelayData {
@@ -137,21 +96,7 @@ struct RelayData {
 
 ## Withdrawal Steps
 
-### Direct Withdrawal (Advanced)
-
-1. **Proof Generation**
-   - User constructs withdrawal parameters
-   - Generates ZK proof of commitment ownership
-   - Computes new commitment for remaining value
-2. **Contract Interaction**
-   - User submits proof to pool contract
-   - Pool verifies proof and context
-   - Updates state (nullifiers, commitments)
-   - Transfers assets to signer (processooor)
-
-Do not expose this as the default frontend action if recipient privacy matters.
-
-### Relayed Withdrawal (Recommended)
+### Relayed Withdrawal
 
 1. **User Steps**
    - Construct withdrawal with Entrypoint as processooor

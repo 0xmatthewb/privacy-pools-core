@@ -1,6 +1,6 @@
 ---
 title: Ragequit
-description: "Public fallback exit that allows original depositors to unconditionally reclaim funds from the pool."
+description: "Public exit that allows original depositors to unconditionally reclaim funds from the pool."
 keywords:
   - privacy pools
   - ragequit
@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-Ragequit allows the original depositor to publicly reclaim their funds at any time, regardless of [ASP](/layers/asp) approval status. The contract enforces no ASP-related checks — only that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. While always available, ragequit is primarily useful when a deposit has not been approved, since approved deposits can use the privacy-preserving [withdrawal](/protocol/withdrawal) path instead.
+Ragequit allows the original depositor to publicly reclaim their funds at any time, regardless of [ASP](/layers/asp) approval status. The contract enforces no ASP-related checks — only that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. It is the protocol's public exit path. Use the privacy-preserving [withdrawal](/protocol/withdrawal) path when recipient privacy matters.
 
 :::info Integration
 For production integration guidance, see [Frontend Integration](/build/integration).
@@ -92,10 +92,11 @@ sequenceDiagram
 
 ### Unconditional Availability
 
-Ragequit does not require ASP approval. The contract enforces no ASP-related checks -- only that the caller is the original depositor, the commitment exists in the state tree, and the nullifier has not been spent. This makes ragequit the guaranteed exit path when:
+Ragequit does not require ASP approval. The contract enforces no ASP-related checks -- only that the caller is the original depositor, the commitment exists in the state tree, and the nullifier has not been spent. This makes ragequit the always-available public exit path when:
 
 - A deposit has not yet been approved by the ASP (most deposits are approved within 1 hour, but some may take up to 7 days)
 - A label has been retroactively removed from the ASP approved set
+- The user explicitly wants a public return to the original depositor address
 - The ASP service is unavailable
 
 ### Original Depositor Restriction
@@ -112,6 +113,6 @@ A partial private withdrawal creates a new change commitment with a new nullifie
 
 ### When to Use Ragequit
 
-Ragequit is a public fallback -- it sacrifices privacy because the on-chain transaction links the deposit to the exit. Use the privacy-preserving [relayed withdrawal](/protocol/withdrawal) path when the deposit is ASP-approved. Reserve ragequit for situations where private withdrawal is not available.
+Ragequit is a public exit -- it sacrifices privacy because the on-chain transaction links the deposit to the exit and returns funds to the original depositor address. Use the privacy-preserving [relayed withdrawal](/protocol/withdrawal) path when the deposit is ASP-approved and the user wants the private flow.
 
 Frontend integrations should keep ragequit visually separate from the private withdrawal flow and label it clearly as a public exit.

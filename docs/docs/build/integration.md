@@ -73,8 +73,8 @@ const contracts = sdk.createContractInstance(
   "0x..." as `0x${string}`, // signer private key
 );
 
-// 5. Generate account keys from a mnemonic
-const keys = generateMasterKeys("your twelve word mnemonic phrase ...");
+// 5. Generate account keys from a recovery phrase
+const keys = generateMasterKeys("your recovery phrase ...");
 
 // 6. Derive deposit secrets and compute precommitment
 const scope = await publicClient.readContract({
@@ -130,14 +130,14 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 ## Integration Checklist
 
 1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
-2. If wallet onboarding is supported, derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice, and require a backup step. If the wallet path cannot guarantee deterministic signing, fall back to manual mnemonic create/load.
+2. If wallet onboarding is supported, derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice. Otherwise use manual mnemonic onboarding, and require the recovery phrase to be saved before continuing.
 3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs. A deposit is approved when its `label` appears in the current ASP leaves returned by `GET /{chainId}/public/mt-leaves`. Treat deposits as pending until the label is present.
 5. Build withdrawal proofs with two roots: read the pool state root from `IPrivacyPool.currentRoot()` and use ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
-6. Build the app's withdrawal UX around relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. This is the privacy-preserving withdrawal path and should be the standard withdrawal action.
+6. Build the app's withdrawal UX around relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. This is the privacy-preserving withdrawal path and should be the only user-facing withdrawal action.
 7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval (label present in ASP leaves).
 8. Resolve the final recipient before review, fetch relayer details plus `minWithdrawAmount`, and request the relayer quote on the review step. Discard the quote whenever amount, recipient, relayer, or optional gas-token-drop settings change.
-9. Do not surface direct `PrivacyPool.withdraw()` in normal frontend integrations. It is a signer-only non-private protocol path. If an explicit advanced direct flow is ever implemented, `processooor` must equal `msg.sender`, while the relayed path uses `Entrypoint.relay()` with `processooor = entrypointAddress`.
+9. Keep private withdrawals on the relayed `Entrypoint.relay()` path. Do not surface direct `PrivacyPool.withdraw()` in frontend UX.
 10. Keep ragequit separate and clearly public.
 
 ## Frontend Defaults
@@ -145,7 +145,7 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 - Track each deposit and each post-withdrawal change commitment inside the same pool-account tree.
 - Disable withdraw CTAs unless wallet is connected, account state is loaded, at least one relayer is available, and there is at least one approved non-zero pool account.
 - Filter withdraw selectors to approved non-zero accounts for the active chain/scope and pick a sensible default account automatically.
-- Parse confirmed receipts and persist them in pool-account state. This avoids exposing raw secrets in copy/paste or clipboard flows.
+- Parse confirmed receipts and persist them in pool-account state. This avoids exposing raw note material in copy/paste or clipboard flows.
 - Gate wallet-signature derivation by wallet capability; many smart/contract wallets should use manual mnemonic onboarding instead.
 - After a successful private withdrawal, insert the new change commitment back into local account state before allowing another spend.
 - Do not log recovery phrases, signatures, nullifiers, secrets, or raw note material to analytics or error tracking.
@@ -156,7 +156,7 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 ### Account and Recovery
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. Feature-detect this at runtime based on wallet capability.
-- Compare two signatures of the same payload before deriving, and require recovery-phrase backup before continuing.
+- Compare two signatures of the same payload before deriving. If they differ, use manual mnemonic onboarding. Require the recovery phrase to be saved before continuing.
 - If account reconstruction returns `legacyAccount`, keep it during restores for migrated users. If some scopes fail during that restore, retry those scopes with `AccountService.initializeWithEvents(dataService, { mnemonic }, failedPools)`. Otherwise, retry failed non-migration scopes with `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)`.
 - If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
 
@@ -174,7 +174,7 @@ For the full deposit protocol mechanics, see [Deposit](/protocol/deposit).
 - Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution. Displaying reverse ENS alongside the resolved address is helpful. Unresolved input must block submit.
 - Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`. If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
 - `GET /{chainId}/public/deposits-larger-than` is useful for showing an anonymity-set estimate while the user edits the amount.
-- `POST /relayer/quote` without `recipient` is useful earlier in the form for fee estimation only. Request the signed `feeCommitment` only after the final recipient is known on review.
+- Request the signed `feeCommitment` only after the final recipient is known on review.
 - Request the relayer quote only when the review screen opens, keep a visible countdown, and if the quote refreshes because inputs changed or time elapsed, require the user to confirm again.
 - Treat `extraGas` as an optional gas-token drop for supported non-native assets. Quote invalidation and fee display must include it.
 - If proof generation takes noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof`.
@@ -222,7 +222,6 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, se
 - When reconstructing state from events, include the deployment `startBlock` in your `ChainConfig` entries so `DataService` scans from the correct block.
 - `withdrawalAmount` must be `> 0` and `<=` commitment value.
 - Check `minimumDepositAmount` before submitting deposit transactions.
-- If you explicitly implement direct withdrawal, `withdrawal.processooor` must equal `msg.sender`, so the pool pays the signer.
 - For relayed withdrawal, `withdrawal.processooor` must equal the Entrypoint address, and recipient plus fee routing comes from `withdrawal.data`.
 - Relayer `feeCommitment` has a short TTL (~60s); quote and request should be near-contiguous, and quote invalidation should be tied to form changes.
 - After partial withdrawals, refresh leaves before generating the next proof.
@@ -234,7 +233,7 @@ OpenAPI/Swagger schemas may lag live responses. For concrete response shapes, se
 |---|---|---|
 | `IncorrectASPRoot` | ASP root mismatch (`onchainMtRoot` parity not satisfied) | Re-fetch `mt-roots` + `mt-leaves`, use `onchainMtRoot`, regenerate proof |
 | `MERKLE_ERROR` | Leaf missing from provided leaves (wrong scope/pool or stale data) | Verify scope and pool, refresh leaves, rebuild Merkle proofs |
-| `InvalidProcessooor` | Direct vs relayed `processooor` mismatch | Direct: `processooor = msg.sender`; relayed: `processooor = entrypointAddress` |
+| `InvalidProcessooor` | Relayed withdrawal payload built with the wrong `processooor` | Rebuild the withdrawal with `processooor = entrypointAddress` and refresh the relayer quote if needed |
 | `NullifierAlreadySpent` | Commitment already exited via withdrawal or ragequit | Stop retrying that commitment and select another spendable commitment |
 | `PrecommitmentAlreadyUsed` | Duplicate deposit precommitment / index reuse | Increment deposit index, recompute secrets/precommitment, resubmit |
 | `ContextMismatch` | Wrong `withdrawal.data` or `processooor` caused the context hash to differ | Rebuild the `Withdrawal` object and re-derive context |
