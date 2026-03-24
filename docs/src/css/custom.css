@@ -1142,7 +1142,7 @@ code {
 
 /* Search trigger button */
 button.aa-DetachedSearchButton {
-  min-width: 200px;
+  min-width: 150px;
   border-radius: var(--pp-radius-md);
   border: 1px solid var(--pp-border);
   height: 2.25rem;
@@ -1392,10 +1392,10 @@ html[data-theme="dark"] .theme-doc-toc-mobile ul[class*="tableOfContents"] {
     --ifm-h2-font-size: 1.25rem;
   }
 
-  /* Constrain search button on mobile */
+  /* Search button on mobile — match Copy page width */
   button.aa-DetachedSearchButton {
-    min-width: 0;
-    max-width: 140px;
+    min-width: 140px;
+    max-width: 160px;
   }
 
   /* Hide shortcut badge on mobile */
