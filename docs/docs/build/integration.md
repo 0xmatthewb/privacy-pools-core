@@ -28,10 +28,14 @@ Node 18+ (monorepo development requires 20+ — see [Contributing](/build/contri
 
 **Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
 
-**Serve circuit artifacts:** copy the SDK's circuit files to your app's public directory so the browser can fetch them at runtime:
+**Serve circuit artifacts:** the SDK's `Circuits` class fetches `.wasm`, `.zkey`, and `.vkey` files at runtime from a URL you provide via `baseUrl`. You need six files in your public directory: `commitment.wasm`, `commitment.zkey`, `commitment.vkey`, `withdraw.wasm`, `withdraw.zkey`, `withdraw.vkey`. These are built from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits) — copy them from a monorepo build or from the [production app's artifacts](https://app.privacypools.com/artifacts/).
 
 ```bash
-cp node_modules/@0xbow/privacy-pools-core-sdk/dist/node/artifacts/*.{wasm,zkey,vkey} public/artifacts/
+# Example: download from the production app
+mkdir -p public/artifacts
+for f in commitment.wasm commitment.zkey commitment.vkey withdraw.wasm withdraw.zkey withdraw.vkey; do
+  curl -o "public/artifacts/$f" "https://app.privacypools.com/artifacts/$f"
+done
 ```
 
 1. **Load deployment data**
