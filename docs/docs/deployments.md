@@ -17,7 +17,7 @@ keywords:
   - verifiers
 ---
 
-This section contains the addresses of deployed Privacy Pools contracts across various networks.
+This section contains the addresses of deployed Privacy Pools contracts across various networks. Integrations should use the **Entrypoint (Proxy)** address. The implementation address is listed for reference only.
 
 ## Ethereum Mainnet (Chain ID: 1)
 
