@@ -6,6 +6,8 @@ description: Choose the right integration path for your Privacy Pools project.
 keywords: [privacy pools, getting started, integration, frontend, agent]
 ---
 
+Privacy Pools is a smart-contract protocol for compliant private transactions on Ethereum. Users deposit into a shared pool and withdraw privately, using zero-knowledge proofs and Association Set Providers (ASPs) to prove their funds are not linked to illicit activity. The SDK is TypeScript-based and uses viem.
+
 Pick the path that matches what you are building.
 
 ## Frontend or App Integration
@@ -17,9 +19,10 @@ You are building a wallet, dapp, or any user-facing interface that deposits, wit
 | # | Page | Covers |
 |---|------|--------|
 | 1 | [Frontend Integration](/build/integration) | Wallet connection, deposit, relayed withdrawal, ragequit |
-| 2 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
-| 3 | [SDK Utilities](/reference/sdk) | Types and functions |
-| 4 | [Protocol flows](/protocol/deposit) | Deposit, withdrawal, and ragequit mechanics |
+| 2 | [UX Patterns](/build/ux-patterns) | Account management, deposit, withdrawal, and ragequit frontend patterns |
+| 3 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
+| 4 | [SDK Utilities](/reference/sdk) | Types and functions |
+| 5 | [Protocol flows](/protocol/deposit) | Deposit, withdrawal, and ragequit mechanics |
 
 ## Agent Workflows
 
@@ -30,7 +33,7 @@ You are using an AI coding agent or LLM-powered tool to integrate Privacy Pools.
 | 1 | [Agent Workflows](/build/agents) | Entry points and workflows |
 | 2 | [Skill Library](/build/skills) | Task-specific skill files for agents |
 | 3 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
-| 4 | [Frontend Integration](/build/integration) | The same integration rules apply |
+| 4 | [Frontend Integration](/build/integration) | SDK patterns, deposit/withdrawal implementation |
 
 ## Contributing
 
