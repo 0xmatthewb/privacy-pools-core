@@ -401,3 +401,5 @@ const migratedRetry = await AccountService.initializeWithEvents(
 The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search. On mnemonic-based initialization, it also scans the legacy derivation path before continuing with current-key deposits and withdrawals.
 
 After initialization, refresh ASP review status across every loaded chain/scope combination to determine which accounts are eligible for private withdrawal. Persist zero-value change commitments for history alignment, but do not treat them as spendable balances.
+
+For a complete integration recipe and checklist, see [Frontend Integration](/build/integration).

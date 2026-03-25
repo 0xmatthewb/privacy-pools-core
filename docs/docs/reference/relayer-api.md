@@ -282,3 +282,5 @@ Before proceeding with a relayed withdrawal, check:
 
 1. `withdrawalAmount >= minWithdrawAmount`
 2. If partial withdrawal: the remaining balance should be either `0` or `>= minWithdrawAmount`. If the remainder would be non-zero but below the minimum, warn the user and offer alternatives (withdraw less, withdraw the full balance, or plan a later public exit for the remainder).
+
+For how these endpoints fit into the full withdrawal flow, see [Frontend Integration](/build/integration).

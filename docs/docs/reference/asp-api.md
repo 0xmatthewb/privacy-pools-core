@@ -230,3 +230,5 @@ For direct on-chain reads without the HTTP API:
 - **Latest root:** `Entrypoint.latestRoot()` (selector: `0xd7b0fef1`)
 - **Historical roots:** `Entrypoint.rootByIndex(index)` returns the root at a given index. `Entrypoint.associationSets(index)` returns `(root, ipfsCID, timestamp)`.
 - **IPFS CID:** `associationSets(index).ipfsCID` returns the IPFS CID containing the label set for a given root index.
+
+For how these endpoints fit into the withdrawal flow, see [Frontend Integration](/build/integration).
