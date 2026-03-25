@@ -105,7 +105,9 @@ graph TD
 
 - Vetting fee: Configurable percentage (`vettingFeeBPS`) taken by the Entrypoint on every deposit
 - Example: 100 basis points = 1% fee
-- The fee is deducted **on deposit**, not on withdrawal. The `value` emitted in the `Deposited` event is the post-fee `committedValue`, which may be less than the `amount` sent. Always use this post-fee value when reconstructing commitments or computing withdrawal amounts.
+:::warning Fee is deducted on deposit
+The fee is deducted **on deposit**, not on withdrawal. The `value` emitted in the `Deposited` event is the post-fee `committedValue`, which may be less than the `amount` sent. Always use this post-fee value when reconstructing commitments or computing withdrawal amounts.
+:::
 
 ### Minimum Deposit
 

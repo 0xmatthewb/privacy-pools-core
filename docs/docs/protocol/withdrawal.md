@@ -13,6 +13,14 @@ keywords:
 
 Frontend integrations should use relayed withdrawal. A relayer submits `Entrypoint.relay()` for the user, which preserves recipient privacy and matches the production app flow.
 
+**Happy path at a glance:**
+
+1. Verify ASP roots have converged on-chain (`mtRoot === onchainMtRoot`)
+2. Request a relayer quote (valid ~60 seconds)
+3. Build `Withdrawal` struct using the quote's `feeCommitment.withdrawalData`
+4. Generate ZK proof with Merkle proofs from both state and ASP trees
+5. Submit proof to relayer before the quote expires
+
 The pool contract also exposes direct `PrivacyPool.withdraw()`, but that is a non-private contract-level path. Keep it out of normal frontend UX.
 
 Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()`, while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
@@ -101,7 +109,10 @@ struct RelayData {
    - Validate the relayer minimum and warn if the remaining balance after a partial withdrawal would fall below it
    - Generate ZK proof
    - Submit to relayer before the quote expires
-   - **Important:** The relayer returns HTTP 200 for both success and application-level failures. Always check `result.success` before treating the withdrawal as complete. See [Relayer API — Handling Failures](/reference/relayer-api#handling-failures) for the full failure matrix.
+
+:::warning Relayer returns HTTP 200 for failed withdrawals
+The relayer returns HTTP 200 for both success and application-level failures. Always check `result.success` before treating the withdrawal as complete. See [Relayer API — Handling Failures](/reference/relayer-api#handling-failures) for the full failure matrix.
+:::
 2. **Relayer Steps**
    - Verify proof locally
    - Submit transaction to Entrypoint
@@ -137,9 +148,11 @@ Withdrawal proofs carry two separate Merkle roots with different sources and val
 | **Tree contents** | Commitment hashes | Approved labels |
 | **Error on mismatch** | `UnknownStateRoot` | `IncorrectASPRoot` |
 
+:::warning ASP root convergence required
 Always verify ASP root parity before submitting: `BigInt(onchainMtRoot) === Entrypoint.latestRoot()`.
 
-**Important:** The ASP API returns two root values. `mtRoot` is the ASP's latest computed root; `onchainMtRoot` is the root currently committed on-chain. The `mt-leaves` endpoint returns leaves for `mtRoot`, but proofs must use `onchainMtRoot`. If `mtRoot !== onchainMtRoot`, the ASP has computed a new tree that has not been pushed on-chain yet — wait and re-fetch until they converge before building a proof.
+The ASP API returns two root values. `mtRoot` is the ASP's latest computed root; `onchainMtRoot` is the root currently committed on-chain. The `mt-leaves` endpoint returns leaves for `mtRoot`, but proofs must use `onchainMtRoot`. If `mtRoot !== onchainMtRoot`, the ASP has computed a new tree that has not been pushed on-chain yet — wait and re-fetch until they converge before building a proof.
+:::
 
 ### Change Commitment Refresh
 
