@@ -26,7 +26,9 @@ After deposit, the ASP evaluates the deposit and decides whether to add its labe
 
 ## Waiting for Approval
 
-The ASP reviews deposits asynchronously. Check status by calling `GET /{chainId}/public/mt-roots` — when `mtRoot` equals `onchainMtRoot` and the deposit's label appears in the `aspLeaves` array from `GET /{chainId}/public/mt-leaves`, the deposit is ready for withdrawal. If `mtRoot !== onchainMtRoot`, the ASP tree has not yet converged on-chain — wait and re-fetch. Show deposits as "pending" until both conditions are met.
+The ASP reviews deposits asynchronously. Most deposits are approved within an hour, though some may take longer. Show deposits as "pending" until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain.
+
+For the technical convergence check and API endpoints, see the [Withdrawal page](/protocol/withdrawal#state-root-vs-asp-root) and the [ASP API Reference](/reference/asp-api).
 
 ## [Private Withdrawal](/protocol/withdrawal)
 

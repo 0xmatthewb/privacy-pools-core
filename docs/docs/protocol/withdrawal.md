@@ -10,6 +10,9 @@ keywords:
   - fees
 ---
 
+A withdrawal moves funds out of the pool to any recipient address. A zero-knowledge proof demonstrates ownership of a valid, ASP-approved commitment without revealing which one. A relayer submits the transaction so the recipient has no on-chain link to the depositor.
+
+---
 
 Frontend integrations should use relayed withdrawal. A relayer submits `Entrypoint.relay()` for the user, which preserves recipient privacy and matches the production app flow.
 
@@ -20,8 +23,6 @@ Frontend integrations should use relayed withdrawal. A relayer submits `Entrypoi
 3. Build `Withdrawal` struct using the quote's `feeCommitment.withdrawalData`
 4. Generate ZK proof with Merkle proofs from both state and ASP trees
 5. Submit proof to relayer before the quote expires
-
-The pool contract also exposes direct `PrivacyPool.withdraw()`, but that is a non-private contract-level path. Keep it out of normal frontend UX.
 
 Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()`, while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
 
@@ -73,16 +74,6 @@ sequenceDiagram
 
 ```
 
-## Contract-Level Direct Withdrawal
-
-`PrivacyPool.withdraw()` still exists at the contract layer, but it is not the recommended frontend path:
-
-- `withdrawal.processooor` must equal `msg.sender`
-- the pool pays the signer directly
-- recipient privacy is lost compared with the relayed flow
-
-Keep it documented for protocol completeness and error handling, not as a user-facing UX option.
-
 ## Withdrawal Data Structure
 
 ```solidity
@@ -97,6 +88,10 @@ struct RelayData {
     uint256 relayFeeBPS;   // Fee in basis points
 }
 ```
+
+:::note
+The three-o spelling of `processooor` is intentional — it matches the field name in the deployed smart contracts.
+:::
 
 ## Withdrawal Steps
 
@@ -139,7 +134,7 @@ After re-quoting, require the user to review and confirm again before proof gene
 
 ### State Root vs ASP Root
 
-Withdrawal proofs carry two separate Merkle roots with different sources and validation rules:
+Withdrawal proofs must demonstrate inclusion in two separate Merkle trees, each with its own root source and validation rule:
 
 | | State Root | ASP Root |
 |---|-----------|----------|
@@ -178,3 +173,16 @@ context = uint256(keccak256(abi.encode(
     pool.SCOPE()
 ))) % SNARK_SCALAR_FIELD;
 ```
+
+<details>
+<summary>Contract-Level Direct Withdrawal (advanced)</summary>
+
+`PrivacyPool.withdraw()` still exists at the contract layer, but it is not the recommended frontend path:
+
+- `withdrawal.processooor` must equal `msg.sender`
+- the pool pays the signer directly
+- recipient privacy is lost compared with the relayed flow
+
+Keep it documented for protocol completeness and error handling, not as a user-facing UX option.
+
+</details>

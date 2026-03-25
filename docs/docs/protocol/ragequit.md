@@ -105,10 +105,20 @@ This means ragequit cannot be delegated to another wallet. The original depositi
 
 Ragequit and private withdrawal are **mutually exclusive** on the same commitment. Both operations spend the commitment's nullifier. Once a commitment has been exited via either path, the nullifier is marked as spent and the other path will revert with `NullifierAlreadySpent`.
 
+:::info Change commitments after partial withdrawal
 A partial private withdrawal creates a new change commitment with a new nullifier. The original commitment's nullifier is spent, but the change commitment can still be ragequit (by the original depositor) or privately withdrawn.
+:::
 
 ### When to Use Ragequit
 
 Ragequit is a public exit. It sacrifices privacy because the on-chain transaction links the deposit to the exit and returns funds to the original depositor address. Use the privacy-preserving [relayed withdrawal](/protocol/withdrawal) path when the deposit is ASP-approved and the user wants the private flow.
 
 Frontend integrations should keep ragequit visually separate from the private withdrawal flow and label it clearly as a public exit.
+
+## Next steps
+
+| Goal | Page |
+|------|------|
+| Compare withdrawal vs ragequit | [Protocol Overview](/protocol#choosing-between-withdrawal-and-ragequit) |
+| Frontend patterns for ragequit UX | [UX Patterns](/build/ux-patterns#ragequit-ux) |
+| Debug revert reasons | [Errors & Constraints](/reference/errors) |
