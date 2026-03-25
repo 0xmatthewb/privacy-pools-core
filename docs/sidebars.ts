@@ -51,6 +51,20 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Using Privacy Pools",
+      collapsible: false,
+      link: {
+        type: "doc",
+        id: "protocol/overview",
+      },
+      items: [
+        "protocol/deposit",
+        "protocol/withdrawal",
+        "protocol/ragequit",
+      ],
+    },
+    {
+      type: "category",
       label: "Protocol Components",
       collapsible: false,
       link: {
@@ -110,20 +124,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Using Privacy Pools",
-      collapsible: false,
-      link: {
-        type: "doc",
-        id: "protocol/overview",
-      },
-      items: [
-        "protocol/deposit",
-        "protocol/withdrawal",
-        "protocol/ragequit",
-      ],
-    },
-    {
-      type: "category",
       label: "Technical Reference",
       collapsible: false,
       link: {
@@ -145,12 +145,12 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         "reference/sdk",
-        "deployments",
+        "reference/contracts",
+        "reference/circuits",
         "reference/asp-api",
         "reference/relayer-api",
         "reference/errors",
-        "reference/contracts",
-        "reference/circuits",
+        "deployments",
       ],
     },
     "toc",
