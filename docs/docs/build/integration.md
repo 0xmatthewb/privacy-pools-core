@@ -315,7 +315,7 @@ For server-side signers, use `sdk.createContractInstance(rpcUrl, chain, entrypoi
 
 ### Log Fetch Configuration
 
-`DataService` accepts an optional `logFetchConfig` second argument (a `Map<number, LogFetchConfig>`) that controls how event logs are fetched per chain. Tuning these values prevents RPC rate-limit errors in production.
+`DataService` accepts an optional `logFetchConfig` second argument (a `Map<number, Partial<LogFetchConfig>>`) that controls how event logs are fetched per chain. Tuning these values prevents RPC rate-limit errors in production.
 
 | Chain | `chainId` | `blockChunkSize` |
 |---|---|---|
