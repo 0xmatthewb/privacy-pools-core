@@ -13,10 +13,10 @@ keywords:
 
 ## Commitments and nullifiers
 
-A PrivacyPool commitment is a note for some value deposited in a Pool composed of:
+Each deposit into a Privacy Pool creates a commitment — a cryptographic record composed of:
 
 - **`value`**: The amount being committed
-- **`label`**: A unique identifier derived from scope and nonce
+- **`label`**: A unique identifier derived from the pool's scope and an incrementing nonce
 - **`nullifier`**: A secret that prevents double-spending
 - **`secret`**: A value that helps hide the nullifier
 
@@ -36,6 +36,8 @@ The protocol uses three hash constructions:
 - **Precommitment Hash**: `Poseidon(nullifier, secret)` — submitted at deposit time. Because it hides the nullifier, the contract cannot link this precommitment to the nullifier hash that will later appear during withdrawal.
 - **Nullifier Hash**: `Poseidon(nullifier)` — revealed on-chain during withdrawal or ragequit. The contract records it and rejects any future attempt to spend the same commitment (`NullifierAlreadySpent`). The nullifier itself stays private; only its hash is public, so observers cannot reconstruct the precommitment or link the withdrawal back to the original deposit.
 
+Each pool has a **scope** — a unique identifier derived from the pool address, chain ID, and asset: `keccak256(pool, chainId, asset) % SNARK_SCALAR_FIELD`. Scope is used in API headers (`X-Pool-Scope`) and proof inputs to identify which pool an operation targets.
+
 ## Zero-knowledge proofs in Privacy Pools
 
 Privacy Pools uses [zero-knowledge proofs](/layers/zk) to demonstrate valid statements about private information without revealing that information. The protocol employs three proof types:
@@ -43,6 +45,15 @@ Privacy Pools uses [zero-knowledge proofs](/layers/zk) to demonstrate valid stat
 - **[Commitment Proofs](/layers/zk/commitment)**: Verify the ownership of a commitment (used in ragequit)
 - **[Withdrawal Proofs](/layers/zk/withdrawal)**: Verify ownership, inclusion in both state and ASP trees, and valid value transitions
 - **[Merkle Proofs](/layers/zk/lean-imt)**: Demonstrate membership in a tree without revealing position
+
+## State tree and ASP tree
+
+The protocol maintains two separate Merkle trees per pool:
+
+- **State tree**: Contains commitment hashes — one leaf per deposit and one per change commitment created during withdrawal. Managed on-chain by the pool contract. Root read via `pool.currentRoot()`.
+- **ASP tree**: Contains approved labels. Managed off-chain by the ASP and periodically committed on-chain. Root read via `Entrypoint.latestRoot()` or the ASP API's `onchainMtRoot`.
+
+Withdrawal proofs must demonstrate inclusion in **both** trees: the state tree (proving the commitment exists) and the ASP tree (proving the deposit was approved).
 
 ## Basic operations
 

@@ -19,7 +19,9 @@ On public blockchains like Ethereum, every transaction is visible to everyone. W
 
 ## Privacy Pools offers a solution
 
-Privacy Pools enables private withdrawals through a combination of zero-knowledge proofs and commitment schemes. Users can deposit assets into Privacy Pools and later withdraw them, either partially or fully, without creating an on-chain link between their deposit and withdrawal addresses. The protocol uses an [Association Set Provider (ASP)](/layers/asp) to maintain a set of approved deposits, evaluating deposits after they enter the pool and determining which are eligible for private withdrawal, enabling regulatory compliance.
+Privacy Pools enables private withdrawals through a combination of zero-knowledge proofs and commitment schemes. Users can deposit assets into Privacy Pools and later withdraw them, either partially or fully, without creating an on-chain link between their deposit and withdrawal addresses. A relayer submits withdrawal transactions on behalf of users, breaking the on-chain address link between depositor and recipient.
+
+Deposits are never blocked at entry — anyone can deposit at any time. An [Association Set Provider (ASP)](/layers/asp) independently evaluates deposits after they enter the pool and maintains a set of approved labels. ASP approval is what unlocks the private withdrawal path. If a deposit is not approved (or the user prefers not to wait), the original depositor can always [ragequit](/protocol/ragequit) — a public exit that returns the full balance without ASP approval.
 
 ## Start here
 
@@ -89,8 +91,8 @@ These layers work together to create a secure privacy-preserving system: the con
 
 ## Key features and capabilities
 
+- **Deposits are never blocked**: Anyone can deposit at any time. The ASP evaluates deposits after entry, not before.
+- **Privacy via relayed withdrawals**: A relayer submits the withdrawal transaction, so the recipient address has no on-chain link to the depositor.
 - **Partial Withdrawals**: Users can withdraw portions of their deposits while maintaining privacy.
-- **Multi-Asset Support**: Supports both native cryptocurrency and ERC20 tokens.
-- **Compliance Integration**: ASP-based approval system for regulatory compliance.
-- **Non-Custodial**: Users maintain control of their funds through cryptographic commitments.
-- **[Ragequit](/protocol/ragequit) Mechanism**: Allows original depositors to **publicly** reclaim their funds at any time, primarily useful when deposits have not been approved by the ASP.
+- **[Ragequit](/protocol/ragequit) is always available**: Original depositors can publicly reclaim their funds at any time, even if the ASP has not approved the deposit.
+- **Compliance without custody**: The ASP-based approval system enables regulatory compliance while users retain full control of their funds through cryptographic commitments.
