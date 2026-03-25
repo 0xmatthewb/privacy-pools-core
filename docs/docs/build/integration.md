@@ -31,8 +31,8 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
    - Reserve `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` for server-side signers
 
 3. **Bootstrap account state**
-   - Generate or restore a mnemonic-backed account using `generateMasterKeys`
-   - Reconstruct pool state via `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)`
+   - New accounts: `new AccountService(dataService, { mnemonic })`
+   - Returning users: `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` to restore from on-chain events
    - Returns `{ account, legacyAccount?, errors }` so restores can reconcile migrated histories (see [SDK Utilities](/reference/sdk#account-reconstruction))
 
 4. **Deposit**
@@ -44,8 +44,9 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 5. **Perform the relayed withdrawal**
    1. **Fetch ASP root and verify parity:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
    2. **Request a relayer quote:** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`
-   3. **Build the withdrawal proof:** generate the ZK proof using the verified ASP root, pool state root, and relayer-provided context
-   4. **Submit via relayer:** send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets
+   3. **Build Merkle proofs:** generate `stateMerkleProof` from pool state leaves (keyed by commitment hash) and `aspMerkleProof` from ASP leaves (keyed by label)
+   4. **Generate the withdrawal proof:** pass the Merkle proofs, verified roots, withdrawal amount, and relayer-provided context to `proveWithdrawal`
+   5. **Submit via relayer:** send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets
 
 6. **Refresh state after withdrawal**
    - Re-scan events to pick up the new change commitment
@@ -166,8 +167,8 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
    - Validate `minimumDepositAmount` before submission.
    - Persist the confirmed `Deposited` event's `label` and post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs.
-   - A deposit is approved when its `label` appears in the ASP leaves returned by `GET /{chainId}/public/mt-leaves`.
-   - Treat deposits as pending until the label is present.
+   - A deposit is ready for withdrawal when its `label` appears in the ASP leaves AND `onchainMtRoot` matches `Entrypoint.latestRoot()`.
+   - Treat deposits as pending until both conditions are met.
 5. Build withdrawal proofs with two roots:
    - Pool state root from `IPrivacyPool.currentRoot()`.
    - ASP root from the `onchainMtRoot` field.
