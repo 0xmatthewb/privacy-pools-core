@@ -111,7 +111,7 @@ The fee is deducted **on deposit**, not on withdrawal. The `value` emitted in th
 
 ### Minimum Deposit
 
-Each asset has a `minimumDepositAmount` configured on the Entrypoint. The contract enforces this and reverts with `MinimumDepositAmount` if the deposit is below the threshold. Check this before submitting:
+Each asset has a `minimumDepositAmount` configured on the [Entrypoint](/deployments). The contract enforces this and reverts with `MinimumDepositAmount` if the deposit is below the threshold. Check this before submitting:
 
 ```typescript
 const config = await publicClient.readContract({

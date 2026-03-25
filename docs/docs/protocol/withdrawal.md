@@ -153,7 +153,7 @@ The ASP API returns two root values. `mtRoot` is the ASP's latest computed root;
 
 After a withdrawal, a new change commitment is always inserted into the state tree (zero-value for full withdrawals, reduced-value for partial). Before generating the next withdrawal proof from the same pool account:
 
-1. Re-fetch state tree leaves from the [ASP API](/reference/asp-api) or reconstruct via `DataService`
+1. Re-fetch state tree leaves from the [ASP API](/reference/asp-api) or reconstruct via [`DataService`](/reference/sdk)
 2. Rebuild the Merkle proof with the updated leaf set
 3. Verify the reconstructed root matches the pool's `currentRoot()`
 

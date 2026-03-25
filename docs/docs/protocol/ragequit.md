@@ -78,8 +78,8 @@ sequenceDiagram
 1. Check Requirements
    - Must be original depositor (`depositors[label] == msg.sender`)
    - Commitment must not be already spent (nullifier not yet marked)
-2. Generate commitment proof via `sdk.proveCommitment(value, label, nullifier, secret)`
-3. Call `contracts.ragequit(commitmentProof, privacyPoolAddress)`
+2. Generate commitment proof via [`sdk.proveCommitment(value, label, nullifier, secret)`](/reference/sdk)
+3. Call [`contracts.ragequit(commitmentProof, privacyPoolAddress)`](/reference/sdk)
 4. Finalized ragequit
    - User receives the full commitment value
    - Nullifier is marked as spent

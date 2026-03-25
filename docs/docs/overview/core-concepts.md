@@ -44,7 +44,7 @@ Each pool has a **scope** — a unique identifier derived from the pool address,
 
 ## Zero-knowledge proofs in Privacy Pools
 
-Privacy Pools uses [zero-knowledge proofs](/layers/zk) to demonstrate valid statements about private information without revealing that information. The protocol employs three proof types:
+Privacy Pools uses [zero-knowledge proofs](/layers/zk) to demonstrate valid statements about private information without revealing that information. The protocol employs two proof types:
 
 - **[Commitment Proofs](/layers/zk/commitment)**: Verify ownership of a commitment (used in ragequit)
 - **[Withdrawal Proofs](/layers/zk/withdrawal)**: Verify ownership, inclusion in both state and ASP trees, and valid value transitions. Withdrawal proofs embed [Merkle inclusion proofs](/layers/zk/lean-imt) to demonstrate membership in each tree without revealing the leaf position
