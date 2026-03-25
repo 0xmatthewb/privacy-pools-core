@@ -57,3 +57,31 @@ Public Outputs:
 - existingNullifierHash: Hash of spent nullifier
 
 ```
+
+## `publicSignals` Ordering
+
+The relayer and contract expect `publicSignals` as a fixed-length array. The SDK produces these automatically, but non-SDK integrators must match this exact order.
+
+**Withdrawal proof (8 elements):**
+
+| Index | Signal | Description |
+|-------|--------|-------------|
+| 0 | `newCommitmentHash` | Poseidon hash of the change commitment |
+| 1 | `existingNullifierHash` | Poseidon hash of the spent nullifier |
+| 2 | `withdrawnValue` | Amount withdrawn |
+| 3 | `stateRoot` | Pool state Merkle root |
+| 4 | `stateTreeDepth` | Depth of the state tree (32) |
+| 5 | `ASPRoot` | ASP Merkle root |
+| 6 | `ASPTreeDepth` | Depth of the ASP tree (32) |
+| 7 | `context` | `uint256(keccak256(abi.encode(withdrawal, scope))) % SNARK_SCALAR_FIELD` |
+
+**Ragequit proof (4 elements):**
+
+| Index | Signal | Description |
+|-------|--------|-------------|
+| 0 | `commitmentHash` | Hash of the commitment being exited |
+| 1 | `nullifierHash` | Hash of the commitment's nullifier |
+| 2 | `value` | Value of the commitment |
+| 3 | `label` | Label of the commitment |
+
+Source: `ProofLib.sol` index accessors.
