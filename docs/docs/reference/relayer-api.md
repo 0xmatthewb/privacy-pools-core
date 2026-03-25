@@ -209,7 +209,8 @@ Submits a relayed withdrawal to the relayer for on-chain execution.
 {
   "success": false,
   "error": "description of failure",
-  "requestId": "uuid"
+  "requestId": "uuid",
+  "timestamp": 1744676669549
 }
 ```
 
@@ -240,7 +241,7 @@ The relayer API does not support cancellation. If a `feeCommitment` has expired,
 | Schema or validation error | HTTP 4xx | Fix request payload per error message |
 | Relayer overloaded | HTTP 5xx | Retry after backoff |
 
-For all `success: false` responses, discard the current quote and start from `POST /relayer/quote`.
+For proof, quote, or context failures where no transaction was broadcast, discard the current quote and start from `POST /relayer/quote`. If the response includes a `txHash` (the withdrawal landed but the optional gas-token swap failed), the withdrawal itself succeeded — do not retry the withdrawal.
 
 ### `GET /relayer/details`
 
