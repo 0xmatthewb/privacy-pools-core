@@ -1019,12 +1019,17 @@ html[data-theme="dark"] .pagination-nav__link:hover {
 
 .footer__title {
   font-family: var(--pp-font-heading);
-  font-size: 0.75rem;
-  font-weight: 500;
-  opacity: 0.5;
-  margin: 0 0.75rem 0 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--pp-muted);
+  opacity: 0.55;
+  margin: 0;
+  padding-right: 1.25rem;
+  border-right: 1px solid var(--pp-footer-divider);
+  margin-right: 1.25rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
 }
 
 .footer__links {
@@ -1445,6 +1450,19 @@ html[data-theme="dark"] .theme-doc-toc-mobile ul[class*="tableOfContents"] {
     gap: 1rem;
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .footer__title {
+    border-right: none;
+    padding-right: 0;
+    margin-right: 0;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.25rem;
+  }
+
+  .footer__col {
+    flex-direction: column;
   }
 }
 
