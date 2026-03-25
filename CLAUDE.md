@@ -20,10 +20,11 @@ Route all Privacy Pools tasks through the docs below.
 
 ## Recommended Read Order
 
-1. Read `docs/docs/build/integration.md` for fast orientation.
-2. Read the relevant protocol flow: `docs/docs/protocol/deposit.md`, `withdrawal.md`, or `ragequit.md`.
-3. Pull addresses/startBlock from `docs/docs/deployments.md`.
-4. Check API references in `docs/docs/reference/` as needed.
+1. Read `docs/docs/build/agents.md` for agent workflow setup and skill discovery.
+2. Read `docs/docs/build/integration.md` for the SDK integration recipe.
+3. Read the relevant protocol flow: `docs/docs/protocol/deposit.md`, `withdrawal.md`, or `ragequit.md`.
+4. Pull addresses/startBlock from `docs/docs/deployments.md`.
+5. Check API references in `docs/docs/reference/` as needed.
 
 ## Quick Task Router
 
