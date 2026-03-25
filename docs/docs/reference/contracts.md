@@ -1,5 +1,6 @@
 ---
 title: Contracts Interfaces
+sidebar_position: 6
 description: "Contract interface reference for Privacy Pools components, including structs, events, and function signatures."
 keywords:
   - privacy pools
@@ -11,7 +12,7 @@ keywords:
   - events
 ---
 
-**`IPrivacyPool`**
+## IPrivacyPool
 
 Core interface for privacy pools smart contracts that handle deposits and withdrawals.
 
@@ -41,10 +42,23 @@ interface IPrivacyPool {
     function ASSET() external view returns (address);
     function currentRoot() external view returns (uint256);
 }
-
 ```
 
-**`IEntrypoint`**
+### IPrivacyPool Parameters
+
+| Function | Parameter | Description |
+|---|---|---|
+| `deposit` | `depositor` | Address credited as the original depositor (controls ragequit eligibility) |
+| | `value` | Deposit amount before vetting fee deduction |
+| | `precommitment` | `Poseidon(nullifier, secret)` — must be unique across all deposits. Reverts with `PrecommitmentAlreadyUsed` if reused. |
+| | Returns `commitment` | The label assigned to this deposit: `keccak256(scope, nonce) % SNARK_SCALAR_FIELD` |
+| `withdraw` | `w` | `Withdrawal` struct: `processooor` must equal `msg.sender` for direct calls |
+| | `p` | ZK proof with 8 public signals (see [ProofLib](#prooflib)) |
+| `ragequit` | `p` | Commitment proof with 4 public signals. Only callable by the original depositor of the label. |
+| `SCOPE()` | — | Unique pool identifier: `keccak256(poolAddress, chainId, asset) % SNARK_SCALAR_FIELD` |
+| `currentRoot()` | — | Current state Merkle tree root (used in withdrawal proofs) |
+
+## IEntrypoint
 
 Central registry and coordinator for privacy pools.
 
@@ -108,8 +122,21 @@ interface IEntrypoint {
     // Precommitment tracking
     function usedPrecommitments(uint256 precommitment) external view returns (bool);
 }
-
 ```
+
+### IEntrypoint Parameters
+
+| Function | Parameter | Description |
+|---|---|---|
+| `deposit` (ETH) | `precommitment` | `Poseidon(nullifier, secret)`. Send ETH as `msg.value`. |
+| `deposit` (ERC20) | `asset` | ERC20 token address. Requires prior approval. |
+| | `value` | Amount to deposit (before fee). |
+| | `precommitment` | `Poseidon(nullifier, secret)`. |
+| `relay` | `withdrawal` | `Withdrawal` struct with `processooor` set to the Entrypoint address and `data` set to ABI-encoded `RelayData`. |
+| | `proof` | ZK proof from `proveWithdrawal()`. |
+| | `scope` | Pool scope (identifies which pool to withdraw from). |
+| `latestRoot()` | — | Latest ASP-approved root. Withdrawal proofs must use this exact value. |
+| `usedPrecommitments()` | `precommitment` | Returns `true` if the precommitment has been used in a prior deposit. |
 
 `IPrivacyPool.currentRoot()` is the state-tree root used in withdrawal proofs. `IEntrypoint.latestRoot()` is separate: the latest ASP-approved root that must match ASP `onchainMtRoot`.
 
@@ -133,3 +160,61 @@ event LeafInserted(uint256 _index, uint256 _leaf, uint256 _root);
 // IEntrypoint
 event WithdrawalRelayed(address indexed _relayer, address indexed _recipient, IERC20 indexed _asset, uint256 _amount, uint256 _feeAmount);
 ```
+
+## ProofLib
+
+`ProofLib` defines the Groth16 proof structs used by `withdraw()`, `relay()`, and `ragequit()`. These structs carry the proof components and the public signals that the on-chain verifier checks.
+
+### WithdrawProof
+
+```solidity
+struct WithdrawProof {
+    uint256[2] pA;
+    uint256[2][2] pB;
+    uint256[2] pC;
+    uint256[8] pubSignals;
+}
+```
+
+| Index | Signal | Description |
+|---|---|---|
+| 0 | `newCommitmentHash` | Hash of the change commitment created for remaining funds |
+| 1 | `existingNullifierHash` | Nullifier hash of the commitment being spent |
+| 2 | `withdrawnValue` | Amount being withdrawn |
+| 3 | `stateRoot` | Pool state Merkle root at proof generation time |
+| 4 | `stateTreeDepth` | Depth of the state tree (typically `32`) |
+| 5 | `ASPRoot` | ASP-approved Merkle root — must equal `Entrypoint.latestRoot()` |
+| 6 | `ASPTreeDepth` | Depth of the ASP tree (typically `32`) |
+| 7 | `context` | Binds the proof to specific withdrawal parameters: `keccak256(withdrawal, scope) % SNARK_SCALAR_FIELD` |
+
+### RagequitProof
+
+```solidity
+struct RagequitProof {
+    uint256[2] pA;
+    uint256[2][2] pB;
+    uint256[2] pC;
+    uint256[4] pubSignals;
+}
+```
+
+| Index | Signal | Description |
+|---|---|---|
+| 0 | `commitmentHash` | Hash of the commitment being ragequit |
+| 1 | `nullifierHash` | `Poseidon(nullifier)` of the commitment |
+| 2 | `value` | Full remaining value of the commitment |
+| 3 | `label` | Deposit label — contract checks `depositors[label] == msg.sender` |
+
+:::warning B-coordinate swapping
+When converting a snarkjs Groth16 proof to the Solidity struct format, the inner arrays of `pB` must have their elements reversed: `pB[i] = [proof.pi_b[i][1], proof.pi_b[i][0]]`. This is required because snarkjs and the Solidity verifier use different coordinate orderings.
+:::
+
+### Accessor Functions
+
+ProofLib provides typed accessors for each public signal. These are `internal pure` library functions used by the pool contract, not directly callable by external integrators. They are listed here for reference when reading the contract source:
+
+**WithdrawProof:** `newCommitmentHash()`, `existingNullifierHash()`, `withdrawnValue()`, `stateRoot()`, `stateTreeDepth()`, `ASPRoot()`, `ASPTreeDepth()`, `context()`
+
+**RagequitProof:** `commitmentHash()`, `nullifierHash()`, `value()`, `label()`
+
+For the full integration recipe, see [Frontend Integration](/build/integration). For contract errors, see [Errors and Constraints](/reference/errors).
