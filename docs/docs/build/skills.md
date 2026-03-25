@@ -11,9 +11,9 @@ Skills are focused, task-specific instruction files that agents can load to comp
 
 ## How to Use Skills
 
-Load the skill file for the task you are working on.
+Load the skill file for the task you are working on: paste it into context, fetch it by URL, or point your IDE agent at `.agents/skills/` in the repo root. See [Agent Workflows](/build/agents) for tool-specific setup.
 
-Skills provide focused workflow instructions. For detailed API reference, parameter explanations, and error handling, see [Frontend Integration](/build/integration) and the [Reference](/reference/sdk) pages.
+Skills are focused workflow guides. For full API reference and error handling, see the [Reference](/reference/sdk) pages.
 
 ## Available Skills
 

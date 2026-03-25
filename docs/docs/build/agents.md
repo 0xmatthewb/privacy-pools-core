@@ -7,10 +7,6 @@ description: Entry points, skill files, and workflows for AI coding agents integ
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
-This page links the docs, skill files, and repo entry points agents should start from.
-
-For Node.js runtimes, initialize SDK circuits with `new Circuits({ browser: false })`. Browser-embedded agents can use the default loader. Circuit artifacts are integrity-checked before use.
-
 ## Reference Table
 
 | Resource | URL | Purpose |
@@ -53,9 +49,11 @@ The repo-local skill files live under `.agents/skills/`:
       SKILL.md
 ```
 
-Both locations contain identical content:
-- `.agents/skills/`: for IDE agents that scan the repo locally
-- `docs/static/agent-skills/`: source for the hosted docs site at `https://docs.privacypools.com/agent-skills/<name>/SKILL.md`
+The skill files exist in two places with identical content. `.agents/skills/` is for IDE agents that scan the repo locally. `docs/static/agent-skills/` is the source for the hosted URLs above.
+
+## Circuit Initialization
+
+For Node.js runtimes, initialize SDK circuits with `new Circuits({ browser: false })`. Browser-embedded agents can use the default loader.
 
 ## Agent-Specific Workflows
 
