@@ -8,6 +8,10 @@ keywords: [privacy pools, getting started, integration, frontend, agent]
 
 Privacy Pools is a smart-contract protocol for compliant private transactions on Ethereum. Users deposit into a shared pool and withdraw privately, using zero-knowledge proofs and Association Set Providers (ASPs) to prove their funds are not linked to illicit activity. The SDK is TypeScript-based and uses viem.
 
+:::info
+These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).
+:::
+
 ## Key Concepts
 
 | Term | Meaning |
