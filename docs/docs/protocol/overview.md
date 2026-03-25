@@ -26,13 +26,13 @@ After deposit, the ASP evaluates the deposit and decides whether to add its labe
 
 ## Waiting for Approval
 
-The ASP reviews deposits asynchronously. Check status by calling `GET /{chainId}/public/mt-roots` — when `mtRoot` equals `onchainMtRoot` and the deposit's label appears in `GET /{chainId}/public/mt-leaves`, the deposit is ready for withdrawal. If `mtRoot !== onchainMtRoot`, the ASP tree has not yet converged on-chain — wait and re-fetch. Show deposits as "pending" until both conditions are met.
+The ASP reviews deposits asynchronously. Check status by calling `GET /{chainId}/public/mt-roots` — when `mtRoot` equals `onchainMtRoot` and the deposit's label appears in the `aspLeaves` array from `GET /{chainId}/public/mt-leaves`, the deposit is ready for withdrawal. If `mtRoot !== onchainMtRoot`, the ASP tree has not yet converged on-chain — wait and re-fetch. Show deposits as "pending" until both conditions are met.
 
 ## [Private Withdrawal](/protocol/withdrawal)
 
 Once approved, the user can withdraw privately through a relayer. A zero-knowledge proof demonstrates ownership and ASP membership without revealing which deposit is being spent. The relayer submits the transaction so the withdrawal address has no on-chain link to the depositor.
 
-Partial withdrawals are supported. Each withdrawal creates a change commitment with the remaining balance, which can be spent in a future withdrawal.
+Partial withdrawals are supported. Each withdrawal creates a change commitment with the remaining balance, which can be spent in a future withdrawal. Change commitments do not need fresh ASP approval — the withdrawal proof already demonstrated membership. However, change commitments cannot be ragequit because only the original deposit records a depositor address.
 
 ## [Ragequit](/protocol/ragequit)
 

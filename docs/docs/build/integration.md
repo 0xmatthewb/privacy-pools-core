@@ -174,7 +174,7 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
    - Validate `minimumDepositAmount` before submission.
    - Persist the confirmed `Deposited` event's `label` and post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs.
-   - A deposit is ready for withdrawal when `mtRoot === onchainMtRoot` (from `GET /{chainId}/public/mt-roots`) and the deposit's `label` appears in `mt-leaves`.
+   - A deposit is ready for withdrawal when `mtRoot === onchainMtRoot` (from `GET /{chainId}/public/mt-roots`) and the deposit's `label` appears in the `aspLeaves` array from `GET /{chainId}/public/mt-leaves`.
    - Treat deposits as pending until both conditions are met.
 5. Build withdrawal proofs with two roots:
    - Pool state root from `IPrivacyPool.currentRoot()`.
