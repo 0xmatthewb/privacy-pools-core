@@ -32,7 +32,7 @@ The ASP reviews deposits asynchronously. Check status by calling `GET /{chainId}
 
 Once approved, the user can withdraw privately through a relayer. A zero-knowledge proof demonstrates ownership and ASP membership without revealing which deposit is being spent. The relayer submits the transaction so the withdrawal address has no on-chain link to the depositor.
 
-Partial withdrawals are supported. Each withdrawal creates a change commitment with the remaining balance, which can be spent in a future withdrawal. Change commitments do not need fresh ASP approval — the withdrawal proof already demonstrated membership. However, change commitments cannot be ragequit because only the original deposit records a depositor address.
+Partial withdrawals are supported. Each withdrawal creates a change commitment with the remaining balance, which can be spent in a future withdrawal. Change commitments do not need fresh ASP approval — the withdrawal proof already demonstrated membership. Change commitments can be ragequit by the original depositor, since they share the same label and the depositor mapping persists.
 
 ## [Ragequit](/protocol/ragequit)
 
