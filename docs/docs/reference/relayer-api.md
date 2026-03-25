@@ -229,6 +229,19 @@ if (!result.success) {
 
 The relayer API does not support cancellation. If a `feeCommitment` has expired, request a new quote.
 
+### Handling Failures
+
+| Scenario | Response | Action |
+|----------|----------|--------|
+| Bad proof | HTTP 200, `success: false` | Regenerate proof with fresh roots and re-quote |
+| Expired fee commitment | HTTP 200, `success: false` | Re-quote via `POST /relayer/quote`, then resubmit |
+| Context mismatch | HTTP 200, `success: false` | Verify `withdrawal.data` matches `feeCommitment.withdrawalData` |
+| Stale ASP root | On-chain `IncorrectASPRoot` revert | Re-fetch ASP roots, verify parity, regenerate proof |
+| Schema or validation error | HTTP 4xx | Fix request payload per error message |
+| Relayer overloaded | HTTP 5xx | Retry after backoff |
+
+For all `success: false` responses, discard the current quote and start from `POST /relayer/quote`.
+
 ### `GET /relayer/details`
 
 Returns relayer configuration for a specific chain and asset. Use this to check asset support, fee receiver address, and minimum withdrawal amounts.

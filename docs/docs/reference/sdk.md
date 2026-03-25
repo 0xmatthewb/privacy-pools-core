@@ -107,6 +107,7 @@ interface ContractInteractionsService {
 
   getScope(privacyPoolAddress: Address): Promise<bigint>;
   getStateRoot(privacyPoolAddress: Address): Promise<bigint>;
+  // ⚠️ Do NOT use for withdrawal proofs — use IPrivacyPool.currentRoot() instead
   getStateSize(privacyPoolAddress: Address): Promise<bigint>;
   getAssetConfig(assetAddress: Address): Promise<AssetConfig>;
   getScopeData(
