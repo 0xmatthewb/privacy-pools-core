@@ -124,7 +124,7 @@ When using `DataService` for event reconstruction, always initialize with the de
 
 ### Submitting Duplicate Precommitments
 
-Each precommitment hash can only be used once. If a deposit transaction fails or is dropped, increment the deposit index and compute a new precommitment rather than retrying with the same one. The contract will revert with `PrecommitmentAlreadyUsed`.
+Each precommitment hash can only be used once on-chain. If a deposit transaction reverts or is never mined, the precommitment is not consumed — you can retry with the same index. Only increment the index after a confirmed successful deposit. The contract reverts with `PrecommitmentAlreadyUsed` if a precommitment was already used in a successful deposit.
 
 ### Forgetting to Refresh After a Withdrawal
 
