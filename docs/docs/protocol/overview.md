@@ -5,13 +5,13 @@ description: Lifecycle overview of Privacy Pools operations from deposit through
 keywords: [privacy pools, deposit, withdrawal, ragequit, ASP, lifecycle]
 ---
 
-Privacy Pools has three operations. Users deposit assets into a pool, then either withdraw privately through a relayer or exit publicly via ragequit.
+Privacy Pools has three operations. Users deposit assets into a pool. Once approved by the ASP, they can withdraw privately through a relayer. At any time, the original depositor can ragequit to publicly reclaim funds.
 
 ```mermaid
 flowchart LR
     D["Deposit"] --> A["ASP Approval"]
     A --> W["Private Withdrawal"]
-    A --> R["Ragequit"]
+    D --> R["Ragequit"]
     style D fill:#2d2d2d,stroke:#555,color:#fff
     style A fill:#2d2d2d,stroke:#555,color:#fff
     style W fill:#2d2d2d,stroke:#555,color:#fff
