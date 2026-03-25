@@ -147,16 +147,23 @@ After a successful deposit, parse the `Deposited` event and persist the followin
 | `nullifier` | Locally generated | Required to reconstruct the commitment and generate proofs |
 | `secret` | Locally generated | Required to reconstruct the commitment and generate proofs |
 
-Store these in mnemonic-backed account state rather than surfacing raw deposit secrets to the user. This avoids exposing raw deposit secrets in copy/paste or clipboard flows.
+Store these in mnemonic-backed account state rather than surfacing raw deposit secrets to the user.
+
+:::warning
+Do not expose raw deposit secrets (nullifier, secret) in copy/paste or clipboard flows.
+:::
 
 ### Account and Recovery
 
 Frontends should use mnemonic-backed pool accounts. Deposit secrets (`nullifier`, `secret`) are derived deterministically from the mnemonic, pool scope, and a sequential deposit index, so accounts can be fully reconstructed from the mnemonic and on-chain events.
 
-- If offering wallet-signature onboarding, gate it by wallet capability: sign the same EIP-712 payload twice and compare. If signatures differ, use manual mnemonic setup.
+- If offering wallet-signature onboarding, gate it by wallet capability: sign the same EIP-712 payload twice and compare.
+  - If signatures differ, use manual mnemonic setup.
 - Require the user to save the recovery phrase before the first deposit.
 - For manual recovery phrase entry, sanitize whitespace, newlines, and commas, and validate the checksum before use.
 
 ### Precommitment Uniqueness
 
-Each precommitment hash can only be used once across all pools. The Entrypoint tracks used precommitments and reverts with `PrecommitmentAlreadyUsed` on duplicates. If a deposit transaction reverts or is never mined, the precommitment is not consumed — retry with the same index. Only increment the index after a confirmed successful deposit.
+Each precommitment hash can only be used once across all pools. The Entrypoint tracks used precommitments and reverts with `PrecommitmentAlreadyUsed` on duplicates.
+
+If a deposit transaction reverts or is never mined, the precommitment is not consumed — retry with the same index. Only increment the index after a confirmed successful deposit.

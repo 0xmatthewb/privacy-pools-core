@@ -40,18 +40,22 @@ Before enabling withdrawal, verify:
 
 Filter withdraw selectors to approved non-zero accounts for the active chain/scope and pick a sensible default automatically.
 
-- Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution. Display reverse ENS alongside the resolved address. Unresolved input must block submit.
+- Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution.
+  - Display reverse ENS alongside the resolved address.
+  - Unresolved input must block submit.
   ```typescript
-  import { normalize } from "viem/ens";
+  import { normalize } from "viem/ens"; // normalize from viem/ens
   const resolved = await publicClient.getEnsAddress({ name: normalize(input) });
   ```
-- Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`. If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
+- Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`.
+  - If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
   ```typescript
   const details = await fetch(`${relayerUrl}/relayer/details?chainId=${chainId}&assetAddress=${asset}`).then(r => r.json());
   ```
 - Use `GET /{chainId}/public/deposits-larger-than` to show an anonymity-set estimate while the user edits the amount.
 - Request the signed `feeCommitment` only after the final recipient is known on review.
-- Request the relayer quote only when the review screen opens. Keep a visible countdown. If the quote refreshes because inputs changed or time elapsed, require the user to confirm again.
+- Request the relayer quote only when the review screen opens. Keep a visible countdown.
+  - If the quote refreshes because inputs changed or time elapsed, require the user to confirm again.
 - Treat `extraGas` as an optional gas-token drop for supported non-native assets. Quote invalidation and fee display must include it.
 - If proof generation takes noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof`.
 - After a successful withdrawal, insert the new change commitment back into local account state before allowing another spend.

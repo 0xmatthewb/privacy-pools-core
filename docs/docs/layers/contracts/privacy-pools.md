@@ -162,4 +162,4 @@ These are implemented differently for:
 - Native ETH (PrivacyPoolSimple)
 - ERC20 tokens (PrivacyPoolComplex)
 
-The PrivacyPool contract provides a robust foundation for implementing privacy-preserving asset pools, with strong security guarantees and efficient state management. It's designed to be extended for specific asset types while maintaining consistent privacy and security properties.
+The PrivacyPool contract provides a foundation for implementing privacy-preserving asset pools with strong security guarantees and efficient state management. It is designed to be extended for specific asset types while maintaining consistent privacy and security properties.

@@ -61,4 +61,4 @@ The Association Set Provider is a crucial compliance layer that controls which d
 - Original depositors can [ragequit](/protocol/ragequit)
 - Enables compliant exit path
 
-The ASP system enables Privacy Pools to maintain compliance requirements while preserving the core privacy features of the protocol through cryptographic proofs and controlled label management.
+The ASP system enables Privacy Pools to maintain compliance requirements while preserving privacy through cryptographic proofs and controlled label management.
