@@ -24,7 +24,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 **Serve circuit artifacts:** copy the SDK's circuit files to your app's public directory so the browser can fetch them at runtime:
 
 ```bash
-cp node_modules/@0xbow/privacy-pools-core-sdk/artifacts/*.{wasm,zkey,vkey} public/artifacts/
+cp node_modules/@0xbow/privacy-pools-core-sdk/dist/node/artifacts/*.{wasm,zkey,vkey} public/artifacts/
 ```
 
 1. **Load deployment data**
