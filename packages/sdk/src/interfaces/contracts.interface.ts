@@ -56,7 +56,7 @@ export interface ContractInteractions {
   getAssetConfig(assetAddress: Address): Promise<AssetConfig>;
   getScopeData(
     scope: bigint,
-  ): Promise<{ poolAddress: Address | null; assetAddress: Address | null }>;
+  ): Promise<{ poolAddress: Address; assetAddress: Address }>;
 
   approveERC20(
     spenderAddress: Address,
