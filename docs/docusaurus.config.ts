@@ -198,7 +198,7 @@ const config: Config = {
     image: "img/privacy-pools-banner.png",
     mermaid: {
       theme: {
-        light: "default",
+        light: "neutral",
         dark: "dark",
       },
       options: {
