@@ -267,6 +267,7 @@ interface PoolAccount {
   deposit: AccountCommitment;
   children: AccountCommitment[];
   ragequit?: RagequitEvent;
+  isMigrated?: boolean;
 }
 
 interface AccountCommitment {
@@ -278,6 +279,7 @@ interface AccountCommitment {
   blockNumber: bigint;
   timestamp?: bigint;
   txHash: Hex;
+  isMigration?: boolean;
 }
 
 interface WithdrawalProofInput {

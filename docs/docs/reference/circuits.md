@@ -20,8 +20,8 @@ Creates commitment proofs using Poseidon hash. Used by both withdrawal and rageq
 
 | Signal | Type | Visibility | Description |
 |---|---|---|---|
-| `value` | field | private | Amount being committed |
-| `label` | field | private | Deposit label: `keccak256(abi.encodePacked(scope, nonce)) % SNARK_SCALAR_FIELD` |
+| `value` | field | public | Amount being committed |
+| `label` | field | public | Deposit label: `keccak256(abi.encodePacked(scope, nonce)) % SNARK_SCALAR_FIELD` |
 | `nullifier` | field | private | Unique nullifier for this commitment |
 | `secret` | field | private | Secret paired with the nullifier |
 
