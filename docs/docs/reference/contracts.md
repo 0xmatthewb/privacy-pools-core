@@ -182,9 +182,9 @@ struct WithdrawProof {
 | 1 | `existingNullifierHash` | Nullifier hash of the commitment being spent |
 | 2 | `withdrawnValue` | Amount being withdrawn |
 | 3 | `stateRoot` | Pool state Merkle root at proof generation time |
-| 4 | `stateTreeDepth` | Depth of the state tree (typically `32`) |
+| 4 | `stateTreeDepth` | Depth of the state tree (max `32`) |
 | 5 | `ASPRoot` | ASP-approved Merkle root — must equal `Entrypoint.latestRoot()` |
-| 6 | `ASPTreeDepth` | Depth of the ASP tree (typically `32`) |
+| 6 | `ASPTreeDepth` | Depth of the ASP tree (max `32`) |
 | 7 | `context` | Binds the proof to specific withdrawal parameters: `keccak256(withdrawal, scope) % SNARK_SCALAR_FIELD` |
 
 ### RagequitProof

@@ -226,21 +226,9 @@ const { nullifier: newNullifier, secret: newSecret } =
   accountService.createWithdrawalSecrets(commitment);
 
 // Roots come from the Merkle proof results, not separate contract calls
+// proveWithdrawal accepts AccountCommitment directly (no wrapping needed)
 const withdrawalProof = await sdk.proveWithdrawal(
-  // proveWithdrawal expects a Commitment shape wrapping the account data
-  {
-    hash: commitment.hash,
-    nullifierHash: commitment.hash, // SDK uses precommitment hash here
-    preimage: {
-      value: commitment.value,
-      label: commitment.label,
-      precommitment: {
-        hash: commitment.hash,
-        nullifier: commitment.nullifier,
-        secret: commitment.secret,
-      },
-    },
-  },
+  commitment,
   {
     context,
     withdrawalAmount: withdrawAmount,
