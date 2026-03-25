@@ -108,7 +108,7 @@ interface ContractInteractionsService {
 
   getScope(privacyPoolAddress: Address): Promise<bigint>;
   getStateRoot(privacyPoolAddress: Address): Promise<bigint>;
-  // ⚠️ Do NOT use for withdrawal proofs — use IPrivacyPool.currentRoot() instead
+  // ⚠️ Despite the name, this reads Entrypoint.latestRoot() (the ASP root), not the pool's state root
   getStateSize(privacyPoolAddress: Address): Promise<bigint>;
   getAssetConfig(assetAddress: Address): Promise<AssetConfig>;
   getScopeData(
@@ -123,7 +123,7 @@ interface ContractInteractionsService {
 }
 ```
 
-`ContractInteractionsService.getStateRoot(poolAddress)` exists on the service, but withdrawal proofs should use the pool state root from `IPrivacyPool.currentRoot()`. Treat the ASP root separately: use `onchainMtRoot` for `WithdrawalProofInput.aspRoot` and verify it against `Entrypoint.latestRoot()`.
+`ContractInteractionsService.getStateRoot(poolAddress)` reads `Entrypoint.latestRoot()` despite its name — it returns the ASP root, not the pool state root. For withdrawal proofs, read the pool state root directly via `IPrivacyPool.currentRoot()` and use `onchainMtRoot` from the ASP API for the ASP root.
 
 `ContractInteractionsService` always requires a `privateKey` in its constructor, even for read-only methods like `getScope()` and `getStateRoot()`. If you need scope or the pool state root without a signer (e.g., for `DataService` workflows), read them directly from the pool contract via a viem `PublicClient`:
 
