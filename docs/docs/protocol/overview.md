@@ -26,7 +26,7 @@ After deposit, the ASP evaluates the deposit and decides whether to add its labe
 
 ## Waiting for Approval
 
-The ASP reviews deposits asynchronously. Check approval status by calling `GET /{chainId}/public/mt-leaves` with the pool's scope — if the deposit's label appears in the response, the ASP has approved it. Before attempting withdrawal, also verify that `onchainMtRoot` matches `Entrypoint.latestRoot()` — see [Withdrawal](/protocol/withdrawal) for details. Show deposits as "pending" until both conditions are met.
+The ASP reviews deposits asynchronously. Check status by calling `GET /{chainId}/public/mt-roots` — when `mtRoot` equals `onchainMtRoot` and the deposit's label appears in `GET /{chainId}/public/mt-leaves`, the deposit is ready for withdrawal. If `mtRoot !== onchainMtRoot`, the ASP tree has not yet converged on-chain — wait and re-fetch. Show deposits as "pending" until both conditions are met.
 
 ## [Private Withdrawal](/protocol/withdrawal)
 

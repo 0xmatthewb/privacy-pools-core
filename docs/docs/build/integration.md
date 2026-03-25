@@ -42,7 +42,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
    - Wait for ASP approval before attempting withdrawal
 
 5. **Perform the relayed withdrawal**
-   1. **Fetch ASP root and verify parity:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
+   1. **Fetch ASP roots and verify convergence:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`). If `onchainMtRoot` is `null` or `mtRoot !== onchainMtRoot`, stop — the ASP tree has not converged on-chain yet. Once they match, confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
    2. **Request a relayer quote:** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`
    3. **Build Merkle proofs:** generate `stateMerkleProof` from pool state leaves (keyed by commitment hash) and `aspMerkleProof` from ASP leaves (keyed by label)
    4. **Generate the withdrawal proof:** call `proveWithdrawal` with the Merkle proofs, verified roots, withdrawal amount, relayer-provided context, change secrets from `accountService.createWithdrawalSecrets(commitment)`, and tree depth `32n` for both state and ASP trees
