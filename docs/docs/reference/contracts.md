@@ -98,6 +98,15 @@ interface IEntrypoint {
         uint256 maxRelayFeeBPS
     );
     function latestRoot() external view returns (uint256);
+
+    // Historical root access
+    function rootByIndex(uint256 index) external view returns (uint256 root);
+    function associationSets(uint256 index) external view returns (
+        uint256 root, string memory ipfsCID, uint256 timestamp
+    );
+
+    // Precommitment tracking
+    function usedPrecommitments(uint256 precommitment) external view returns (bool);
 }
 
 ```
