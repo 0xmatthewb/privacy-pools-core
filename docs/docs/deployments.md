@@ -17,7 +17,9 @@ keywords:
   - verifiers
 ---
 
-This section contains the addresses of deployed Privacy Pools contracts across various networks. Integrations should use the **Entrypoint (Proxy)** address. The implementation address is listed for reference only.
+This page is the canonical source for contract addresses, pool scopes, and `startBlock` values. Integrations should use the **Entrypoint (Proxy)** address for deposits and relayed withdrawals. Ragequit calls go directly to the pool contract address. The implementation address is listed for reference only.
+
+To resolve a chain + asset into pool metadata at runtime, call `Entrypoint.assetConfig(assetAddress)` — it returns the pool address, minimum deposit, and fee configuration. For scope, call `pool.SCOPE()`.
 
 ## Ethereum Mainnet (Chain ID: 1)
 
