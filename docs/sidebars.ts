@@ -30,7 +30,7 @@ const sidebars: SidebarsConfig = {
         slug: "/build",
         title: "Build",
         description:
-          "Guides for integrating Privacy Pools into frontends, backends, and agent workflows.",
+          "Guides for integrating Privacy Pools into frontends and agent workflows.",
         keywords: [
           "privacy pools",
           "build",
@@ -43,6 +43,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "build/start",
         "build/integration",
+        "build/ux-patterns",
         "build/agents",
         "build/skills",
         "build/contributing",
@@ -112,18 +113,8 @@ const sidebars: SidebarsConfig = {
       label: "Using Privacy Pools",
       collapsible: false,
       link: {
-        type: "generated-index",
-        slug: "/protocol",
-        title: "Using Privacy Pools",
-        description:
-          "Deposit, withdrawal, and ragequit guidance for Privacy Pools.",
-        keywords: [
-          "privacy pools",
-          "deposit",
-          "withdrawal",
-          "ragequit",
-          "relayer",
-        ],
+        type: "doc",
+        id: "protocol/overview",
       },
       items: [
         "protocol/deposit",
@@ -153,13 +144,13 @@ const sidebars: SidebarsConfig = {
         ],
       },
       items: [
-        "reference/contracts",
-        "reference/circuits",
         "reference/sdk",
         "deployments",
         "reference/asp-api",
         "reference/relayer-api",
         "reference/errors",
+        "reference/contracts",
+        "reference/circuits",
       ],
     },
     "toc",
