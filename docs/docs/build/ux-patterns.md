@@ -13,9 +13,9 @@ Practical frontend patterns for Privacy Pools integrations. For the step-by-step
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload — see [Deposit — Account and Recovery](/protocol/deposit#account-and-recovery) for the full onboarding rules.
 - Compare two signatures of the same payload before deriving. If they differ, use manual mnemonic onboarding. Require the recovery phrase to be saved before continuing.
-- If account reconstruction returns `legacyAccount`, keep it during restores for migrated users.
-  - If some scopes fail during a legacy restore, retry those scopes with `AccountService.initializeWithEvents(dataService, { mnemonic }, failedPools)` so legacy discovery runs again.
-  - For non-migration retries, use `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)` instead.
+- If `initializeWithEvents` returns `legacyAccount`, keep it during restores for migrated users — it is needed for ragequit of legacy deposits.
+- If some scopes fail during account restoration, retry those scopes with `AccountService.initializeWithEvents(dataService, { mnemonic }, failedPools)` to re-run discovery.
+  - For retries from an existing account service, use `AccountService.initializeWithEvents(dataService, { service: account }, failedPools)` instead.
 - If you support manual recovery input, normalize whitespace, commas, and newlines before checksum validation.
 - Do not log recovery phrases, signatures, nullifiers, secrets, or raw note material to analytics or error tracking.
 

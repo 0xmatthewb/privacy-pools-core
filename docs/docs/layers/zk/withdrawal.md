@@ -49,4 +49,4 @@ Circuit constraints:
 3. Ensures withdrawn amount is valid
 4. Computes new commitment for remaining value
 5. Checks the existing and new nullifier don't match
-6. Verifies context matches on-chain data
+6. Binds context to the proof via a quadratic constraint (`context * context`), preventing it from being optimized away — the actual on-chain match is verified by the contract's `validWithdrawal` modifier

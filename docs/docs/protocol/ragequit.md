@@ -41,12 +41,6 @@ sequenceDiagram
 
     activate Pool
 
-    Pool->>State: Check commitment exists
-
-    alt Commitment not found
-        Pool-->>User: Revert: InvalidCommitment
-    end
-
     Pool->>Pool: Verify caller is original depositor
 
     alt Not original depositor
@@ -57,6 +51,12 @@ sequenceDiagram
 
     alt Invalid proof
         Pool-->>User: Revert: InvalidProof
+    end
+
+    Pool->>State: Check commitment exists
+
+    alt Commitment not found
+        Pool-->>User: Revert: InvalidCommitment
     end
 
     Pool->>State: Mark nullifier as spent

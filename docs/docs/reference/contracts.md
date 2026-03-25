@@ -49,9 +49,9 @@ interface IPrivacyPool {
 | Function | Parameter | Description |
 |---|---|---|
 | `deposit` | `depositor` | Address credited as the original depositor (controls ragequit eligibility) |
-| | `value` | Deposit amount before vetting fee deduction |
+| | `value` | Deposit amount after vetting fee deduction (the Entrypoint deducts the fee before calling the pool) |
 | | `precommitment` | `Poseidon(nullifier, secret)` — must be unique across all deposits. Reverts with `PrecommitmentAlreadyUsed` if reused. |
-| | Returns `commitment` | The label assigned to this deposit: `keccak256(scope, nonce) % SNARK_SCALAR_FIELD` |
+| | Returns `commitment` | The commitment hash: `Poseidon(value, label, precommitmentHash)`. The label is a separate value emitted in the `Deposited` event. |
 | `withdraw` | `w` | `Withdrawal` struct: `processooor` must equal `msg.sender` for direct calls |
 | | `p` | ZK proof with 8 public signals (see [ProofLib](#prooflib)) |
 | `ragequit` | `p` | Commitment proof with 4 public signals. Only callable by the original depositor of the label. |

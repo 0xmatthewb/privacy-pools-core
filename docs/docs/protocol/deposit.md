@@ -124,6 +124,7 @@ const config = await publicClient.readContract({
       { name: "_pool", type: "address" },
       { name: "_minimumDepositAmount", type: "uint256" },
       { name: "_vettingFeeBPS", type: "uint256" },
+      { name: "_maxRelayFeeBPS", type: "uint256" },
     ],
     stateMutability: "view",
   }],

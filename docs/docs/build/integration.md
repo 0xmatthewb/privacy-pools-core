@@ -45,7 +45,7 @@ cp node_modules/@0xbow/privacy-pools-core-sdk/dist/node/artifacts/*.{wasm,zkey,v
 3. **Bootstrap account state**
    - New accounts: `new AccountService(dataService, { mnemonic })`
    - Returning users: `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` to restore from on-chain events
-   - Returns `{ account, legacyAccount?, errors }` so restores can reconcile migrated histories (see [SDK Utilities](/reference/sdk#account-reconstruction))
+   - Returns `{ account, legacyAccount?, errors }` — `account` is the restored `AccountService`, `legacyAccount` (if present) holds migrated deposit histories for ragequit, `errors` lists any scopes that failed to load (see [SDK Utilities](/reference/sdk#account-reconstruction))
 
 4. **Deposit**
    - Derive deposit secrets using `accountService.createDepositSecrets(scope, index)`
@@ -75,7 +75,10 @@ import {
   calculateContext,
   generateMerkleProof,
 } from "@0xbow/privacy-pools-core-sdk";
-import { createPublicClient, createWalletClient, custom, http } from "viem";
+import {
+  createPublicClient, createWalletClient, custom, http,
+  encodeAbiParameters, parseAbiParameters,
+} from "viem";
 import { sepolia } from "viem/chains";
 
 // 1. Initialize SDK with circuit artifacts (set baseUrl for browser)
@@ -178,64 +181,79 @@ const quote = await fetch(`${relayerUrl}/relayer/quote`, {
   }),
 }).then((r) => r.json());
 
-// 10. Build the Withdrawal struct and Merkle proofs
-const withdrawal = {
-  processooor: entrypointAddress,
-  data: quote.feeCommitment.withdrawalData, // pre-encoded RelayData from relayer
-};
-const scopeHash = `0x${scope.toString(16).padStart(64, "0")}` as `0x${string}`;
-const context = BigInt(calculateContext(withdrawal, scopeHash as any));
+// 10. Build the Withdrawal struct by ABI-encoding RelayData client-side
+// feeReceiverAddress comes from /relayer/details, not the quote response
+const relayerDetails = await fetch(
+  `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0x0000000000000000000000000000000000000000`
+).then((r) => r.json());
+const withdrawalData = encodeAbiParameters(
+  parseAbiParameters("address recipient, address feeRecipient, uint256 relayFeeBPS"),
+  [recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS)]
+);
+const withdrawal = { processooor: entrypointAddress, data: withdrawalData };
+const context = BigInt(calculateContext(withdrawal, scope as any));
 
-// Fetch ASP leaves and state leaves for Merkle proofs
-const aspLeaves = await fetch(
+// Fetch ASP leaves and state tree leaves from the ASP API
+// The mt-leaves endpoint returns both as flat string[] arrays (decimal-encoded bigints)
+const leavesResponse = await fetch(
   `${aspHost}/11155111/public/mt-leaves`,
   { headers: { "X-Pool-Scope": scope.toString() } }
 ).then((r) => r.json());
-const stateLeaves = await dataService.getStateLeaves({
-  chainId: 11155111,
-  address: poolAddress,
-  scope,
-  deploymentBlock: 123456n,
-});
 
 // Pick the pool account to spend (reconstructed from AccountService)
-// poolAccounts is a Map<scope, PoolAccount[]> — each PoolAccount tracks
-// a deposit and its chain of change commitments via lastCommitment
+// poolAccounts is a Map<scope, PoolAccount[]>
+// Each PoolAccount has deposit (original) and children (change commitments)
 const poolAccounts = accountService.account.poolAccounts;
-const poolAccount = poolAccounts.values().next().value[0]; // first account for first scope
-const commitment = poolAccount.lastCommitment; // AccountCommitment with hash, value, label, nullifier, secret
+const poolAccount = poolAccounts.values().next().value[0];
+// The spendable commitment is the latest: last child, or the deposit if no children
+const commitment = poolAccount.children.length > 0
+  ? poolAccount.children[poolAccount.children.length - 1]
+  : poolAccount.deposit;
+
+// Build Merkle proofs from both trees
+// State tree leaves are commitment hashes; ASP tree leaves are labels
 const stateMerkleProof = generateMerkleProof(
-  stateLeaves.map((l: bigint) => l),
-  commitment.hash // state tree uses commitment hashes
+  leavesResponse.stateTreeLeaves.map(BigInt),
+  commitment.hash
 );
 const aspMerkleProof = generateMerkleProof(
-  aspLeaves.map((l: { label: string }) => BigInt(l.label)),
-  BigInt(commitment.label) // ASP tree uses labels, NOT commitment hashes
+  leavesResponse.aspLeaves.map(BigInt),
+  commitment.label
 );
 
 // 11. Generate the withdrawal proof
 const { nullifier: newNullifier, secret: newSecret } =
   accountService.createWithdrawalSecrets(commitment);
 
-// Read the pool state root (separate from ASP root)
-const poolStateRoot = await publicClient.readContract({
-  address: poolAddress,
-  abi: [{ name: "currentRoot", type: "function", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" }],
-  functionName: "currentRoot",
-});
-
-const withdrawalProof = await sdk.proveWithdrawal(commitment, {
-  context,
-  withdrawalAmount: withdrawAmount,
-  stateMerkleProof,
-  aspMerkleProof,
-  stateRoot: `0x${poolStateRoot.toString(16).padStart(64, "0")}` as any, // pool state root
-  stateTreeDepth: 32n,
-  aspRoot: aspRoots.onchainMtRoot, // ASP root
-  aspTreeDepth: 32n,
-  newSecret,
-  newNullifier,
-});
+// Roots come from the Merkle proof results, not separate contract calls
+const withdrawalProof = await sdk.proveWithdrawal(
+  // proveWithdrawal expects a Commitment shape wrapping the account data
+  {
+    hash: commitment.hash,
+    nullifierHash: commitment.hash, // SDK uses precommitment hash here
+    preimage: {
+      value: commitment.value,
+      label: commitment.label,
+      precommitment: {
+        hash: commitment.hash,
+        nullifier: commitment.nullifier,
+        secret: commitment.secret,
+      },
+    },
+  },
+  {
+    context,
+    withdrawalAmount: withdrawAmount,
+    stateMerkleProof,
+    aspMerkleProof,
+    stateRoot: stateMerkleProof.root as any,
+    stateTreeDepth: 32n,
+    aspRoot: aspMerkleProof.root as any,
+    aspTreeDepth: 32n,
+    newSecret,
+    newNullifier,
+  }
+);
 
 // 12. Submit to relayer before the quote expires
 const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
@@ -261,11 +279,12 @@ Ragequit lets the original depositor reclaim funds publicly without ASP approval
 // Generate a commitment proof for ragequit
 // Use an AccountCommitment from the pool account (has nullifier + secret)
 const ragequitCommitment = commitment; // AccountCommitment from pool account
+// Fields are already bigints — no conversion needed
 const commitmentProof = await sdk.proveCommitment(
-  BigInt(ragequitCommitment.value),
-  BigInt(ragequitCommitment.label),
-  BigInt(ragequitCommitment.nullifier),
-  BigInt(ragequitCommitment.secret)
+  ragequitCommitment.value,
+  ragequitCommitment.label,
+  ragequitCommitment.nullifier,
+  ragequitCommitment.secret
 );
 
 // Submit ragequit directly to the pool contract

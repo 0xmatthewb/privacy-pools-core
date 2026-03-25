@@ -25,23 +25,17 @@ The contract extends the State base contract which manages the merkle tree and n
 
 ### State Management
 
-Inherits key state variables from the State contract:
+Inherits state variables from the State contract, including pool-specific immutables:
 
 ```solidity
-string public constant VERSION = '0.1.0';
 uint32 public constant ROOT_HISTORY_SIZE = 64;
 IEntrypoint public immutable ENTRYPOINT;
 IVerifier public immutable WITHDRAWAL_VERIFIER;
 IVerifier public immutable RAGEQUIT_VERIFIER;
+uint256 public immutable SCOPE;    // keccak256(address(this), chainId, asset) % SNARK_SCALAR_FIELD
+address public immutable ASSET;
 uint256 public nonce;
 bool public dead;
-```
-
-And adds pool-specific state:
-
-```solidity
-uint256 public immutable SCOPE;
-address public immutable ASSET;
 ```
 
 ## Core Data Structures
@@ -70,7 +64,7 @@ function deposit(
 The deposit flow:
 
 1. Validates pool is active and deposit value is within bounds
-2. Computes unique label from scope and nonce (`uint256(keccak256(abi.encodePacked(scope, nonce))) % SNARK_SCALAR_FIELD`)
+2. Computes unique label from scope and pre-incremented nonce (`uint256(keccak256(abi.encodePacked(SCOPE, ++nonce))) % Constants.SNARK_SCALAR_FIELD`)
 3. Records depositor address (for ragequit authorization)
 4. Computes commitment hash (`Poseidon(value, label, precommitment)`)
 5. Inserts commitment into the Merkle tree
@@ -103,10 +97,11 @@ function ragequit(ProofLib.RagequitProof memory _proof) external
 
 Allows original depositors to publicly reclaim funds at any time (no ASP check):
 
-1. Verify caller is original depositor
-2. Verify commitment exists in state tree
-3. Spend nullifier hash
-4. Transfer committed value back to depositor
+1. Verify caller is original depositor (`OnlyOriginalDepositor`)
+2. Verify Groth16 proof (`InvalidProof`)
+3. Verify commitment exists in state tree (`InvalidCommitment`)
+4. Spend nullifier hash (`NullifierAlreadySpent`)
+5. Transfer committed value back to depositor
 
 ### 4. Wind Down Capability
 
