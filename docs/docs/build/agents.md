@@ -1,6 +1,6 @@
 ---
 sidebar_label: Agent Workflows
-sidebar_position: 3
+sidebar_position: 4
 title: Agent Workflows
 slug: /build/agents
 description: Entry points, skill files, and workflows for AI coding agents integrating with Privacy Pools.

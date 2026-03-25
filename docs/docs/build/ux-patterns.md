@@ -1,6 +1,6 @@
 ---
 sidebar_label: UX Patterns
-sidebar_position: 5
+sidebar_position: 3
 title: UX Patterns
 slug: /build/ux-patterns
 description: Recommended frontend patterns for account management, deposits, withdrawals, and ragequit in Privacy Pools.

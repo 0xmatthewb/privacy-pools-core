@@ -1,6 +1,6 @@
 ---
 sidebar_label: Skill Library
-sidebar_position: 4
+sidebar_position: 5
 title: Skill Library
 slug: /build/skills
 description: Task-specific skill files that agents can load for Privacy Pools integration, deposit, withdrawal, and ragequit workflows.
