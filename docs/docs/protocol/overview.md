@@ -46,7 +46,7 @@ A public exit that returns the full balance to the original depositor address. R
 |---|---|---|
 | **Privacy** | No on-chain link between depositor and recipient | Public link to depositor |
 | **ASP approval** | Required | Not required |
-| **Who can call** | Anyone with the recovery phrase | Only the original depositor address |
+| **Who can call** | Anyone with the recovery phrase (a BIP-39 mnemonic that derives all deposit secrets) | Only the original depositor address |
 | **Partial amounts** | Yes, creates a change commitment | No, full balance only |
 
 **The recovery phrase and the deposit wallet control different things.** The recovery phrase derives the secrets needed for private withdrawal — it can be used from any address. Ragequit can only be called from the wallet that made the original deposit. Neither is a universal fallback: losing the recovery phrase blocks private withdrawal, and losing access to the deposit wallet blocks ragequit.

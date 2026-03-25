@@ -139,7 +139,8 @@ const scope = await publicClient.readContract({
   }],
   functionName: "SCOPE",
 });
-// Index = number of existing pool accounts for this scope (0n for first deposit)
+// Index = number of existing deposits for this scope (0n for first, 1n for second, etc.)
+// Increment after each confirmed deposit — the index drives deterministic secret derivation
 const { precommitment } = accountService.createDepositSecrets(scope as Hash, 0n);
 
 // 6. Simulate then deposit ETH via the Entrypoint
@@ -214,7 +215,8 @@ const withdrawal = { processooor: entrypointAddress, data: withdrawalData };
 const context = BigInt(calculateContext(withdrawal, scope as Hash));
 
 // Fetch ASP leaves and state tree leaves from the ASP API
-// The mt-leaves endpoint returns both as flat string[] arrays (decimal-encoded bigints)
+// Response shape: { stateTreeLeaves: string[], aspLeaves: string[] }
+// Both are flat arrays of decimal-encoded bigints
 const leavesResponse = await fetch(
   `${aspHost}/11155111/public/mt-leaves`,
   { headers: { "X-Pool-Scope": scope.toString() } }
@@ -222,7 +224,7 @@ const leavesResponse = await fetch(
 
 // Pick the pool account to spend (reconstructed from AccountService)
 // poolAccounts is a Map<scope, PoolAccount[]>
-// Each PoolAccount has deposit (original) and children (change commitments)
+// Each PoolAccount has deposit (original) and children (change commitments from partial withdrawals)
 const poolAccounts = accountService.account.poolAccounts;
 const poolAccountsArray = [...poolAccounts.values()].flat();
 if (poolAccountsArray.length === 0) {
