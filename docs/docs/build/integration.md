@@ -60,7 +60,7 @@ import {
   generateDepositSecrets,
   hashPrecommitment,
 } from "@0xbow/privacy-pools-core-sdk";
-import { createPublicClient, http } from "viem";
+import { createPublicClient, createWalletClient, custom, http } from "viem";
 import { sepolia } from "viem/chains";
 
 // 1. Initialize SDK with circuit artifacts
@@ -76,20 +76,17 @@ const dataService = new DataService([
   },
 ]);
 
-// 3. Read on-chain data with a PublicClient
+// 3. Read on-chain data
 const publicClient = createPublicClient({
   chain: sepolia,
   transport: http("https://sepolia.infura.io/v3/YOUR_KEY"),
 });
 
-// 4. Server-side signer example only.
-//    Browser dapps should use a WalletClient plus the relevant ABI instead.
-const contracts = sdk.createContractInstance(
-  "https://sepolia.infura.io/v3/YOUR_KEY",
-  sepolia,
-  "0x..." as `0x${string}`, // Entrypoint address from /deployments
-  "0x..." as `0x${string}`, // signer private key
-);
+// 4. Connect the user's wallet for writes
+const walletClient = createWalletClient({
+  chain: sepolia,
+  transport: custom(window.ethereum!),
+});
 
 // 5. Generate account keys from a recovery phrase
 const keys = generateMasterKeys("your recovery phrase ...");
@@ -109,12 +106,24 @@ const scope = await publicClient.readContract({
 const { nullifier, secret } = generateDepositSecrets(keys, scope, 0n);
 const precommitment = hashPrecommitment(nullifier, secret);
 
-// 7. Deposit ETH into the pool
-const depositTx = await contracts.depositETH(
-  10000000000000000n, // 0.01 ETH in wei
-  precommitment,
-);
-await depositTx.wait();
+// 7. Deposit ETH via the Entrypoint proxy
+const entrypointAddress = "0x..." as `0x${string}`; // Entrypoint (Proxy) from /deployments
+const [account] = await walletClient.getAddresses();
+const txHash = await walletClient.writeContract({
+  account,
+  address: entrypointAddress,
+  abi: [{
+    name: "deposit",
+    type: "function",
+    inputs: [{ name: "_precommitment", type: "uint256" }],
+    outputs: [{ name: "_commitment", type: "uint256" }],
+    stateMutability: "payable",
+  }],
+  functionName: "deposit",
+  args: [precommitment],
+  value: 10000000000000000n, // 0.01 ETH
+});
+await publicClient.waitForTransactionReceipt({ hash: txHash });
 
 // 8. Fetch deposit events to confirm and reconstruct state
 const deposits = await dataService.getDeposits({
@@ -126,10 +135,10 @@ const deposits = await dataService.getDeposits({
 
 // 9. Withdrawal: generate proof and submit via relayer
 //    See /reference/sdk for proveWithdrawal() and /protocol/withdrawal
-//    for the full relayed withdrawal flow via the production or testnet relayer host
+//    for the full relayed withdrawal flow
 ```
 
-See [SDK Utilities](/reference/sdk) for the full API surface.
+For server-side signers, use `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` instead of a `WalletClient`. See [SDK Utilities](/reference/sdk) for the full API surface.
 
 ### Log Fetch Configuration
 
