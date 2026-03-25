@@ -8,7 +8,15 @@ keywords: [privacy pools, getting started, integration, frontend, agent]
 
 Privacy Pools is a smart-contract protocol for compliant private transactions on Ethereum. Users deposit into a shared pool and withdraw privately, using zero-knowledge proofs and Association Set Providers (ASPs) to prove their funds are not linked to illicit activity. The SDK is TypeScript-based and uses viem.
 
-Pick the path that matches what you are building.
+## Key Concepts
+
+| Term | Meaning |
+|------|---------|
+| **Scope** | Unique identifier for each pool, derived from the asset and contract address. Used in API headers and proof inputs. |
+| **Commitment** | Poseidon hash of a deposit's value, label, nullifier, and secret. The on-chain record of a deposit. |
+| **Label** | Per-deposit identifier. The ASP approves deposits by adding their label to the approved set. |
+| **ASP** | Association Set Provider: off-chain service that evaluates deposits and maintains an approved Merkle tree. |
+| **Recovery phrase** | BIP-39 mnemonic that derives all deposit secrets. If lost, funds cannot be withdrawn privately. Must be saved before depositing. |
 
 ## Frontend or App Integration
 
