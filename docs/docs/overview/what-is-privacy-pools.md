@@ -25,7 +25,7 @@ Privacy Pools enables private withdrawals through a combination of zero-knowledg
 
 | Goal | Page |
 |---|---|
-| Build a frontend integration | [Frontend Integration](/build/integration) |
+| Build a frontend integration | [Start Here](/build/start) |
 | Discover agent and tool ingestion paths | [Agent Workflows](/build/agents) |
 | Look up chain addresses and `startBlock` | [Deployments](/deployments) |
 

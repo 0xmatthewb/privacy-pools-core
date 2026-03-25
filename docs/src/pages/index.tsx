@@ -84,8 +84,8 @@ const PERSONAS = [
     title: "Builders",
     icon: IconCode,
     description: "Build frontend flows for deposit, withdrawal, and account management.",
-    link: "/build/integration",
-    label: "Integration guide",
+    link: "/build/start",
+    label: "Start here",
   },
   {
     title: "Researchers",
