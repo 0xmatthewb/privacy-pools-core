@@ -156,7 +156,7 @@ const deposits = await dataService.getDeposits({
 
 // 8. Wait for ASP approval, then fetch roots
 const poolAddress = "0x..." as `0x${string}`;  // pool address
-const aspHost = "https://asp.privacypools.com"; // see /reference/asp-api for host selection
+const aspHost = "https://dw.0xbow.io"; // Sepolia — see /reference/asp-api for host selection
 const aspRoots = await fetch(
   `${aspHost}/11155111/public/mt-roots`,
   { headers: { "X-Pool-Scope": scope.toString() } } // must be decimal
@@ -176,15 +176,16 @@ const quote = await fetch(`${relayerUrl}/relayer/quote`, {
   body: JSON.stringify({
     chainId: 11155111,
     amount: withdrawAmount.toString(),
-    asset: "0x0000000000000000000000000000000000000000",
+    asset: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", // native ETH sentinel
     recipient,
+    extraGas: false,
   }),
 }).then((r) => r.json());
 
 // 10. Build the Withdrawal struct by ABI-encoding RelayData client-side
 // feeReceiverAddress comes from /relayer/details, not the quote response
 const relayerDetails = await fetch(
-  `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0x0000000000000000000000000000000000000000`
+  `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
 ).then((r) => r.json());
 const withdrawalData = encodeAbiParameters(
   parseAbiParameters("address recipient, address feeRecipient, uint256 relayFeeBPS"),
