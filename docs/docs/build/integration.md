@@ -72,6 +72,8 @@ import {
   DataService,
   AccountService,
   Circuits,
+  calculateContext,
+  generateMerkleProof,
 } from "@0xbow/privacy-pools-core-sdk";
 import { createPublicClient, createWalletClient, custom, http } from "viem";
 import { sepolia } from "viem/chains";
@@ -177,8 +179,6 @@ const quote = await fetch(`${relayerUrl}/relayer/quote`, {
 }).then((r) => r.json());
 
 // 10. Build the Withdrawal struct and Merkle proofs
-import { calculateContext, generateMerkleProof } from "@0xbow/privacy-pools-core-sdk";
-
 const withdrawal = {
   processooor: entrypointAddress,
   data: quote.feeCommitment.withdrawalData, // pre-encoded RelayData from relayer
@@ -199,10 +199,11 @@ const stateLeaves = await dataService.getStateLeaves({
 });
 
 // Pick the pool account to spend (reconstructed from AccountService)
-// AccountService.initializeWithEvents() returns properly typed AccountCommitments
-// with hash, value, label, nullifier, and secret fields
-const poolAccount = accountService.account.poolAccounts.values().next().value[0];
-const commitment = poolAccount.lastCommitment; // AccountCommitment
+// poolAccounts is a Map<scope, PoolAccount[]> — each PoolAccount tracks
+// a deposit and its chain of change commitments via lastCommitment
+const poolAccounts = accountService.account.poolAccounts;
+const poolAccount = poolAccounts.values().next().value[0]; // first account for first scope
+const commitment = poolAccount.lastCommitment; // AccountCommitment with hash, value, label, nullifier, secret
 const stateMerkleProof = generateMerkleProof(
   stateLeaves.map((l: bigint) => l),
   commitment.hash // state tree uses commitment hashes
@@ -254,7 +255,7 @@ const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
 
 ### Ragequit (Public Exit)
 
-Ragequit lets the original depositor reclaim funds publicly without ASP approval. It calls the pool contract directly (not via relayer).
+Ragequit lets the original depositor reclaim funds publicly without ASP approval. It calls the pool contract directly (not via relayer). Only the address that submitted the original deposit can ragequit — other addresses will revert with `OnlyOriginalDepositor`.
 
 ```typescript
 // Generate a commitment proof for ragequit
