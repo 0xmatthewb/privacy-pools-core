@@ -1315,16 +1315,20 @@ html[data-theme="dark"] .aa-DetachedFormContainer .aa-Form:focus-within {
    Links
    ══════════════════════════════════════════════════════════════════════ */
 
-.markdown a {
+.markdown a:not(.hash-link) {
   transition: color var(--pp-transition), opacity var(--pp-transition),
     text-decoration-color var(--pp-transition);
   text-decoration: underline;
-  text-decoration-color: var(--pp-muted);
+  text-decoration-color: rgba(95, 95, 90, 0.45);
   text-decoration-thickness: 1px;
   text-underline-offset: 2.5px;
 }
 
-.markdown a:hover {
+html[data-theme="dark"] .markdown a:not(.hash-link) {
+  text-decoration-color: rgba(168, 168, 161, 0.55);
+}
+
+.markdown a:not(.hash-link):hover {
   text-decoration-color: var(--ifm-font-color-base);
 }
 
