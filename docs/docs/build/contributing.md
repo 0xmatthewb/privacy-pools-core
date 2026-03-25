@@ -169,23 +169,23 @@ cd docs && yarn build
 
 ### Contracts
 
-```
-// packages/contracts/.env
-ETHEREUM_MAINNET_RPC=
-ETHEREUM_SEPOLIA_RPC=
+```bash
+# packages/contracts/.env
+ETHEREUM_MAINNET_RPC=          # required
+ETHEREUM_SEPOLIA_RPC=          # required
 
-GNOSIS_RPC=
-GNOSIS_CHIADO_RPC=
+GNOSIS_RPC=                    # optional
+GNOSIS_CHIADO_RPC=             # optional
 
-ETHERSCAN_API_KEY=
+ETHERSCAN_API_KEY=             # optional (for contract verification)
 
-DEPLOYER_ADDRESS=
-OWNER_ADDRESS=
-POSTMAN_ADDRESS=
+DEPLOYER_ADDRESS=              # required
+OWNER_ADDRESS=                 # required
+POSTMAN_ADDRESS=               # required
 
-ENTRYPOINT_ADDRESS=
-WITHDRAWAL_VERIFIER_ADDRESS=
-RAGEQUIT_VERIFIER_ADDRESS=
+ENTRYPOINT_ADDRESS=            # required
+WITHDRAWAL_VERIFIER_ADDRESS=   # required
+RAGEQUIT_VERIFIER_ADDRESS=     # required
 ```
 
 ### SDK
@@ -198,8 +198,9 @@ No `.env` file is required. Circom compilation and tests run without environment
 
 ### Relayer
 
+Required fields: `chain_id`, `rpc_url`, `signer_private_key`, and contract addresses. Optional: `cors_allow_all` (defaults to false), `allowed_domains`, and `sqlite_db_path`.
+
 ```json
-// config.example.json
 {
   "defaults": {
     "fee_receiver_address": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",

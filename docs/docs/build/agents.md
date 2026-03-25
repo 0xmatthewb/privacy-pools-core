@@ -23,16 +23,7 @@ This page helps AI coding agents and LLM-powered tools get set up for Privacy Po
 
 ## Skill Library
 
-The [Skill Library](/build/skills) provides four task-specific skill files that agents can load for focused work:
-
-| Skill | Purpose | Hosted URL |
-|---|---|---|
-| `privacy-pools-integration` | End-to-end integration planning and architecture | [`SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md) |
-| `privacy-pools-deposit` | Deposit flow implementation | [`SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md) |
-| `privacy-pools-withdraw` | Relayed withdrawal implementation | [`SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md) |
-| `privacy-pools-ragequit` | Ragequit (public exit) implementation | [`SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md) |
-
-Each skill is a markdown file with task-specific instructions and references.
+See the [Skill Library](/build/skills) for the full list of available skills with descriptions and hosted URLs.
 
 ## Skill File Locations
 

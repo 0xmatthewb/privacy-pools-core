@@ -22,7 +22,8 @@ This guide walks through integrating Privacy Pools deposits, withdrawals, and ra
 ## Minimal Frontend Recipe
 
 :::info Prerequisites
-Node 18+, viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain — see [Deployments](/deployments) for chain addresses and `startBlock` values.
+Node 18+ (monorepo development requires 20+ — see [Contributing](/build/contributing)), viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain — see [Deployments](/deployments) for chain addresses and `startBlock` values.
+- SDK version: 1.2.0 (`@0xbow/privacy-pools-core-sdk`)
 :::
 
 **Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
@@ -45,12 +46,16 @@ cp node_modules/@0xbow/privacy-pools-core-sdk/dist/node/artifacts/*.{wasm,zkey,v
 3. **Bootstrap account state**
    - New accounts: `new AccountService(dataService, { mnemonic })`
    - Returning users: `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` to restore from on-chain events
-   - Returns `{ account, legacyAccount?, errors }` — `account` is the restored `AccountService`, `legacyAccount` (if present) holds migrated deposit histories for ragequit, `errors` lists any scopes that failed to load (see [SDK Utilities](/reference/sdk#account-reconstruction))
+   - Returns `{ account, legacyAccount?, errors }`:
+     - `account` is the restored `AccountService`
+     - `legacyAccount` (if present) holds migrated deposit histories for ragequit
+     - `errors` lists any scopes that failed to load (see [SDK Utilities](/reference/sdk#account-reconstruction))
 
 4. **Deposit**
    - Derive deposit secrets using `accountService.createDepositSecrets(scope, index)`
    - Simulate the deposit transaction with `publicClient.simulateContract(...)`, then execute with `walletClient.writeContract(request)`
-   - Persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state (see [Account Reconstruction](/reference/sdk#account-reconstruction) for the full shape)
+   - Persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state
+     (see [Account Reconstruction](/reference/sdk#account-reconstruction) for the full shape)
    - Wait for ASP approval before attempting withdrawal
 
 5. **Perform the relayed withdrawal**
@@ -81,6 +86,12 @@ import {
 } from "viem";
 import { sepolia } from "viem/chains";
 
+// --- Fill in from /deployments for your target chain ---
+const POOL_ADDRESS = "0x..." as `0x${string}`;
+const ENTRYPOINT_ADDRESS = "0x..." as `0x${string}`;
+const START_BLOCK = 123456n;
+const RPC_URL = "https://sepolia.infura.io/v3/YOUR_KEY";
+
 // 1. Initialize SDK with circuit artifacts (set baseUrl for browser)
 const sdk = new PrivacyPoolSDK(
   new Circuits({ baseUrl: window.location.origin })
@@ -90,16 +101,16 @@ const sdk = new PrivacyPoolSDK(
 const dataService = new DataService([
   {
     chainId: 11155111,
-    privacyPoolAddress: "0x..." as `0x${string}`, // from /deployments
-    startBlock: 123456n,                           // from /deployments
-    rpcUrl: "https://sepolia.infura.io/v3/YOUR_KEY",
+    privacyPoolAddress: POOL_ADDRESS,
+    startBlock: START_BLOCK,
+    rpcUrl: RPC_URL,
   },
 ]);
 
 // 3. Create clients
 const publicClient = createPublicClient({
   chain: sepolia,
-  transport: http("https://sepolia.infura.io/v3/YOUR_KEY"),
+  transport: http(RPC_URL),
 });
 const walletClient = createWalletClient({
   chain: sepolia,
@@ -113,7 +124,7 @@ const accountService = new AccountService(dataService, {
 
 // 5. Read the pool scope and derive deposit secrets
 const scope = await publicClient.readContract({
-  address: "0x..." as `0x${string}`, // pool address
+  address: POOL_ADDRESS,
   abi: [{
     name: "SCOPE",
     type: "function",
@@ -127,7 +138,7 @@ const scope = await publicClient.readContract({
 const { precommitment } = accountService.createDepositSecrets(scope, 0n);
 
 // 6. Simulate then deposit ETH via the Entrypoint
-const entrypointAddress = "0x..." as `0x${string}`; // Entrypoint (Proxy) from /deployments
+const entrypointAddress = ENTRYPOINT_ADDRESS;
 const [account] = await walletClient.getAddresses();
 const { request } = await publicClient.simulateContract({
   account,
@@ -149,13 +160,13 @@ await publicClient.waitForTransactionReceipt({ hash: txHash });
 // 7. Fetch deposit events to confirm and reconstruct state
 const deposits = await dataService.getDeposits({
   chainId: 11155111,
-  address: "0x..." as `0x${string}`, // pool address
+  address: POOL_ADDRESS,
   scope,
-  deploymentBlock: 123456n,
+  deploymentBlock: START_BLOCK,
 });
 
 // 8. Wait for ASP approval, then fetch roots
-const poolAddress = "0x..." as `0x${string}`;  // pool address
+const poolAddress = POOL_ADDRESS;
 const aspHost = "https://dw.0xbow.io"; // Sepolia — see /reference/asp-api for host selection
 const aspRoots = await fetch(
   `${aspHost}/11155111/public/mt-roots`,
@@ -187,6 +198,9 @@ const quote = await fetch(`${relayerUrl}/relayer/quote`, {
 const relayerDetails = await fetch(
   `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
 ).then((r) => r.json());
+// The client encodes RelayData (not the relayer) because the proof's
+// context is bound to the withdrawal struct. If the relayer set `data`,
+// it could redirect funds to a different recipient.
 const withdrawalData = encodeAbiParameters(
   parseAbiParameters("address recipient, address feeRecipient, uint256 relayFeeBPS"),
   [recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS)]
@@ -205,7 +219,11 @@ const leavesResponse = await fetch(
 // poolAccounts is a Map<scope, PoolAccount[]>
 // Each PoolAccount has deposit (original) and children (change commitments)
 const poolAccounts = accountService.account.poolAccounts;
-const poolAccount = poolAccounts.values().next().value[0];
+const poolAccountsArray = [...poolAccounts.values()].flat();
+if (poolAccountsArray.length === 0) {
+  throw new Error("No pool accounts found — deposit first");
+}
+const poolAccount = poolAccountsArray[0];
 // The spendable commitment is the latest: last child, or the deposit if no children
 const commitment = poolAccount.children.length > 0
   ? poolAccount.children[poolAccount.children.length - 1]
@@ -325,32 +343,14 @@ For server-side signers, use `sdk.createContractInstance(rpcUrl, chain, entrypoi
 
 Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRetries`, and `retryBaseDelayMs`. See [SDK Utilities](/reference/sdk) for the full `LogFetchConfig` type.
 
-## Integration Checklist
+## Key integration rules
 
-1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
-2. If wallet onboarding is supported:
-   - Derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice.
-   - Otherwise use manual mnemonic onboarding.
-   - Require the recovery phrase to be saved before continuing.
-3. For deposits:
-   - Derive deposit secrets from the recovery account.
-   - Validate `minimumDepositAmount` before submission.
-   - Persist the confirmed `Deposited` event's `label` and post-fee `value` into pool-account state.
-4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs.
-   - A deposit is ready for withdrawal when `mtRoot === onchainMtRoot` (from `GET /{chainId}/public/mt-roots`) and the deposit's `label` appears in the `aspLeaves` array from `GET /{chainId}/public/mt-leaves`.
-   - Treat deposits as pending until both conditions are met.
-5. Build withdrawal proofs with two roots:
-   - Pool state root from `IPrivacyPool.currentRoot()`.
-   - ASP root from the `onchainMtRoot` field.
-   - Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
-6. Use relayed withdrawals only: `https://fastrelay.xyz` on production chains, `https://testnet-relayer.privacypools.com` on testnets. Do not surface direct `PrivacyPool.withdraw()` in frontend UX.
-7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval.
-8. On the review step:
-   - Resolve the final recipient before quoting.
-   - Fetch relayer details and `minWithdrawAmount`.
-   - Request the relayer quote.
-   - Discard the quote whenever amount, recipient, relayer, or gas-token-drop settings change.
-9. Keep ragequit separate and clearly public.
+1. **Relayed withdrawals only** — use `fastrelay.xyz` on production chains and `testnet-relayer.privacypools.com` on published testnets. Never expose direct `PrivacyPool.withdraw()` in frontend UX.
+2. **Recovery phrase first** — require users to save their recovery phrase before their first deposit. Never expose raw note material in clipboard or copy/paste flows.
+3. **Quote on review, re-quote on change** — request relayer quotes on the review step. If amount, recipient, or relayer changes, or the quote expires, discard and re-quote.
+4. **ASP root parity** — always verify the ASP tree has converged on-chain (`mtRoot === onchainMtRoot`) before generating a withdrawal proof.
+
+For the complete set of frontend patterns covering account management, deposit flows, withdrawal UX, and ragequit handling, see [UX Patterns](/build/ux-patterns).
 
 ## Next Steps
 
