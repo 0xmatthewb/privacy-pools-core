@@ -1,6 +1,6 @@
 ---
 sidebar_label: Errors & Constraints
-sidebar_position: 7
+sidebar_position: 6
 title: Errors and Constraints
 description: "Contract revert reasons, SDK error patterns, and common integration pitfalls for Privacy Pools."
 keywords:
@@ -13,6 +13,8 @@ keywords:
 ---
 
 Revert reason names are taken directly from the Solidity interface definitions in the contracts package. This page covers integrator-facing errors. Admin and governance errors (pool registration, fee configuration, IPFS CID validation, etc.) are omitted.
+
+For the contract interface definitions where these errors originate, see [Contracts Interfaces](/reference/contracts).
 
 ## Contract Revert Reasons
 
@@ -89,7 +91,10 @@ The state root and ASP root can become stale between fetching data and submittin
 
 ### ASP Root Parity
 
-The `onchainMtRoot` from the ASP `mt-roots` endpoint may temporarily differ from `Entrypoint.latestRoot()` if the ASP has computed a new root that has not been pushed on-chain yet. The `mt-leaves` endpoint returns leaves corresponding to `mtRoot` (the database root), not `onchainMtRoot`. If these values diverge, wait and re-fetch until they converge before building a proof.
+The `onchainMtRoot` from the ASP `mt-roots` endpoint may temporarily differ from `Entrypoint.latestRoot()` if the ASP has computed a new root that has not been pushed on-chain yet.
+
+- The `mt-leaves` endpoint returns leaves corresponding to `mtRoot` (the database root), not `onchainMtRoot`.
+- If these values diverge, wait and re-fetch until they converge before building a proof.
 
 ## Common Integration Mistakes
 
@@ -128,7 +133,10 @@ Each precommitment hash can only be used once on-chain. If a deposit transaction
 
 ### Forgetting to Refresh After a Withdrawal
 
-After a withdrawal, a new reduced-value or zero-value change commitment may be inserted into the state tree. Before generating the next withdrawal proof, re-fetch state tree leaves and rebuild the Merkle proof. Persist zero-value change commitments for history reconstruction, but do not treat them as spendable balances. Using stale leaves will produce an invalid state root.
+After a withdrawal, a new reduced-value or zero-value change commitment may be inserted into the state tree. Before generating the next withdrawal proof, re-fetch state tree leaves and rebuild the Merkle proof.
+
+- Persist zero-value change commitments for history reconstruction, but do not treat them as spendable balances.
+- Using stale leaves will produce an invalid state root.
 
 ### Using Raw Event Value Instead of Committed Value
 

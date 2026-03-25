@@ -1,6 +1,6 @@
 ---
 title: Contracts Interfaces
-sidebar_position: 6
+sidebar_position: 2
 description: "Contract interface reference for Privacy Pools components, including structs, events, and function signatures."
 keywords:
   - privacy pools
@@ -138,7 +138,9 @@ interface IEntrypoint {
 | `latestRoot()` | — | Latest ASP-approved root. Withdrawal proofs must use this exact value. |
 | `usedPrecommitments()` | `precommitment` | Returns `true` if the precommitment has been used in a prior deposit. |
 
+:::info State root vs ASP root
 `IPrivacyPool.currentRoot()` is the state-tree root used in withdrawal proofs. `IEntrypoint.latestRoot()` is separate: the latest ASP-approved root that must match ASP `onchainMtRoot`.
+:::
 
 `IPrivacyPool.withdraw()` is the direct pool path: caller must equal `Withdrawal.processooor`, so funds go to that signer. `IEntrypoint.relay()` is the relayed path: `Withdrawal.processooor` must be the Entrypoint, and recipient plus fee routing comes from `RelayData`.
 
@@ -216,5 +218,7 @@ ProofLib provides typed accessors for each public signal. These are `internal pu
 **WithdrawProof:** `newCommitmentHash()`, `existingNullifierHash()`, `withdrawnValue()`, `stateRoot()`, `stateTreeDepth()`, `ASPRoot()`, `ASPTreeDepth()`, `context()`
 
 **RagequitProof:** `commitmentHash()`, `nullifierHash()`, `value()`, `label()`
+
+For the circuit-level constraints behind these proof structs, see [Circuits Interfaces](/reference/circuits).
 
 For the full integration recipe, see [Frontend Integration](/build/integration). For contract errors, see [Errors and Constraints](/reference/errors).

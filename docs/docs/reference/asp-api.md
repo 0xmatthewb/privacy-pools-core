@@ -1,6 +1,6 @@
 ---
 sidebar_label: ASP API
-sidebar_position: 5
+sidebar_position: 4
 title: ASP API Reference
 description: "HTTP API reference for the Association Set Provider, including endpoints for Merkle roots, leaves, health checks, and chain discovery."
 keywords:

@@ -1,6 +1,6 @@
 ---
 sidebar_label: Relayer API
-sidebar_position: 6
+sidebar_position: 5
 title: Relayer API Reference
 description: "HTTP API reference for the Privacy Pools relayer, including quote, relay request, and details endpoints."
 keywords:
@@ -214,7 +214,9 @@ Submits a relayed withdrawal to the relayer for on-chain execution.
 }
 ```
 
-**Important:** The relayer returns HTTP 200 for both success and application-level failures (bad proof, expired `feeCommitment`, context mismatch). Pre-processing errors (bad schema, unsupported chain, gas price too high) return non-200 status codes.
+:::warning The relayer returns HTTP 200 for failures
+The relayer returns HTTP 200 for both success and application-level failures (bad proof, expired `feeCommitment`, context mismatch). Pre-processing errors (bad schema, unsupported chain, gas price too high) return non-200 status codes.
+:::
 
 Always check `result.success` after verifying the HTTP status:
 
@@ -241,7 +243,11 @@ The relayer API does not support cancellation. If a `feeCommitment` has expired,
 | Schema or validation error | HTTP 4xx | Fix request payload per error message |
 | Relayer overloaded | HTTP 5xx | Retry after backoff |
 
-For proof, quote, or context failures where no transaction was broadcast, discard the current quote and start from `POST /relayer/quote`. If the response includes a `txHash` (the withdrawal landed but the optional gas-token swap failed), the withdrawal itself succeeded — do not retry the withdrawal.
+For proof, quote, or context failures where no transaction was broadcast, discard the current quote and start from `POST /relayer/quote`.
+
+:::info
+If the response includes a `txHash` (the withdrawal landed but the optional gas-token swap failed), the withdrawal itself succeeded — do not retry the withdrawal.
+:::
 
 ### `GET /relayer/details`
 

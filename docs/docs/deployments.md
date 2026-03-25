@@ -1,5 +1,6 @@
 ---
 title: Deployments
+sidebar_position: 7
 description: "Canonical deployment addresses for Privacy Pools contracts across supported networks."
 keywords:
   - privacy pools
@@ -147,6 +148,10 @@ Use **`8461450n`** as `startBlock` when initializing `DataService` for Sepolia. 
 
 ## Starknet (Chain ID: SN_MAIN)
 
+:::info
+The TypeScript SDK (`@0xbow/privacy-pools-core-sdk`) targets EVM chains only. Starknet integration uses a separate toolchain.
+:::
+
 ### Core Contracts
 
 | Contract | Address |
@@ -160,3 +165,11 @@ Use **`8461450n`** as `startBlock` when initializing `DataService` for Sepolia. 
 | ETH | `0x1575a7d243bf929bea1eead2a33dfb25dad16df1af7a34f61caea22e4ec57fb` | `0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7` |
 | USDC | `0x78d8a02f3a7073dfd6c7a4ea3e15ba217a3196ecf6487b09a03800d69092879` | `0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8` |
 | STRK | `0x2f35b62fff4fbf6188c758e5e1f92d98193ea179d42142746101660168a1d13` | `0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d` |
+
+## Related references
+
+| Reference | Page |
+|-----------|------|
+| SDK initialization with deployment addresses | [SDK Utilities](/reference/sdk) |
+| ASP host selection per chain | [ASP API Reference](/reference/asp-api) |
+| Relayer host selection per chain | [Relayer API Reference](/reference/relayer-api) |

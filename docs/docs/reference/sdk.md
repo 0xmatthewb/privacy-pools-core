@@ -1,5 +1,6 @@
 ---
 title: SDK Utilities
+sidebar_position: 1
 description: "SDK API reference for high-level protocol operations, proof helpers, and integration-oriented TypeScript types."
 keywords:
   - privacy pools
@@ -31,7 +32,11 @@ const sdk = new PrivacyPoolSDK(circuits);
 
 ### `Circuits`
 
-The `Circuits` class implements `CircuitsInterface` and generates or verifies the Groth16 proofs used for commitments and withdrawals. In browser environments, pass `{ baseUrl: window.location.origin }` so artifacts load from your app's origin. In Node.js, pass `{ browser: false }` so artifacts load from disk rather than `fetch`. You can also override `baseUrl` when serving artifacts from a custom location.
+The `Circuits` class implements `CircuitsInterface` and generates or verifies the Groth16 proofs used for commitments and withdrawals.
+
+- **Browser:** pass `{ baseUrl: window.location.origin }` so artifacts load from your app's origin.
+- **Node.js:** pass `{ browser: false }` so artifacts load from disk rather than `fetch`.
+- You can also override `baseUrl` when serving artifacts from a custom location.
 
 Every downloaded circuit artifact (`wasm`, `vkey`, and `zkey`) is verified against a registered SHA-256 digest before use, including when `baseUrl` is overridden.
 
@@ -127,7 +132,11 @@ interface ContractInteractionsService {
 }
 ```
 
-`ContractInteractionsService.getStateRoot()` reads `latestRoot()` using the Entrypoint ABI on whatever address is passed. Despite accepting `privacyPoolAddress`, you must pass the **Entrypoint address** — passing a pool address will fail. The return value is the ASP root, not the pool state root. For withdrawal proofs, read the pool state root directly via `IPrivacyPool.currentRoot()` and use `onchainMtRoot` from the ASP API for the ASP root.
+:::warning Pass the Entrypoint address, not the pool address
+`getStateRoot()` reads `latestRoot()` using the Entrypoint ABI on whatever address is passed. Despite accepting `privacyPoolAddress`, you must pass the **Entrypoint address** — passing a pool address will fail.
+:::
+
+The return value is the ASP root, not the pool state root. For withdrawal proofs, read the pool state root directly via `IPrivacyPool.currentRoot()` and use `onchainMtRoot` from the [ASP API](/reference/asp-api) for the ASP root.
 
 `ContractInteractionsService` always requires a `privateKey` in its constructor, even for read-only methods like `getScope()` and `getStateRoot()`. If you need scope or the pool state root without a signer (e.g., for `DataService` workflows), read them directly from the pool contract via a viem `PublicClient`:
 
@@ -170,7 +179,11 @@ class DataService {
 
 `DataService` is fully standalone. It does not require `PrivacyPoolSDK` or a private key. Initialize it with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`). Use it for read-only event scanning and account reconstruction in contexts where a signer is not available (e.g., indexers, dashboards, or pre-login state reconstruction).
 
-`DataService` fetches logs in chunked, rate-limited ranges. Always initialize it with the deployment `startBlock` from the [Deployments](/deployments) page rather than `0n`. Scanning from genesis works but is unnecessarily slow and may hit RPC provider limits. Use the optional second constructor argument when you need per-chain fetch overrides (chunk size, concurrency, delay, retries). It also preserves zero-value withdrawal events so account reconstruction stays correct for full-withdrawal chains, even though zero-value change commitments are not spendable.
+`DataService` fetches logs in chunked, rate-limited ranges:
+
+- Always initialize with the deployment `startBlock` from the [Deployments](/deployments) page rather than `0n`. Scanning from genesis works but is unnecessarily slow and may hit RPC provider limits.
+- Use the optional second constructor argument when you need per-chain fetch overrides (chunk size, concurrency, delay, retries).
+- Zero-value withdrawal events are preserved so account reconstruction stays correct for full-withdrawal chains, even though zero-value change commitments are not spendable.
 
 `getDeposits` starts from `pool.deploymentBlock` if present, falling back to the chain's configured `startBlock`. `getWithdrawals` and `getRagequits` accept an optional `fromBlock` parameter for incremental fetching, defaulting to `pool.deploymentBlock`.
 
@@ -354,7 +367,11 @@ interface RagequitEvent {
 
 ## Account Reconstruction
 
-Pool accounts are reconstructed from on-chain events with `AccountService`. When initialized from `{ mnemonic }`, the SDK may also return `legacyAccount` so migrated histories can be reconciled. Retry failed scopes with `{ service: account }` only for non-migration retries. If the original restore depended on `legacyAccount`, rerun the failed scopes with `{ mnemonic }` so legacy discovery runs again.
+Pool accounts are reconstructed from on-chain events with `AccountService`:
+
+- When initialized from `{ mnemonic }`, the SDK may also return `legacyAccount` so migrated histories can be reconciled.
+- Retry failed scopes with `{ service: account }` only for non-migration retries.
+- If the original restore depended on `legacyAccount`, rerun the failed scopes with `{ mnemonic }` so legacy discovery runs again.
 
 For advanced event-collection flows, `AccountService` also accepts `poolConcurrency` in its constructor to limit how many pools are fetched in parallel while collecting events with `getEvents()`. The default is `2`.
 
@@ -400,6 +417,9 @@ const migratedRetry = await AccountService.initializeWithEvents(
 
 The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search. On mnemonic-based initialization, it also scans the legacy derivation path before continuing with current-key deposits and withdrawals.
 
-After initialization, refresh ASP review status across every loaded chain/scope combination to determine which accounts are eligible for private withdrawal. Persist zero-value change commitments for history alignment, but do not treat them as spendable balances.
+After initialization:
+
+- Refresh ASP review status across every loaded chain/scope combination to determine which accounts are eligible for private withdrawal.
+- Persist zero-value change commitments for history alignment, but do not treat them as spendable balances.
 
 For a complete integration recipe and checklist, see [Frontend Integration](/build/integration).

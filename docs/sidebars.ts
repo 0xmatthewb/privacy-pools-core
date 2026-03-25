@@ -23,6 +23,20 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Using Privacy Pools",
+      collapsible: false,
+      link: {
+        type: "doc",
+        id: "protocol/overview",
+      },
+      items: [
+        "protocol/deposit",
+        "protocol/withdrawal",
+        "protocol/ragequit",
+      ],
+    },
+    {
+      type: "category",
       label: "Build",
       collapsible: false,
       link: {
@@ -47,20 +61,6 @@ const sidebars: SidebarsConfig = {
         "build/agents",
         "build/skills",
         "build/contributing",
-      ],
-    },
-    {
-      type: "category",
-      label: "Using Privacy Pools",
-      collapsible: false,
-      link: {
-        type: "doc",
-        id: "protocol/overview",
-      },
-      items: [
-        "protocol/deposit",
-        "protocol/withdrawal",
-        "protocol/ragequit",
       ],
     },
     {

@@ -1,6 +1,6 @@
 ---
 title: Circuits Interfaces
-sidebar_position: 7
+sidebar_position: 3
 description: "Circuit interface reference describing public and private inputs, outputs, and constraints for commitment and withdrawal proofs."
 keywords:
   - privacy pools
