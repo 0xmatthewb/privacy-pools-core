@@ -105,8 +105,8 @@ const PERSONAS = [
     title: "Build with Agents",
     icon: IconCpu,
     description: "Discover LLM-facing artifacts, workflow files, and tool ingestion paths.",
-    link: "/build/agents",
-    label: "Agent integration",
+    link: "/build/start",
+    label: "Start here",
   },
 ];
 

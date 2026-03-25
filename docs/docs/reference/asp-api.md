@@ -228,5 +228,5 @@ Rate-limit details are not published. Treat HTTP 403, 429, or any equivalent thr
 For direct on-chain reads without the HTTP API:
 
 - **Latest root:** `Entrypoint.latestRoot()` (selector: `0xd7b0fef1`)
-- **Historical root access:** Admin-only.
+- **Historical roots:** `Entrypoint.rootByIndex(index)` returns the root at a given index. `Entrypoint.associationSets(index)` returns `(root, ipfsCID, timestamp)`.
 - **IPFS CID:** `associationSets(index).ipfsCID` returns the IPFS CID containing the label set for a given root index.

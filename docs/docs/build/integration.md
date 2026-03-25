@@ -19,6 +19,8 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 
 ## Minimal Frontend Recipe
 
+**Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
+
 1. **Load deployment data**
    - Read chain-specific contract addresses and `startBlock` from [Deployments](/deployments)
    - You need: `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope
