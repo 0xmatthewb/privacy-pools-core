@@ -107,8 +107,11 @@ interface ContractInteractionsService {
   ): Promise<TransactionResponse>;
 
   getScope(privacyPoolAddress: Address): Promise<bigint>;
+
+  // ⚠️ Misleading name: calls Entrypoint.latestRoot(), not pool.currentRoot().
+  // You must pass the Entrypoint address, not a pool address. See note below.
   getStateRoot(privacyPoolAddress: Address): Promise<bigint>;
-  // ⚠️ Despite the name, this reads Entrypoint.latestRoot() (the ASP root), not the pool's state root
+
   getStateSize(privacyPoolAddress: Address): Promise<bigint>;
   getAssetConfig(assetAddress: Address): Promise<AssetConfig>;
   getScopeData(
