@@ -45,7 +45,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
    1. **Fetch ASP root and verify parity:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`) and confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
    2. **Request a relayer quote:** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`
    3. **Build Merkle proofs:** generate `stateMerkleProof` from pool state leaves (keyed by commitment hash) and `aspMerkleProof` from ASP leaves (keyed by label)
-   4. **Generate the withdrawal proof:** pass the Merkle proofs, verified roots, withdrawal amount, and relayer-provided context to `proveWithdrawal`
+   4. **Generate the withdrawal proof:** call `proveWithdrawal` with the Merkle proofs, verified roots, withdrawal amount, relayer-provided context, change secrets from `accountService.createWithdrawalSecrets(commitment)`, and tree depth `32n` for both state and ASP trees
    5. **Submit via relayer:** send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets
 
 6. **Refresh state after withdrawal**
@@ -106,6 +106,7 @@ const scope = await publicClient.readContract({
   }],
   functionName: "SCOPE",
 });
+// Index = number of existing pool accounts for this scope (0n for first deposit)
 const { precommitment } = accountService.createDepositSecrets(scope, 0n);
 
 // 6. Simulate then deposit ETH via the Entrypoint
