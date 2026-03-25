@@ -121,8 +121,8 @@ interface ContractInteractionsService {
   getAssetConfig(assetAddress: Address): Promise<AssetConfig>;
   getScopeData(
     scope: bigint,
-  ): Promise<{ poolAddress: Address; assetAddress: Address }>;
-  // Throws if the scope is not registered on the Entrypoint
+  ): Promise<{ poolAddress: Address | null; assetAddress: Address | null }>;
+  // Returns null addresses if the scope is not registered on the Entrypoint
 
   approveERC20(
     spenderAddress: Address,

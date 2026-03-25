@@ -80,6 +80,7 @@ import {
   calculateContext,
   generateMerkleProof,
 } from "@0xbow/privacy-pools-core-sdk";
+import type { Hash } from "@0xbow/privacy-pools-core-sdk";
 import {
   createPublicClient, createWalletClient, custom, http,
   encodeAbiParameters, parseAbiParameters,
@@ -135,7 +136,7 @@ const scope = await publicClient.readContract({
   functionName: "SCOPE",
 });
 // Index = number of existing pool accounts for this scope (0n for first deposit)
-const { precommitment } = accountService.createDepositSecrets(scope, 0n);
+const { precommitment } = accountService.createDepositSecrets(scope as Hash, 0n);
 
 // 6. Simulate then deposit ETH via the Entrypoint
 const entrypointAddress = ENTRYPOINT_ADDRESS;
@@ -161,7 +162,7 @@ await publicClient.waitForTransactionReceipt({ hash: txHash });
 const deposits = await dataService.getDeposits({
   chainId: 11155111,
   address: POOL_ADDRESS,
-  scope,
+  scope: scope as Hash,
   deploymentBlock: START_BLOCK,
 });
 
@@ -206,7 +207,7 @@ const withdrawalData = encodeAbiParameters(
   [recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS)]
 );
 const withdrawal = { processooor: entrypointAddress, data: withdrawalData };
-const context = BigInt(calculateContext(withdrawal, scope as any));
+const context = BigInt(calculateContext(withdrawal, scope as Hash));
 
 // Fetch ASP leaves and state tree leaves from the ASP API
 // The mt-leaves endpoint returns both as flat string[] arrays (decimal-encoded bigints)
@@ -253,9 +254,9 @@ const withdrawalProof = await sdk.proveWithdrawal(
     withdrawalAmount: withdrawAmount,
     stateMerkleProof,
     aspMerkleProof,
-    stateRoot: stateMerkleProof.root as any,
+    stateRoot: stateMerkleProof.root as Hash,
     stateTreeDepth: 32n,
-    aspRoot: aspMerkleProof.root as any,
+    aspRoot: aspMerkleProof.root as Hash,
     aspTreeDepth: 32n,
     newSecret,
     newNullifier,
@@ -339,6 +340,8 @@ For server-side signers, use `sdk.createContractInstance(rpcUrl, chain, entrypoi
 |---|---|---|
 | Ethereum mainnet | `1` | `1_250_000` |
 | Optimism | `10` | `12_000_000` |
+| Base | `8453` | `6_000_000` |
+| BNB Chain | `56` | `10_000_000` |
 | Arbitrum One | `42161` | `48_000_000` |
 
 Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRetries`, and `retryBaseDelayMs`. See [SDK Utilities](/reference/sdk) for the full `LogFetchConfig` type.

@@ -26,7 +26,7 @@ After deposit, the ASP evaluates the deposit and decides whether to add its labe
 
 ## Waiting for Approval
 
-The ASP reviews deposits asynchronously. Most deposits are approved within an hour, though some may take longer. Show deposits as "pending" until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain.
+The ASP reviews deposits asynchronously. Approval times vary — if a deposit is not approved promptly, ragequit is always available as a fallback (see [Ragequit](/protocol/ragequit)). Show deposits as "pending" until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain.
 
 For the technical convergence check and API endpoints, see the [Withdrawal page](/protocol/withdrawal#state-root-vs-asp-root) and the [ASP API Reference](/reference/asp-api).
 

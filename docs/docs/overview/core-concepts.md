@@ -13,10 +13,12 @@ keywords:
 
 ## Commitments and nullifiers
 
+Commitments are the core data structure that makes privacy possible — they record a deposit in a way that lets the depositor prove ownership later without revealing which deposit they own.
+
 Each deposit into a Privacy Pool creates a commitment — a cryptographic record composed of:
 
 - **`value`**: The amount being committed
-- **`label`**: A unique identifier derived from the pool's scope and an incrementing nonce
+- **`label`**: A unique identifier derived from the pool's scope and an incrementing nonce. The ASP's approved set contains labels — having your label approved is what unlocks the private withdrawal path
 - **`nullifier`**: A secret that prevents double-spending
 - **`secret`**: A value that helps hide the nullifier
 
@@ -38,15 +40,14 @@ The protocol uses three hash constructions:
   - The contract records it and rejects any future attempt to spend the same commitment (`NullifierAlreadySpent`).
   - The nullifier itself stays private; only its hash is public, so observers cannot reconstruct the precommitment or link the withdrawal back to the original deposit.
 
-Each pool has a **scope** — a unique identifier derived from the pool address, chain ID, and asset: `keccak256(pool, chainId, asset) % SNARK_SCALAR_FIELD`. Scope is used in API headers (`X-Pool-Scope`) and proof inputs to identify which pool an operation targets.
+Each pool has a **scope** — a unique identifier derived from the pool address, chain ID, and asset: `keccak256(abi.encodePacked(poolAddress, chainId, asset)) % SNARK_SCALAR_FIELD`. Scope is used in API headers (`X-Pool-Scope`) and proof inputs to identify which pool an operation targets.
 
 ## Zero-knowledge proofs in Privacy Pools
 
 Privacy Pools uses [zero-knowledge proofs](/layers/zk) to demonstrate valid statements about private information without revealing that information. The protocol employs three proof types:
 
-- **[Commitment Proofs](/layers/zk/commitment)**: Verify the ownership of a commitment (used in ragequit)
-- **[Withdrawal Proofs](/layers/zk/withdrawal)**: Verify ownership, inclusion in both state and ASP trees, and valid value transitions
-- **[Merkle Proofs](/layers/zk/lean-imt)**: Demonstrate membership in a tree without revealing position
+- **[Commitment Proofs](/layers/zk/commitment)**: Verify ownership of a commitment (used in ragequit)
+- **[Withdrawal Proofs](/layers/zk/withdrawal)**: Verify ownership, inclusion in both state and ASP trees, and valid value transitions. Withdrawal proofs embed [Merkle inclusion proofs](/layers/zk/lean-imt) to demonstrate membership in each tree without revealing the leaf position
 
 ## State tree and ASP tree
 
