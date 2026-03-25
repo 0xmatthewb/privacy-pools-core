@@ -123,7 +123,7 @@ interface ContractInteractionsService {
 }
 ```
 
-`ContractInteractionsService.getStateRoot(poolAddress)` reads `Entrypoint.latestRoot()` despite its name — it returns the ASP root, not the pool state root. For withdrawal proofs, read the pool state root directly via `IPrivacyPool.currentRoot()` and use `onchainMtRoot` from the ASP API for the ASP root.
+`ContractInteractionsService.getStateRoot()` reads `latestRoot()` using the Entrypoint ABI on whatever address is passed. Despite accepting `privacyPoolAddress`, you must pass the **Entrypoint address** — passing a pool address will fail. The return value is the ASP root, not the pool state root. For withdrawal proofs, read the pool state root directly via `IPrivacyPool.currentRoot()` and use `onchainMtRoot` from the ASP API for the ASP root.
 
 `ContractInteractionsService` always requires a `privateKey` in its constructor, even for read-only methods like `getScope()` and `getStateRoot()`. If you need scope or the pool state root without a signer (e.g., for `DataService` workflows), read them directly from the pool contract via a viem `PublicClient`:
 
