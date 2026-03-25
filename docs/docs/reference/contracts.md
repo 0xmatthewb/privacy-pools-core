@@ -105,3 +105,22 @@ interface IEntrypoint {
 `IPrivacyPool.currentRoot()` is the state-tree root used in withdrawal proofs. `IEntrypoint.latestRoot()` is separate: the latest ASP-approved root that must match ASP `onchainMtRoot`.
 
 `IPrivacyPool.withdraw()` is the direct pool path: caller must equal `Withdrawal.processooor`, so funds go to that signer. `IEntrypoint.relay()` is the relayed path: `Withdrawal.processooor` must be the Entrypoint, and recipient plus fee routing comes from `RelayData`.
+
+All user-facing transactions go through the Entrypoint proxy. Use the **Entrypoint (Proxy)** address from [Deployments](/deployments), not the implementation address.
+
+## Events
+
+Integrator-relevant events emitted during deposits, withdrawals, and ragequit operations.
+
+```solidity
+// IPrivacyPool
+event Deposited(address indexed _depositor, uint256 _commitment, uint256 _label, uint256 _value, uint256 _precommitmentHash);
+event Withdrawn(address indexed _processooor, uint256 _value, uint256 _spentNullifier, uint256 _newCommitment);
+event Ragequit(address indexed _ragequitter, uint256 _commitment, uint256 _label, uint256 _value);
+
+// IState
+event LeafInserted(uint256 _index, uint256 _leaf, uint256 _root);
+
+// IEntrypoint
+event WithdrawalRelayed(address indexed _relayer, address indexed _recipient, IERC20 indexed _asset, uint256 _amount, uint256 _feeAmount);
+```
