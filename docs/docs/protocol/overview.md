@@ -20,12 +20,29 @@ flowchart LR
 
 ## [Deposit](/protocol/deposit)
 
-A user commits assets into a Privacy Pool. The contract records a commitment leaf in the pool's Merkle tree and deducts a vetting fee. After deposit, the ASP evaluates the deposit and may add its label to the approved set.
+A user commits assets into a Privacy Pool. The contract records a commitment in the pool's Merkle tree and deducts a vetting fee. The user must save their recovery phrase before depositing — it derives every secret needed to spend funds later.
+
+After deposit, the ASP evaluates the deposit and decides whether to add its label to the approved set.
+
+## Waiting for Approval
+
+The ASP reviews deposits asynchronously. Check approval status by calling `GET /{chainId}/public/mt-leaves` with the pool's scope — if the deposit's label appears in the response, it is approved. Show deposits as "pending" until then.
 
 ## [Private Withdrawal](/protocol/withdrawal)
 
-Once a deposit's label is ASP-approved, the user can withdraw privately through a relayer. A zero-knowledge proof demonstrates ownership and ASP membership without revealing which deposit is being spent. The relayer submits the transaction so the withdrawal address has no on-chain link to the depositor.
+Once approved, the user can withdraw privately through a relayer. A zero-knowledge proof demonstrates ownership and ASP membership without revealing which deposit is being spent. The relayer submits the transaction so the withdrawal address has no on-chain link to the depositor.
+
+Partial withdrawals are supported. Each withdrawal creates a change commitment with the remaining balance, which can be spent in a future withdrawal.
 
 ## [Ragequit](/protocol/ragequit)
 
-A public exit that returns the full balance to the original depositor address. Ragequit does not require ASP approval and can be called at any time, but it creates an on-chain link between the deposit and the exit.
+A public exit that returns the full balance to the original depositor address. Ragequit does not require ASP approval and can be called at any time, but it creates an on-chain link between the deposit and the exit. Only the original depositor can ragequit.
+
+## Choosing Between Withdrawal and Ragequit
+
+| | Private Withdrawal | Ragequit |
+|---|---|---|
+| **Privacy** | No on-chain link between depositor and recipient | Public link to depositor |
+| **ASP approval** | Required | Not required |
+| **Who can call** | Anyone with the recovery phrase | Only the original depositor address |
+| **Partial amounts** | Yes, creates a change commitment | No, full balance only |
