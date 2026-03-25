@@ -1316,9 +1316,16 @@ html[data-theme="dark"] .aa-DetachedFormContainer .aa-Form:focus-within {
    ══════════════════════════════════════════════════════════════════════ */
 
 .markdown a {
-  transition: color var(--pp-transition), opacity var(--pp-transition);
+  transition: color var(--pp-transition), opacity var(--pp-transition),
+    text-decoration-color var(--pp-transition);
+  text-decoration: underline;
+  text-decoration-color: var(--pp-muted);
   text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
+  text-underline-offset: 2.5px;
+}
+
+.markdown a:hover {
+  text-decoration-color: var(--ifm-font-color-base);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
