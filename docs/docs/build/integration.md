@@ -340,8 +340,6 @@ For server-side signers, use `sdk.createContractInstance(rpcUrl, chain, entrypoi
 |---|---|---|
 | Ethereum mainnet | `1` | `1_250_000` |
 | Optimism | `10` | `12_000_000` |
-| Base | `8453` | `6_000_000` |
-| BNB Chain | `56` | `10_000_000` |
 | Arbitrum One | `42161` | `48_000_000` |
 
 Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRetries`, and `retryBaseDelayMs`. See [SDK Utilities](/reference/sdk) for the full `LogFetchConfig` type.
