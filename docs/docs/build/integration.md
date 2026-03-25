@@ -7,6 +7,8 @@ description: Step-by-step guide for integrating Privacy Pools deposits, withdraw
 keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integration]
 ---
 
+This guide walks through integrating Privacy Pools deposits, withdrawals, and ragequit into a frontend application using the TypeScript SDK. It assumes you have a viem-based dapp and want to add compliant private transactions.
+
 ## Key References
 
 | Page | What you will find |
@@ -18,6 +20,10 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 | [ASP API](/reference/asp-api), [Relayer API](/reference/relayer-api) | Endpoint schemas and response shapes |
 
 ## Minimal Frontend Recipe
+
+:::info Prerequisites
+Node 18+, viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain — see [Deployments](/deployments) for chain addresses and `startBlock` values.
+:::
 
 **Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
 
@@ -143,9 +149,157 @@ const deposits = await dataService.getDeposits({
   deploymentBlock: 123456n,
 });
 
-// 8. Withdrawal: generate proof and submit via relayer
-//    See /reference/sdk for proveWithdrawal() and /protocol/withdrawal
-//    for the full relayed withdrawal flow
+// 8. Wait for ASP approval, then fetch roots
+const poolAddress = "0x..." as `0x${string}`;  // pool address
+const aspHost = "https://asp.privacypools.com"; // see /reference/asp-api for host selection
+const aspRoots = await fetch(
+  `${aspHost}/11155111/public/mt-roots`,
+  { headers: { "X-Pool-Scope": scope.toString() } } // must be decimal
+).then((r) => r.json());
+// Stop if ASP tree has not converged on-chain
+if (!aspRoots.onchainMtRoot || aspRoots.mtRoot !== aspRoots.onchainMtRoot) {
+  throw new Error("ASP tree has not converged — try again later");
+}
+
+// 9. Request a relayer quote
+const relayerUrl = "https://fastrelay.xyz"; // testnet: https://testnet-relayer.privacypools.com
+const withdrawAmount = 5000000000000000n; // 0.005 ETH
+const recipient = "0x..." as `0x${string}`;
+const quote = await fetch(`${relayerUrl}/relayer/quote`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    chainId: 11155111,
+    amount: withdrawAmount.toString(),
+    asset: "0x0000000000000000000000000000000000000000",
+    recipient,
+  }),
+}).then((r) => r.json());
+
+// 10. Build the Withdrawal struct and Merkle proofs
+import { calculateContext, generateMerkleProof } from "@0xbow/privacy-pools-core-sdk";
+
+const withdrawal = {
+  processooor: entrypointAddress,
+  data: quote.feeCommitment.withdrawalData, // pre-encoded RelayData from relayer
+};
+const scopeHash = `0x${scope.toString(16).padStart(64, "0")}` as `0x${string}`;
+const context = BigInt(calculateContext(withdrawal, scopeHash as any));
+
+// Fetch ASP leaves and state leaves for Merkle proofs
+const aspLeaves = await fetch(
+  `${aspHost}/11155111/public/mt-leaves`,
+  { headers: { "X-Pool-Scope": scope.toString() } }
+).then((r) => r.json());
+const stateLeaves = await dataService.getStateLeaves({
+  chainId: 11155111,
+  address: poolAddress,
+  scope,
+  deploymentBlock: 123456n,
+});
+
+// Pick the pool account to spend (reconstructed from AccountService)
+// AccountService.initializeWithEvents() returns properly typed AccountCommitments
+// with hash, value, label, nullifier, and secret fields
+const poolAccount = accountService.account.poolAccounts.values().next().value[0];
+const commitment = poolAccount.lastCommitment; // AccountCommitment
+const stateMerkleProof = generateMerkleProof(
+  stateLeaves.map((l: bigint) => l),
+  commitment.hash // state tree uses commitment hashes
+);
+const aspMerkleProof = generateMerkleProof(
+  aspLeaves.map((l: { label: string }) => BigInt(l.label)),
+  BigInt(commitment.label) // ASP tree uses labels, NOT commitment hashes
+);
+
+// 11. Generate the withdrawal proof
+const { nullifier: newNullifier, secret: newSecret } =
+  accountService.createWithdrawalSecrets(commitment);
+
+// Read the pool state root (separate from ASP root)
+const poolStateRoot = await publicClient.readContract({
+  address: poolAddress,
+  abi: [{ name: "currentRoot", type: "function", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" }],
+  functionName: "currentRoot",
+});
+
+const withdrawalProof = await sdk.proveWithdrawal(commitment, {
+  context,
+  withdrawalAmount: withdrawAmount,
+  stateMerkleProof,
+  aspMerkleProof,
+  stateRoot: `0x${poolStateRoot.toString(16).padStart(64, "0")}` as any, // pool state root
+  stateTreeDepth: 32n,
+  aspRoot: aspRoots.onchainMtRoot, // ASP root
+  aspTreeDepth: 32n,
+  newSecret,
+  newNullifier,
+});
+
+// 12. Submit to relayer before the quote expires
+const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    withdrawal,
+    proof: withdrawalProof.proof,
+    publicSignals: withdrawalProof.publicSignals,
+    scope: scope.toString(),
+    chainId: 11155111,
+    feeCommitment: quote.feeCommitment,
+  }, (_, v) => (typeof v === "bigint" ? v.toString() : v)),
+}).then((r) => r.json());
+// Check relayResult.success — the relayer returns HTTP 200 even for failures
+```
+
+### Ragequit (Public Exit)
+
+Ragequit lets the original depositor reclaim funds publicly without ASP approval. It calls the pool contract directly (not via relayer).
+
+```typescript
+// Generate a commitment proof for ragequit
+// Use an AccountCommitment from the pool account (has nullifier + secret)
+const ragequitCommitment = commitment; // AccountCommitment from pool account
+const commitmentProof = await sdk.proveCommitment(
+  BigInt(ragequitCommitment.value),
+  BigInt(ragequitCommitment.label),
+  BigInt(ragequitCommitment.nullifier),
+  BigInt(ragequitCommitment.secret)
+);
+
+// Submit ragequit directly to the pool contract
+// Note: pB coordinates must be swapped for Solidity
+const { request: rqRequest } = await publicClient.simulateContract({
+  account,
+  address: poolAddress,
+  abi: [{
+    name: "ragequit",
+    type: "function",
+    inputs: [{
+      name: "p",
+      type: "tuple",
+      components: [
+        { name: "pA", type: "uint256[2]" },
+        { name: "pB", type: "uint256[2][2]" },
+        { name: "pC", type: "uint256[2]" },
+        { name: "pubSignals", type: "uint256[4]" },
+      ],
+    }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  }],
+  functionName: "ragequit",
+  args: [{
+    pA: commitmentProof.proof.pi_a.slice(0, 2).map(BigInt),
+    pB: [
+      [BigInt(commitmentProof.proof.pi_b[0][1]), BigInt(commitmentProof.proof.pi_b[0][0])],
+      [BigInt(commitmentProof.proof.pi_b[1][1]), BigInt(commitmentProof.proof.pi_b[1][0])],
+    ],
+    pC: commitmentProof.proof.pi_c.slice(0, 2).map(BigInt),
+    pubSignals: commitmentProof.publicSignals.map(BigInt),
+  }],
+});
+await walletClient.writeContract(rqRequest);
 ```
 
 For server-side signers, use `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` instead of a `WalletClient`. See [SDK Utilities](/reference/sdk) for the full API surface.
