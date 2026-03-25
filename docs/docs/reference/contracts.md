@@ -106,7 +106,7 @@ interface IEntrypoint {
 
 `IPrivacyPool.withdraw()` is the direct pool path: caller must equal `Withdrawal.processooor`, so funds go to that signer. `IEntrypoint.relay()` is the relayed path: `Withdrawal.processooor` must be the Entrypoint, and recipient plus fee routing comes from `RelayData`.
 
-All user-facing transactions go through the Entrypoint proxy. Use the **Entrypoint (Proxy)** address from [Deployments](/deployments), not the implementation address.
+Deposits and relayed withdrawals go through the Entrypoint proxy. Use the **Entrypoint (Proxy)** address from [Deployments](/deployments) for these operations. Ragequit calls go directly to the pool contract address.
 
 ## Events
 
