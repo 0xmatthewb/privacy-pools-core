@@ -26,11 +26,11 @@ You are building a wallet, dapp, or any user-facing interface that deposits, wit
 
 | # | Page | Covers |
 |---|------|--------|
-| 1 | [Frontend Integration](/build/integration) | Wallet connection, deposit, relayed withdrawal, ragequit |
-| 2 | [UX Patterns](/build/ux-patterns) | Account management, deposit, withdrawal, and ragequit frontend patterns |
-| 3 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
-| 4 | [SDK Utilities](/reference/sdk) | Types and functions |
-| 5 | [Protocol flows](/protocol/deposit) | Deposit, withdrawal, and ragequit mechanics |
+| 1 | [Using Privacy Pools](/protocol) | Lifecycle: deposit, approval, withdrawal, ragequit |
+| 2 | [Frontend Integration](/build/integration) | SDK setup, deposit, relayed withdrawal, ragequit |
+| 3 | [UX Patterns](/build/ux-patterns) | Account management and frontend patterns |
+| 4 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
+| 5 | [SDK Utilities](/reference/sdk) | Types and functions |
 
 ## Agent Workflows
 
