@@ -21,6 +21,12 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 
 **Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
 
+**Serve circuit artifacts:** copy the SDK's circuit files to your app's public directory so the browser can fetch them at runtime:
+
+```bash
+cp node_modules/@0xbow/privacy-pools-core-sdk/artifacts/*.{wasm,zkey,vkey} public/artifacts/
+```
+
 1. **Load deployment data**
    - Read chain-specific contract addresses and `startBlock` from [Deployments](/deployments)
    - You need: `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope
@@ -168,7 +174,7 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
    - Validate `minimumDepositAmount` before submission.
    - Persist the confirmed `Deposited` event's `label` and post-fee `value` into pool-account state.
 4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs.
-   - A deposit is ready for withdrawal when its `label` appears in the ASP leaves AND `onchainMtRoot` matches `Entrypoint.latestRoot()`.
+   - A deposit is ready for withdrawal when `mtRoot === onchainMtRoot` (from `GET /{chainId}/public/mt-roots`) and the deposit's `label` appears in `mt-leaves`.
    - Treat deposits as pending until both conditions are met.
 5. Build withdrawal proofs with two roots:
    - Pool state root from `IPrivacyPool.currentRoot()`.
