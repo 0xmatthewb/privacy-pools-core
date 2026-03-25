@@ -25,6 +25,13 @@ See the README in each package for detailed information about their specific imp
 - [Relayer Package](./packages/relayer/README.md)
 - [SDK Package](./packages/sdk/README.md)
 
+## Documentation
+
+Full integration guides, API references, and agent workflows are at [docs.privacypools.com](https://docs.privacypools.com).
+
+- [Start Here](https://docs.privacypools.com/build/start) — builder and agent entry point
+- [Deployments](https://docs.privacypools.com/deployments) — contract addresses and start blocks
+
 ## Development
 
 To set up the development environment:
