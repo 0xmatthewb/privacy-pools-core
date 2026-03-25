@@ -1019,14 +1019,17 @@ html[data-theme="dark"] .pagination-nav__link:hover {
 
 .footer__title {
   font-family: var(--pp-font-heading);
-  font-size: 0.6875rem;
-  font-weight: 500;
+  font-size: 0.625rem;
+  font-weight: 600;
   color: var(--pp-muted);
-  opacity: 0.65;
-  margin: 0 1rem 0 0;
+  opacity: 0.7;
+  margin: 0 1.25rem 0 0;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
+  background: var(--pp-footer-divider);
+  padding: 0.25rem 0.625rem;
+  border-radius: 3px;
 }
 
 .footer__links {
