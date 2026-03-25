@@ -1,9 +1,9 @@
 ---
-sidebar_label: Agent Workflows
+sidebar_label: Agent Setup
 sidebar_position: 4
-title: Agent Workflows
+title: Agent Setup
 slug: /build/agents
-description: Entry points, skill files, and workflows for AI coding agents integrating with Privacy Pools.
+description: Entry points, skill files, and setup for AI coding agents integrating with Privacy Pools.
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
@@ -23,12 +23,12 @@ keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 
 The [Skill Library](/build/skills) provides four task-specific skill files that agents can load for focused work:
 
-| Skill | Hosted URL | Purpose |
+| Skill | Purpose | Hosted URL |
 |---|---|---|
-| `privacy-pools-integration` | [`/agent-skills/privacy-pools-integration/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md) | End-to-end integration planning |
-| `privacy-pools-deposit` | [`/agent-skills/privacy-pools-deposit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md) | Deposit flow implementation |
-| `privacy-pools-withdraw` | [`/agent-skills/privacy-pools-withdraw/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md) | Relayed withdrawal implementation |
-| `privacy-pools-ragequit` | [`/agent-skills/privacy-pools-ragequit/SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md) | Ragequit (public exit) implementation |
+| `privacy-pools-integration` | End-to-end integration planning and architecture | [`SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-integration/SKILL.md) |
+| `privacy-pools-deposit` | Deposit flow implementation | [`SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md) |
+| `privacy-pools-withdraw` | Relayed withdrawal implementation | [`SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md) |
+| `privacy-pools-ragequit` | Ragequit (public exit) implementation | [`SKILL.md`](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md) |
 
 Each skill is a markdown file with task-specific instructions and references.
 
@@ -88,7 +88,7 @@ done
 For agents that ingest a single document, two corpus files are available:
 
 - [`llms.txt`](https://docs.privacypools.com/llms.txt): lightweight site index with page titles and URLs. Good for quick orientation or retrieval-augmented pipelines that fetch pages on demand.
-- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt): complete corpus with all docs pages inlined. Best when the agent can consume the full context in one pass.
+- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt): complete corpus with all docs pages inlined (~16k words / ~20-25k tokens). Best when the agent can consume the full context in one pass. If your agent has a smaller context window, use `llms.txt` and fetch individual pages on demand.
 
 Individual skill files can also be fetched directly by URL (e.g., `https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md`) without loading the full corpus.
 
