@@ -135,7 +135,9 @@ Withdrawal proofs carry two separate Merkle roots with different sources and val
 | **Tree contents** | Commitment hashes | Approved labels |
 | **Error on mismatch** | `UnknownStateRoot` | `IncorrectASPRoot` |
 
-Always verify ASP root parity before submitting: `BigInt(onchainMtRoot) === Entrypoint.latestRoot()`. See the [ASP API Reference](/reference/asp-api) for details on root convergence.
+Always verify ASP root parity before submitting: `BigInt(onchainMtRoot) === Entrypoint.latestRoot()`.
+
+**Important:** The ASP API returns two root values. `mtRoot` is the ASP's latest computed root; `onchainMtRoot` is the root currently committed on-chain. The `mt-leaves` endpoint returns leaves for `mtRoot`, but proofs must use `onchainMtRoot`. If `mtRoot !== onchainMtRoot`, the ASP has computed a new tree that has not been pushed on-chain yet — wait and re-fetch until they converge before building a proof.
 
 ### Change Commitment Refresh
 
