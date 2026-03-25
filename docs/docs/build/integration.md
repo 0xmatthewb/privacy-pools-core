@@ -38,7 +38,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 4. **Deposit**
    - Derive deposit secrets using `accountService.createDepositSecrets(scope, index)`
    - Simulate the deposit transaction with `publicClient.simulateContract(...)`, then execute with `walletClient.writeContract(request)`
-   - Persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state
+   - Persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state (see [Account Reconstruction](/reference/sdk#account-reconstruction) for the full shape)
    - Wait for ASP approval before attempting withdrawal
 
 5. **Perform the relayed withdrawal**

@@ -271,7 +271,7 @@ Returns relayer configuration for a specific chain and asset. Use this to check 
 | `chainId` | `number` | Chain ID. |
 | `feeBPS` | `string` | Base fee in basis points. |
 | `minWithdrawAmount` | `string` | Minimum withdrawal amount (in token smallest unit). |
-| `feeReceiverAddress` | `string` | Address that receives the relay fee. Use this as the `feeRecipient` in `RelayData`. |
+| `feeReceiverAddress` | `string` | Address that receives the relay fee. For standard withdrawals, use this as `feeRecipient` in `RelayData`. When using `feeCommitment` from the quote, the `withdrawalData` already encodes the correct fee routing. |
 | `assetAddress` | `string` | Asset address. |
 | `maxGasPrice` | `string \| null` | Maximum gas price the relayer will accept. `null` when not configured for the chain. |
 

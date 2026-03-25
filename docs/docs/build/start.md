@@ -13,7 +13,7 @@ Privacy Pools is a smart-contract protocol for compliant private transactions on
 | Term | Meaning |
 |------|---------|
 | **Scope** | Unique identifier for each pool, derived from the asset and contract address. Used in API headers and proof inputs. |
-| **Commitment** | Poseidon hash of a deposit's value, label, nullifier, and secret. The on-chain record of a deposit. |
+| **Commitment** | A hash that records a deposit on-chain. Derived from the deposit's value, label, and secrets. |
 | **Label** | Per-deposit identifier. The ASP approves deposits by adding their label to the approved set. |
 | **ASP** | Association Set Provider: off-chain service that evaluates deposits and maintains an approved Merkle tree. |
 | **Recovery phrase** | BIP-39 mnemonic that derives all deposit secrets. If lost, funds cannot be withdrawn privately. Must be saved before depositing. |
@@ -38,10 +38,10 @@ You are using an AI coding agent or LLM-powered tool to integrate Privacy Pools.
 
 | # | Page | Covers |
 |---|------|--------|
-| 1 | [Skill Library](/build/skills) | Load the skill file for your task |
-| 2 | [Frontend Integration](/build/integration) | SDK patterns, deposit/withdrawal implementation |
-| 3 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
-| 4 | [Agent Workflows](/build/agents) | Tool-specific setup (Claude Code, Codex, etc.) |
+| 1 | [Agent Workflows](/build/agents) | Runtime setup (Claude Code, Codex, etc.) |
+| 2 | [Skill Library](/build/skills) | Load the skill file for your task |
+| 3 | [Frontend Integration](/build/integration) | SDK patterns, deposit/withdrawal implementation |
+| 4 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
 
 ## Contributing
 
