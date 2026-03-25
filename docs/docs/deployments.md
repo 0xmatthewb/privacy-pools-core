@@ -28,7 +28,7 @@ To resolve a chain + asset into pool metadata at runtime, call `Entrypoint.asset
 | Contract | Address | Deployment Block |
 |----------|---------|-----------------|
 | WithdrawalVerifier | `0x022891f938ae7fdc8ab9ead0fbf50aba8c897d6d` | `22153709` |
-| RagequitVerifier | `0xa45aca8604a73d80c551faad6355a5c3a5565ec6` | `22153710` |
+| CommitmentVerifier | `0xa45aca8604a73d80c551faad6355a5c3a5565ec6` | `22153710` |
 | Entrypoint (Implementation) | `0xdd8aa0560a08e39c0b3a84bba356bc025afbd4c1` | `22153711` |
 | Entrypoint (Proxy) | `0x6818809eefce719e480a7526d76bd3e561526b46` | `22153713` |
 
@@ -62,7 +62,7 @@ Use **`22153709n`** as `startBlock` when initializing `DataService` for Ethereum
 | Contract | Address | Deployment Block |
 |----------|---------|-----------------|
 | WithdrawalVerifier | `0x022891f938ae7fdc8ab9ead0fbf50aba8c897d6d` | `404391795` |
-| RagequitVerifier | `0xa45aca8604a73d80c551faad6355a5c3a5565ec6` | `404391799` |
+| CommitmentVerifier | `0xa45aca8604a73d80c551faad6355a5c3a5565ec6` | `404391799` |
 | Entrypoint (Implementation) | `0x1cabfda9a9c14d16302dd7c8f4b6e2a57aa7b364` | `404391804` |
 | Entrypoint (Proxy) | `0x44192215fed782896be2ce24e0bfbf0bf825d15e` | `404391809` |
 
@@ -85,7 +85,7 @@ Use **`404391795n`** as `startBlock` when initializing `DataService` for Arbitru
 | Contract | Address | Deployment Block |
 |----------|---------|-----------------|
 | WithdrawalVerifier | `0x022891f938ae7fdc8ab9ead0fbf50aba8c897d6d` | `144288139` |
-| RagequitVerifier | `0xa45aca8604a73d80c551faad6355a5c3a5565ec6` | `144288140` |
+| CommitmentVerifier | `0xa45aca8604a73d80c551faad6355a5c3a5565ec6` | `144288140` |
 | Entrypoint (Implementation) | `0x1cabfda9a9c14d16302dd7c8f4b6e2a57aa7b364` | `144288141` |
 | Entrypoint (Proxy) | `0x44192215fed782896be2ce24e0bfbf0bf825d15e` | `144288142` |
 
@@ -107,7 +107,7 @@ Use **`144288139n`** as `startBlock` when initializing `DataService` for OP Main
 | Contract | Address | Deployment Block |
 |----------|---------|-----------------|
 | WithdrawalVerifier | `0x23ee06ec2b5a6fcd00a426973d27cd168c7eb00d` | `32854673` |
-| RagequitVerifier | `0x6b54109d73891163fd3362241182a127482dd87d` | `32854675` |
+| CommitmentVerifier | `0x6b54109d73891163fd3362241182a127482dd87d` | `32854675` |
 | Entrypoint (Implementation) | `0x3a8ce23ed895eb9d7a714667573cb86513447109` | `32854676` |
 | Entrypoint (Proxy) | `0x54aca0d27500669fa37867233e05423701f11ba1` | `32854677` |
 
@@ -129,7 +129,7 @@ Use **`32854673n`** as `startBlock` when initializing `DataService` for OP Sepol
 | Contract | Address | Deployment Block |
 |----------|---------|-----------------|
 | WithdrawalVerifier | `0x822f33ed5ac1d33ceed4eec60a99b06e5053a00a` | `8461450` |
-| RagequitVerifier | `0xb4b9ce9aebd6a2c82a7ba5b64e33cc7fb6ec1b60` | `8461451` |
+| CommitmentVerifier | `0xb4b9ce9aebd6a2c82a7ba5b64e33cc7fb6ec1b60` | `8461451` |
 | Entrypoint (Implementation) | `0x457f219308fd4f06ffb39dc7b532a51b1580f58b` | `8461452` |
 | Entrypoint (Proxy) | `0x34a2068192b1297f2a7f85d7d8cde66f8f0921cb` | `8461453` |
 
