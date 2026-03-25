@@ -7,6 +7,8 @@ description: How to set up the Privacy Pools monorepo, run tests, and contribute
 keywords: [privacy pools, contributing, monorepo, testing, development]
 ---
 
+This page covers local setup for the Privacy Pools monorepo, including build and test commands for contracts, circuits, SDK, and relayer.
+
 ## Prerequisites
 
 - Node.js (v20 or later)
@@ -235,3 +237,11 @@ The documentation site uses Docusaurus v3.7.0 with `onBrokenLinks: "throw"`. Alw
 cd docs
 yarn build
 ```
+
+## Next Steps
+
+| Topic | Page |
+|---|---|
+| Contract and pool architecture deep-dive | [Smart Contracts Layer](/layers/contracts) |
+| ZK circuit internals | [Zero Knowledge Layer](/layers/zk) |
+| SDK types, methods, and account reconstruction | [SDK Utilities](/reference/sdk) |

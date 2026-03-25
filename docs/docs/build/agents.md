@@ -7,6 +7,8 @@ description: Entry points, skill files, and setup for AI coding agents integrati
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
+This page helps AI coding agents and LLM-powered tools get set up for Privacy Pools integration work. It covers skill file discovery, circuit initialization, and tool-specific configuration for Claude Code, Codex, and other IDEs.
+
 ## Reference Table
 
 | Resource | URL | Purpose |

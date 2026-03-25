@@ -42,6 +42,7 @@ Filter withdraw selectors to approved non-zero accounts for the active chain/sco
 
 - Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution. Display reverse ENS alongside the resolved address. Unresolved input must block submit.
   ```typescript
+  import { normalize } from "viem/ens";
   const resolved = await publicClient.getEnsAddress({ name: normalize(input) });
   ```
 - Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`. If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
@@ -64,3 +65,10 @@ For the full withdrawal protocol mechanics, see [Withdrawal](/protocol/withdrawa
 - Handle wallet rejections and user cancellations gracefully without retry loops or error telemetry.
 
 For the full ragequit protocol mechanics, see [Ragequit](/protocol/ragequit).
+
+## Next Steps
+
+| Topic | Page |
+|---|---|
+| SDK types, methods, and account reconstruction | [SDK Utilities](/reference/sdk) |
+| Contract errors, safety checks, and common mistakes | [Errors and Constraints](/reference/errors) |

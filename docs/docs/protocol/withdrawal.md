@@ -162,7 +162,11 @@ After a withdrawal, a new zero-value or reduced-value change commitment may be i
 2. Rebuild the Merkle proof with the updated leaf set
 3. Verify the reconstructed root matches the pool's `currentRoot()`
 
-Persist zero-value change commitments for account-history reconstruction, but do not surface them as spendable balances. Using stale leaves after a withdrawal will produce an invalid state root.
+Persist zero-value change commitments for account-history reconstruction, but do not surface them as spendable balances.
+
+:::warning Stale leaves produce invalid proofs
+Using stale leaves after a withdrawal will produce an invalid state root. Always re-fetch leaves and rebuild Merkle proofs before generating a new withdrawal proof from the same pool account.
+:::
 
 ### Context Generation
 
