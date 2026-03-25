@@ -9,15 +9,15 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 
 ## Key References
 
-1. [Deployments](/deployments): chain-specific addresses and `startBlock`
-2. [SDK Utilities](/reference/sdk): SDK types and functions
-3. [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit): protocol behavior
-4. [UX Patterns](/build/ux-patterns): account management, deposit/withdrawal/ragequit frontend patterns
-5. [Skill Library](/build/skills): task-specific agent skill files
+| Page | What you will find |
+|---|---|
+| [Deployments](/deployments) | Contract addresses and `startBlock` per chain |
+| [SDK Utilities](/reference/sdk) | SDK types, methods, and account reconstruction |
+| [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit) | On-chain mechanics for each protocol flow |
+| [UX Patterns](/build/ux-patterns) | Frontend patterns for accounts, deposits, withdrawals, and ragequit |
+| [ASP API](/reference/asp-api), [Relayer API](/reference/relayer-api) | Endpoint schemas and response shapes |
 
 ## Minimal Frontend Recipe
-
-Each step names the SDK or contract method; see [SDK Utilities](/reference/sdk), [Withdrawal](/protocol/withdrawal), and [Deployments](/deployments) for exact types and payloads.
 
 1. **Load deployment data**
    - Read chain-specific contract addresses and `startBlock` from [Deployments](/deployments)
@@ -146,13 +146,28 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 ## Integration Checklist
 
 1. Bootstrap a mnemonic-backed account before the user can deposit or withdraw.
-2. If wallet onboarding is supported, derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice. Otherwise use manual mnemonic onboarding, and require the recovery phrase to be saved before continuing.
-3. Derive deposit secrets from the recovery account, validate `minimumDepositAmount`, submit the deposit, and persist the confirmed `Deposited` `label` plus post-fee `value` into pool-account state.
-4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs. A deposit is approved when its `label` appears in the current ASP leaves returned by `GET /{chainId}/public/mt-leaves`. Treat deposits as pending until the label is present.
-5. Build withdrawal proofs with two roots: read the pool state root from `IPrivacyPool.currentRoot()` and use ASP `onchainMtRoot` for the ASP root. Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
-6. Build the app's withdrawal UX around relayed withdrawals using `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets. Do not surface direct `PrivacyPool.withdraw()` in frontend UX.
-7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval (label present in ASP leaves).
-8. Resolve the final recipient before review, fetch relayer details plus `minWithdrawAmount`, and request the relayer quote on the review step. Discard the quote whenever amount, recipient, relayer, or optional gas-token-drop settings change.
+2. If wallet onboarding is supported:
+   - Derive the recovery seed from deterministic EIP-712 signatures only when the wallet can reproduce the same payload signature twice.
+   - Otherwise use manual mnemonic onboarding.
+   - Require the recovery phrase to be saved before continuing.
+3. For deposits:
+   - Derive deposit secrets from the recovery account.
+   - Validate `minimumDepositAmount` before submission.
+   - Persist the confirmed `Deposited` event's `label` and post-fee `value` into pool-account state.
+4. Reconstruct balances as pool accounts and refresh ASP approval state across all loaded chain/scope pairs.
+   - A deposit is approved when its `label` appears in the ASP leaves returned by `GET /{chainId}/public/mt-leaves`.
+   - Treat deposits as pending until the label is present.
+5. Build withdrawal proofs with two roots:
+   - Pool state root from `IPrivacyPool.currentRoot()`.
+   - ASP root from the `onchainMtRoot` field.
+   - Require exact parity between `onchainMtRoot` and `Entrypoint.latestRoot()`.
+6. Use relayed withdrawals only: `https://fastrelay.xyz` on production chains, `https://testnet-relayer.privacypools.com` on testnets. Do not surface direct `PrivacyPool.withdraw()` in frontend UX.
+7. Only enable private withdrawal when a relayer is available and the selected pool account has positive balance plus ASP approval.
+8. On the review step:
+   - Resolve the final recipient before quoting.
+   - Fetch relayer details and `minWithdrawAmount`.
+   - Request the relayer quote.
+   - Discard the quote whenever amount, recipient, relayer, or gas-token-drop settings change.
 9. Keep ragequit separate and clearly public.
 
 ## Next Steps
