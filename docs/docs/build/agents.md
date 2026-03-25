@@ -61,8 +61,8 @@ For Node.js runtimes, initialize SDK circuits with `new Circuits({ browser: fals
 
 Claude Code auto-discovers `CLAUDE.md` at the repository root. It routes the agent to:
 
-1. [Frontend Integration](/build/integration) for the integration happy path.
-2. The [Skill Library](/build/skills) for task-specific workflows.
+1. The [Skill Library](/build/skills) for task-specific workflows.
+2. [Frontend Integration](/build/integration) for SDK patterns and implementation details.
 3. [Deployments](/deployments) for chain addresses and `startBlock` values.
 4. Reference pages under `/reference/` for SDK details, API schemas, or edge cases.
 
@@ -70,8 +70,8 @@ Claude Code auto-discovers `CLAUDE.md` at the repository root. It routes the age
 
 Codex reads `AGENTS.md` at the repository root for build commands, repo structure, and security constraints. For protocol integration work:
 
-1. Start with [Frontend Integration](/build/integration) for the integration happy path.
-2. Load the relevant skill from `.agents/skills/<name>/SKILL.md`.
+1. Load the relevant skill from `.agents/skills/<name>/SKILL.md`.
+2. Use [Frontend Integration](/build/integration) for SDK patterns and implementation details.
 3. Use [Deployments](/deployments) for authoritative addresses and start blocks.
 
 For user-scoped installation, Codex discovers skills under `$CODEX_HOME/skills` (default: `~/.codex/skills`). Run from the repository root:

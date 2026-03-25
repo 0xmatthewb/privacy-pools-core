@@ -30,10 +30,10 @@ You are using an AI coding agent or LLM-powered tool to integrate Privacy Pools.
 
 | # | Page | Covers |
 |---|------|--------|
-| 1 | [Agent Workflows](/build/agents) | Entry points and workflows |
-| 2 | [Skill Library](/build/skills) | Task-specific skill files for agents |
+| 1 | [Skill Library](/build/skills) | Load the skill file for your task |
+| 2 | [Frontend Integration](/build/integration) | SDK patterns, deposit/withdrawal implementation |
 | 3 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
-| 4 | [Frontend Integration](/build/integration) | SDK patterns, deposit/withdrawal implementation |
+| 4 | [Agent Workflows](/build/agents) | Tool-specific setup (Claude Code, Codex, etc.) |
 
 ## Contributing
 
