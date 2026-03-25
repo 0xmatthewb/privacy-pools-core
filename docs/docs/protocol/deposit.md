@@ -112,8 +112,23 @@ graph TD
 Each asset has a `minimumDepositAmount` configured on the Entrypoint. The contract enforces this and reverts with `MinimumDepositAmount` if the deposit is below the threshold. Check this before submitting:
 
 ```typescript
-const assetConfig = await contracts.getAssetConfig(assetAddress);
-if (amount < assetConfig.minimumDepositAmount) {
+const config = await publicClient.readContract({
+  address: entrypointAddress,
+  abi: [{
+    name: "assetConfig",
+    type: "function",
+    inputs: [{ name: "_asset", type: "address" }],
+    outputs: [
+      { name: "_pool", type: "address" },
+      { name: "_minimumDepositAmount", type: "uint256" },
+      { name: "_vettingFeeBPS", type: "uint256" },
+    ],
+    stateMutability: "view",
+  }],
+  functionName: "assetConfig",
+  args: [assetAddress],
+});
+if (amount < config[1]) {
   throw new Error("Deposit below minimum");
 }
 ```

@@ -23,14 +23,15 @@ The SDK exports a concrete `Circuits` class that satisfies this interface:
 ```typescript
 import { PrivacyPoolSDK, Circuits } from "@0xbow/privacy-pools-core-sdk";
 
-const circuits = new Circuits(); // browser / frontend
+// Browser: set baseUrl so circuit artifacts load from the app origin
+const circuits = new Circuits({ baseUrl: window.location.origin });
 // In Node.js, use: new Circuits({ browser: false })
 const sdk = new PrivacyPoolSDK(circuits);
 ```
 
 ### `Circuits`
 
-The `Circuits` class implements `CircuitsInterface` and generates or verifies the Groth16 proofs used for commitments and withdrawals. Use the default `new Circuits()` in browser environments. In Node.js, pass `{ browser: false }` so artifacts load from disk rather than `fetch`. You can also override `baseUrl` when serving artifacts from a custom location.
+The `Circuits` class implements `CircuitsInterface` and generates or verifies the Groth16 proofs used for commitments and withdrawals. In browser environments, pass `{ baseUrl: window.location.origin }` so artifacts load from your app's origin. In Node.js, pass `{ browser: false }` so artifacts load from disk rather than `fetch`. You can also override `baseUrl` when serving artifacts from a custom location.
 
 Every downloaded circuit artifact (`wasm`, `vkey`, and `zkey`) is verified against a registered SHA-256 digest before use, including when `baseUrl` is overridden.
 
