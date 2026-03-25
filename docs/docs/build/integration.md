@@ -34,8 +34,8 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
    - Returns `{ account, legacyAccount?, errors }` so restores can reconcile migrated histories (see [SDK Utilities](/reference/sdk#account-reconstruction))
 
 4. **Deposit**
-   - Derive deposit secrets from the account
-   - Call `ContractInteractionsService.depositETH` (or `depositERC20` after `approveERC20`)
+   - Derive deposit secrets using `accountService.createDepositSecrets(scope, index)`
+   - Simulate the deposit transaction with `publicClient.simulateContract(...)`, then execute with `walletClient.writeContract(request)`
    - Persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state
    - Wait for ASP approval before attempting withdrawal
 
@@ -55,16 +55,16 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import {
   PrivacyPoolSDK,
   DataService,
+  AccountService,
   Circuits,
-  generateMasterKeys,
-  generateDepositSecrets,
-  hashPrecommitment,
 } from "@0xbow/privacy-pools-core-sdk";
 import { createPublicClient, createWalletClient, custom, http } from "viem";
 import { sepolia } from "viem/chains";
 
-// 1. Initialize SDK with circuit artifacts
-const sdk = new PrivacyPoolSDK(new Circuits());
+// 1. Initialize SDK with circuit artifacts (set baseUrl for browser)
+const sdk = new PrivacyPoolSDK(
+  new Circuits({ baseUrl: window.location.origin })
+);
 
 // 2. Create DataService for reading on-chain events
 const dataService = new DataService([
@@ -76,22 +76,22 @@ const dataService = new DataService([
   },
 ]);
 
-// 3. Read on-chain data
+// 3. Create clients
 const publicClient = createPublicClient({
   chain: sepolia,
   transport: http("https://sepolia.infura.io/v3/YOUR_KEY"),
 });
-
-// 4. Connect the user's wallet for writes
 const walletClient = createWalletClient({
   chain: sepolia,
   transport: custom(window.ethereum!),
 });
 
-// 5. Generate account keys from a recovery phrase
-const keys = generateMasterKeys("your recovery phrase ...");
+// 4. Create an AccountService from a recovery phrase
+const accountService = new AccountService(dataService, {
+  mnemonic: "your recovery phrase ...",
+});
 
-// 6. Derive deposit secrets and compute precommitment
+// 5. Read the pool scope and derive deposit secrets
 const scope = await publicClient.readContract({
   address: "0x..." as `0x${string}`, // pool address
   abi: [{
@@ -103,13 +103,12 @@ const scope = await publicClient.readContract({
   }],
   functionName: "SCOPE",
 });
-const { nullifier, secret } = generateDepositSecrets(keys, scope, 0n);
-const precommitment = hashPrecommitment(nullifier, secret);
+const { precommitment } = accountService.createDepositSecrets(scope, 0n);
 
-// 7. Deposit ETH via the Entrypoint proxy
+// 6. Simulate then deposit ETH via the Entrypoint
 const entrypointAddress = "0x..." as `0x${string}`; // Entrypoint (Proxy) from /deployments
 const [account] = await walletClient.getAddresses();
-const txHash = await walletClient.writeContract({
+const { request } = await publicClient.simulateContract({
   account,
   address: entrypointAddress,
   abi: [{
@@ -123,9 +122,10 @@ const txHash = await walletClient.writeContract({
   args: [precommitment],
   value: 10000000000000000n, // 0.01 ETH
 });
+const txHash = await walletClient.writeContract(request);
 await publicClient.waitForTransactionReceipt({ hash: txHash });
 
-// 8. Fetch deposit events to confirm and reconstruct state
+// 7. Fetch deposit events to confirm and reconstruct state
 const deposits = await dataService.getDeposits({
   chainId: 11155111,
   address: "0x..." as `0x${string}`, // pool address
@@ -133,7 +133,7 @@ const deposits = await dataService.getDeposits({
   deploymentBlock: 123456n,
 });
 
-// 9. Withdrawal: generate proof and submit via relayer
+// 8. Withdrawal: generate proof and submit via relayer
 //    See /reference/sdk for proveWithdrawal() and /protocol/withdrawal
 //    for the full relayed withdrawal flow
 ```
