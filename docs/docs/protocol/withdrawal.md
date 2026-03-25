@@ -97,9 +97,10 @@ struct RelayData {
 1. **User Steps**
    - Construct withdrawal with Entrypoint as processooor
    - Resolve the final recipient and request the relayer quote late in the flow so proof generation and relay submission fit inside the quote TTL
+   - Set `withdrawal.data` to the quote's `feeCommitment.withdrawalData` — the proof's `context` depends on the finalized `withdrawal`, so this must happen before proof generation
    - Validate the relayer minimum and warn if the remaining balance after a partial withdrawal would fall below it
    - Generate ZK proof
-   - Submit to relayer off-chain
+   - Submit to relayer before the quote expires
 2. **Relayer Steps**
    - Verify proof locally
    - Submit transaction to Entrypoint
