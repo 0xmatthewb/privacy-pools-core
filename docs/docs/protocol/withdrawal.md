@@ -101,6 +101,7 @@ struct RelayData {
    - Validate the relayer minimum and warn if the remaining balance after a partial withdrawal would fall below it
    - Generate ZK proof
    - Submit to relayer before the quote expires
+   - **Important:** The relayer returns HTTP 200 for both success and application-level failures. Always check `result.success` before treating the withdrawal as complete. See [Relayer API — Handling Failures](/reference/relayer-api#handling-failures) for the full failure matrix.
 2. **Relayer Steps**
    - Verify proof locally
    - Submit transaction to Entrypoint
