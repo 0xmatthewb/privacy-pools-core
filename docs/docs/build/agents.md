@@ -53,7 +53,7 @@ The skill files exist in two places with identical content. `.agents/skills/` is
 
 ## Circuit Initialization
 
-For Node.js runtimes, initialize SDK circuits with `new Circuits({ browser: false })`. Browser-embedded agents can use the default loader.
+For Node.js runtimes, initialize with `new Circuits({ browser: false })`. For browser environments, serve circuit artifacts from your app's public directory and initialize with `new Circuits({ baseUrl: window.location.origin })`. See [Frontend Integration](/build/integration) for the artifact setup steps.
 
 ## Agent-Specific Workflows
 
