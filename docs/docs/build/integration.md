@@ -10,24 +10,32 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-A complete Privacy Pools frontend integration using the TypeScript SDK.
+Use this page when you are wiring a real Privacy Pools integration into a frontend or wallet. It covers the builder happy path first, then points you to reference pages only when you need exact values or schemas.
 
-## Key References
+## Use this page for
 
-| Page | What you will find |
-|---|---|
-| [Deployments](/deployments) | Contract addresses and `startBlock` per chain |
-| [SDK Utilities](/reference/sdk) | SDK types, methods, and account reconstruction |
-| [Deposit](/protocol/deposit), [Withdrawal](/protocol/withdrawal), [Ragequit](/protocol/ragequit) | On-chain mechanics for each protocol flow |
-| [UX Patterns](/build/ux-patterns) | Frontend patterns for accounts, deposits, withdrawals, and ragequit |
-| [ASP API](/reference/asp-api), [Relayer API](/reference/relayer-api) | Endpoint schemas and response shapes |
+- wiring the standard browser or wallet integration path
+- implementing public deposit, private relayed withdrawal, and public ragequit
+- knowing when to jump to [Deployments](/deployments), [SDK Utilities](/reference/sdk), or the API references for exact values
 
-## Minimal Frontend Recipe
+## What you need before starting
 
 :::info Prerequisites
-Node 18+, viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain. See [Deployments](/deployments) for chain addresses and `startBlock` values.
+Node 18+, viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain.
+
 - SDK version: 1.2.0 (`@0xbow/privacy-pools-core-sdk`)
+- Use [Deployments](/deployments) as the lookup page for target-chain addresses and `startBlock`
 :::
+
+Before you start, make sure you have:
+
+- a target chain and asset
+- the target chain's `Entrypoint`, `PrivacyPool`, and `startBlock` from [Deployments](/deployments)
+- hosted circuit artifacts for the SDK
+- a recovery flow before first deposit
+- a plan for both relayed withdrawal and public ragequit
+
+## Circuit artifacts and SDK setup
 
 **Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
 
@@ -41,70 +49,29 @@ for f in commitment.wasm commitment.zkey commitment.vkey withdraw.wasm withdraw.
 done
 ```
 
-1. **Load deployment data**
-   - Read chain-specific contract addresses and `startBlock` from [Deployments](/deployments)
-   - You need: `Entrypoint`, `PrivacyPool`, and the chain's `startBlock` for the target asset scope
-
-2. **Initialize SDK and contract helpers**
-   - Create a `DataService` with a `ChainConfig[]` array (containing `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block
-   - In browser dapps, use a viem `WalletClient` plus the relevant contract ABI for writes
-   - Reserve `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` for server-side signers
-
-3. **Bootstrap account state**
-   - New accounts: `new AccountService(dataService, { mnemonic })`
-   - Returning users: `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)` to restore from on-chain events
-   - Returns `{ account, legacyAccount?, errors }`:
-     - `account` is the restored `AccountService`
-     - `legacyAccount` (if present) holds migrated deposit histories for ragequit
-     - `errors` lists any scopes that failed to load (see [SDK Utilities](/reference/sdk#account-reconstruction))
-
-4. **Deposit**
-   - Derive deposit secrets using `accountService.createDepositSecrets(scope, index)`
-   - Simulate the deposit transaction with `publicClient.simulateContract(...)`, then execute with `walletClient.writeContract(request)`
-   - Persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state
-     (see [Account Reconstruction](/reference/sdk#account-reconstruction) for the full shape)
-   - Wait for ASP approval before attempting withdrawal
-
-5. **Perform the relayed withdrawal**
-   1. **Fetch ASP roots and verify convergence:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`). If `onchainMtRoot` is `null` or `mtRoot !== onchainMtRoot`, stop because the ASP tree has not converged on-chain yet. Once they match, confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
-   2. **Request a relayer quote:** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`
-   3. **Build Merkle proofs:** generate `stateMerkleProof` from pool state leaves (keyed by commitment hash) and `aspMerkleProof` from ASP leaves (keyed by label). For pools with an external ASP, merge all ASP leaf sources, remove duplicates, and sort ascending before generating the ASP proof
-   4. **Generate the withdrawal proof:** call `proveWithdrawal` with the Merkle proofs, verified roots, withdrawal amount, relayer-provided context, change secrets from `accountService.createWithdrawalSecrets(commitment)`, and tree depth `32n` for both state and ASP trees
-   5. **Submit via relayer:** send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets
-
-6. **Refresh state after withdrawal**
-   - Re-scan events to pick up the new change commitment
-   - Insert it into local account state before generating another proof
-
-### Quick Start Code
+Fill the chain-specific values from [Deployments](/deployments) for the network you are integrating.
 
 ```typescript
 import {
   PrivacyPoolSDK,
   DataService,
-  AccountService,
   Circuits,
-  calculateContext,
-  generateMerkleProof,
 } from "@0xbow/privacy-pools-core-sdk";
-import type { Hash } from "@0xbow/privacy-pools-core-sdk";
 import {
   createPublicClient, createWalletClient, custom, http,
 } from "viem";
 import { sepolia } from "viem/chains";
 
-// --- Fill in from /deployments for your target chain ---
+// Fill these values from /deployments for your target chain.
 const POOL_ADDRESS = "0x..." as `0x${string}`;
 const ENTRYPOINT_ADDRESS = "0x..." as `0x${string}`;
 const START_BLOCK = 123456n;
 const RPC_URL = "https://sepolia.infura.io/v3/YOUR_KEY";
 
-// 1. Initialize SDK
 const sdk = new PrivacyPoolSDK(
   new Circuits({ baseUrl: window.location.origin })
 );
 
-// 2. Create DataService
 const dataService = new DataService([
   {
     chainId: 11155111,
@@ -122,13 +89,24 @@ const walletClient = createWalletClient({
   chain: sepolia,
   transport: custom(window.ethereum!),
 });
+```
 
-// 3. Create AccountService
+Create `DataService` with `startBlock` so event scans begin at the deployment block instead of genesis. Reserve `sdk.createContractInstance(...)` for server-side signers; browser dapps should usually use their own viem clients for writes.
+
+## Account bootstrapping
+
+New accounts should start from a mnemonic-backed `AccountService`. Returning users should restore from on-chain events.
+
+```typescript
+import {
+  AccountService,
+} from "@0xbow/privacy-pools-core-sdk";
+import type { Hash } from "@0xbow/privacy-pools-core-sdk";
+
 const accountService = new AccountService(dataService, {
   mnemonic: "your recovery phrase ...",
 });
 
-// 4. Read the pool scope and derive deposit secrets
 const scope = await publicClient.readContract({
   address: POOL_ADDRESS,
   abi: [{
@@ -143,10 +121,14 @@ const scope = await publicClient.readContract({
 
 // index = number of existing deposits for this scope (0 for first deposit)
 const { precommitment } = accountService.createDepositSecrets(scope, 0n);
-
-// 5. Deposit via the Entrypoint
 const [account] = await walletClient.getAddresses();
 ```
+
+For returning users, use `AccountService.initializeWithEvents(dataService, { mnemonic }, pools)`. It returns `{ account, legacyAccount?, errors }`, where `legacyAccount` preserves migrated histories for ragequit and `errors` reports any scopes that failed to load.
+
+## Deposit flow
+
+Derive deposit secrets with `accountService.createDepositSecrets(scope, index)`, then simulate and submit the deposit. Persist the confirmed `Deposited` event's `label` and post-fee `value` into local pool-account state.
 
 <Tabs>
 <TabItem value="eth" label="ETH" default>
@@ -222,8 +204,11 @@ await publicClient.waitForTransactionReceipt({ hash: txHash });
 </TabItem>
 </Tabs>
 
+## Waiting for ASP approval
+
+Do not treat a deposit as ready for private withdrawal until the ASP tree has converged on-chain.
+
 ```typescript
-// 6. Fetch deposit events
 const deposits = await dataService.getDeposits({
   chainId: 11155111,
   address: POOL_ADDRESS,
@@ -231,21 +216,34 @@ const deposits = await dataService.getDeposits({
   deploymentBlock: START_BLOCK,
 });
 
-// 7. Wait for ASP approval, then fetch roots
 const aspHost = "https://dw.0xbow.io"; // Sepolia. See /reference/asp-api for host selection.
 const aspRoots = await fetch(
   `${aspHost}/11155111/public/mt-roots`,
   { headers: { "X-Pool-Scope": scope.toString() } } // must be decimal
 ).then((r) => r.json());
-// → { mtRoot: string, onchainMtRoot: string | null }
+
 if (!aspRoots.onchainMtRoot || aspRoots.mtRoot !== aspRoots.onchainMtRoot) {
   throw new Error("ASP tree has not converged, try again later");
 }
+```
 
-// 8. Request a relayer quote
+Call `GET /{chainId}/public/mt-roots` with decimal `X-Pool-Scope`. If `onchainMtRoot` is `null` or `mtRoot !== onchainMtRoot`, wait and retry. Once they match, also confirm `onchainMtRoot === Entrypoint.latestRoot()` before generating a proof.
+
+## Relayed withdrawal
+
+Relayed withdrawal is the standard frontend path. Request the quote late in the flow, treat the quote's `feeCommitment.withdrawalData` as canonical, and submit the proof before the quote expires.
+
+```typescript
+import {
+  calculateContext,
+  generateMerkleProof,
+} from "@0xbow/privacy-pools-core-sdk";
+import type { Hash } from "@0xbow/privacy-pools-core-sdk";
+
 const relayerUrl = "https://fastrelay.xyz"; // testnet: https://testnet-relayer.privacypools.com
 const withdrawAmount = 5000000000000000n; // 0.005 ETH
 const recipient = "0x..." as `0x${string}`;
+
 const quoteResponse = await fetch(`${relayerUrl}/relayer/quote`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -261,17 +259,13 @@ if (!quoteResponse.ok) {
   throw new Error(`Relayer quote failed: ${quoteResponse.status}`);
 }
 const quote = await quoteResponse.json();
-// → { feeBPS: string, feeCommitment: { expiration, withdrawalData, ... } }
 
-// 9. Build Withdrawal struct
-// The signed feeCommitment is the canonical source for relayed withdrawal.data
 const withdrawal = {
   processooor: ENTRYPOINT_ADDRESS,
   data: quote.feeCommitment.withdrawalData as `0x${string}`,
 };
 const context = BigInt(calculateContext(withdrawal, scope));
 
-// → { stateTreeLeaves: string[], aspLeaves: string[] } (decimal bigints)
 const leavesResponse = await fetch(
   `${aspHost}/11155111/public/mt-leaves`,
   { headers: { "X-Pool-Scope": scope.toString() } }
@@ -295,7 +289,6 @@ const commitment = poolAccount.children.length > 0
   ? poolAccount.children[poolAccount.children.length - 1]
   : poolAccount.deposit;
 
-// State tree: keyed by commitment hash. ASP tree: keyed by label.
 const stateMerkleProof = generateMerkleProof(
   leavesResponse.stateTreeLeaves.map(BigInt),
   commitment.hash
@@ -305,7 +298,6 @@ const aspMerkleProof = generateMerkleProof(
   commitment.label
 );
 
-// 10. Generate the withdrawal proof
 const { nullifier: newNullifier, secret: newSecret } =
   accountService.createWithdrawalSecrets(commitment);
 
@@ -324,9 +316,7 @@ const withdrawalProof = await sdk.proveWithdrawal(
     newNullifier,
   }
 );
-// → { proof: { pi_a, pi_b, pi_c }, publicSignals: string[] }
 
-// 11. Submit to relayer before the quote expires
 const relayResponse = await fetch(`${relayerUrl}/relayer/request`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -337,7 +327,7 @@ const relayResponse = await fetch(`${relayerUrl}/relayer/request`, {
     scope: scope.toString(),
     chainId: 11155111,
     feeCommitment: quote.feeCommitment,
-  }, (_, v) => (typeof v === "bigint" ? v.toString() : v)), // bigint -> string for JSON
+  }, (_, v) => (typeof v === "bigint" ? v.toString() : v)),
 });
 if (!relayResponse.ok) {
   throw new Error(`Relayer request failed: ${relayResponse.status}`);
@@ -348,14 +338,14 @@ if (!relayResult.success) {
 }
 ```
 
-### Account Selection and External ASPs
+### Account selection and external ASPs
 
 - Select withdrawal candidates from `accountService.account.poolAccounts.get(scope)`, not from a flattened cross-chain list.
 - Only offer pool accounts whose latest commitment has a non-zero balance and whose label is approved in the current ASP leaf set.
 - For pools that configure an external ASP, merge the 0xbow ASP leaves with the external provider's leaves, remove duplicates, sort ascending, and generate the ASP Merkle proof from that merged label set.
 - Use `GET /relayer/details` for UX validation such as `minWithdrawAmount` and fee display. When a quote already includes `feeCommitment.withdrawalData`, do not rebuild `withdrawal.data` from `/relayer/details`.
 
-### Ragequit (Public Exit)
+## Ragequit
 
 Ragequit lets the original depositor reclaim funds publicly, bypassing ASP approval. Only the depositing address can call it.
 
@@ -406,7 +396,17 @@ Wait for the receipt before marking ragequit as complete. If you persist local a
 
 For server-side signers, use `sdk.createContractInstance(...)` instead of a `WalletClient`.
 
-### Log Fetch Configuration
+## Production checklist
+
+1. Require the recovery phrase to be saved before the first deposit.
+2. Fill chain-specific `Entrypoint`, `PrivacyPool`, and `startBlock` values from [Deployments](/deployments) when you wire a target chain.
+3. Wait for ERC-20 approval receipts before depositing.
+4. Request relayer quotes on the review step, and re-quote if amount, recipient, relayer, optional gas-token drop, or expiration changes.
+5. Verify ASP root parity before generating a withdrawal proof.
+6. Wait for the receipt before marking deposit, relay, or ragequit as complete.
+7. Keep ragequit available as the public fallback path.
+
+### DataService tuning
 
 `DataService` accepts an optional `logFetchConfig` second argument (a `Map<number, Partial<LogFetchConfig>>`) that controls how event logs are fetched per chain.
 
@@ -418,17 +418,11 @@ For server-side signers, use `sdk.createContractInstance(...)` instead of a `Wal
 
 Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRetries`, and `retryBaseDelayMs`.
 
-## Key integration rules
-
-1. **Relayed withdrawals only.** Use `fastrelay.xyz` on production chains and `testnet-relayer.privacypools.com` on published testnets. Never expose direct `PrivacyPool.withdraw()` in frontend UX.
-2. **Recovery phrase first.** Require users to save their recovery phrase before their first deposit. Never expose raw note material in clipboard or copy/paste flows.
-3. **Quote on review, re-quote on change.** Request relayer quotes on the review step. If amount, recipient, or relayer changes, or the quote expires, discard and re-quote.
-4. **ASP root parity.** Always verify the ASP tree has converged on-chain (`mtRoot === onchainMtRoot`) before generating a withdrawal proof.
-
-## Next Steps
+## Exact references
 
 | Topic | Page |
 |---|---|
+| Chain addresses, chain metadata, and `startBlock` | [Deployments](/deployments) |
 | UX patterns for accounts, deposits, withdrawals, and ragequit | [UX Patterns](/build/ux-patterns) |
 | ASP API endpoints, hosts, and response shapes | [ASP API Reference](/reference/asp-api) |
 | Relayer quote, request, and details endpoints | [Relayer API Reference](/reference/relayer-api) |

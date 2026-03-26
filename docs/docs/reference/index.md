@@ -12,7 +12,7 @@ keywords:
   - deployments
 ---
 
-Use this section when you need exact values, schemas, or contract behavior. For the end-to-end implementation path, start with [Build](/build). For the product lifecycle, start with [Using Privacy Pools](/protocol).
+Use this section when you need exact values, schemas, or contract behavior. For the end-to-end implementation path, start with [Build](/build). For the product lifecycle, start with [Using Privacy Pools](/protocol). Within this section, [Deployments](/deployments) is the lookup page for exact chain values, not part of the initial tutorial flow.
 
 :::info Verified sources
 This reference section is aligned to three sources of truth:
@@ -24,7 +24,7 @@ This reference section is aligned to three sources of truth:
 
 ## Recommended read order
 
-1. [Deployments](/deployments) for chain addresses and `startBlock` values.
+1. [Deployments](/deployments) for chain addresses and `startBlock` values once you know which network you are wiring.
 2. [SDK Utilities](/reference/sdk) for account reconstruction, proof helpers, and contract helpers.
 3. [ASP API](/reference/asp-api) and [Relayer API](/reference/relayer-api) for exact request and response shapes.
 4. [Contracts Interfaces](/reference/contracts) and [Circuits Interfaces](/reference/circuits) for protocol-level types and proof inputs.

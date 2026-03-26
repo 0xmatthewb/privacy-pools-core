@@ -14,6 +14,14 @@ keywords:
 
 The Association Set Provider (ASP) publishes an HTTP API that integrators use to fetch Merkle tree data for withdrawal proofs. The ASP is operated by 0xbow and serves both approved labels (the ASP tree) and state tree leaves (commitment hashes) for each pool.
 
+:::info Use this page for
+- exact ASP hosts, headers, endpoint shapes, and response fields
+- checking root-convergence behavior and approval lookups
+- verifying the canonical API details behind the guide pages
+
+Verified against the current public ASP API behavior and production website integration patterns.
+:::
+
 ## Hosts
 
 | Environment | Host |

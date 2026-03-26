@@ -11,28 +11,30 @@ keywords:
   - agents
 ---
 
-Guides for adding Privacy Pools to wallets and dapps. If you use AI coding agents, there is a dedicated setup path below.
+Guides for adding Privacy Pools to wallets and dapps. Start with the builder path below, then use the reference pages when you need exact values, schemas, or contract behavior.
 
 ## Recommended read order
 
 1. [Start Here](/build/start) for prerequisites, shared terminology, and the build sequence.
 2. [Using Privacy Pools](/protocol) for the product lifecycle your UI should reflect.
-3. [Deployments](/deployments) for contract addresses and `startBlock` values.
-4. [Frontend Integration](/build/integration) for the implementation recipe.
-5. [UX Patterns](/build/ux-patterns) for approval states, recovery, quotes, and withdrawal edge cases.
+3. [Frontend Integration](/build/integration) for the implementation recipe.
+4. [UX Patterns](/build/ux-patterns) for approval states, recovery, quotes, and withdrawal edge cases.
+5. [Technical Reference](/reference) when you need exact SDK, API, contract, or deployment details.
+
+[Deployments](/deployments) is the lookup page for chain addresses, chain metadata, and `startBlock`. Use it when you are wiring a specific target chain, not as an onboarding step by itself.
 
 ## If you are using agents
 
 1. [Agent Setup](/build/agents) for Claude, Codex, and repo-entry guidance.
 2. [Skill Library](/build/skills) for task-specific instructions.
 3. [Frontend Integration](/build/integration) for the canonical implementation path.
-4. [Deployments](/deployments) for contract addresses and chain metadata.
+4. [Technical Reference](/reference) and [Deployments](/deployments) when the task needs exact values.
 
 ## Production checklist
 
-- Initialize `DataService` with the correct chain-specific `startBlock`.
 - Serve the circuit artifacts before attempting proof generation.
 - Require the recovery phrase to be saved before the first deposit.
+- Pull the target chain's `Entrypoint`, `PrivacyPool`, and `startBlock` from [Deployments](/deployments) when wiring the integration.
 - Quote late in the withdrawal flow and discard quotes when inputs change or expire.
 - Verify ASP root parity before generating a withdrawal proof.
 - Keep ragequit available as the public fallback path.

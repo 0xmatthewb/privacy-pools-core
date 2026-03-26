@@ -17,6 +17,14 @@ The relayer is a separate service from the [ASP API](/reference/asp-api). It sub
 
 The public production relayer is operated by Fat Solutions. The relayer code is open-source (`packages/relayer` in the monorepo) and anyone can host their own instance.
 
+:::info Use this page for
+- exact relayer hosts, request payloads, response fields, and failure handling
+- understanding quote lifecycle, `feeCommitment`, and canonical `withdrawal.data`
+- verifying the API details behind the withdrawal guide
+
+Verified against the current relayer API behavior and production website integration patterns.
+:::
+
 ## Hosts
 
 | Environment | Host |

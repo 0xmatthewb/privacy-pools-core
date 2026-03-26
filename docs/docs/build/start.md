@@ -16,19 +16,20 @@ These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).
 
 Make sure you have all five of these inputs first:
 
-1. The target chain and asset from [Deployments](/deployments).
-2. The correct `Entrypoint`, `PrivacyPool`, and `startBlock` values.
+1. The target chain and asset you want to support.
+2. The correct `Entrypoint`, `PrivacyPool`, and `startBlock` values once you are ready to wire that chain. Use [Deployments](/deployments) as the lookup page for those values.
 3. Hosted circuit artifacts for the SDK's `Circuits` loader.
 4. A plan for both private withdrawal and public [ragequit](/protocol/ragequit).
 5. A user-facing recovery flow before the first deposit.
 
-## Recommended Build Path
+## Default builder path
 
 1. Read [Using Privacy Pools](/protocol) to understand the product behavior before writing code.
-2. Copy addresses and `startBlock` values from [Deployments](/deployments).
-3. Implement the happy path from [Frontend Integration](/build/integration).
-4. Add approval, recovery, quote-refresh, and status handling from [UX Patterns](/build/ux-patterns).
-5. Use [Technical Reference](/reference/sdk), [ASP API](/reference/asp-api), and [Relayer API](/reference/relayer-api) when you need exact types and schemas.
+2. Implement the happy path from [Frontend Integration](/build/integration).
+3. Add approval, recovery, quote-refresh, and status handling from [UX Patterns](/build/ux-patterns).
+4. Use [Technical Reference](/reference) when you need exact types, schemas, or contract behavior.
+
+Use [Deployments](/deployments) when you need chain addresses, chain metadata, or `startBlock` for the specific network you are wiring.
 
 ## Core Concepts
 
@@ -40,30 +41,16 @@ Make sure you have all five of these inputs first:
 | **ASP** | Association Set Provider: off-chain service that evaluates deposits and maintains an approved Merkle tree. |
 | **Recovery phrase** | BIP-39 mnemonic that derives all deposit secrets. If lost, funds cannot be withdrawn privately. Must be saved before depositing. |
 
-## Frontend or App Integration
-
-For teams building wallets, dapps, or other user-facing interfaces.
-
-**Read order:**
-
-| # | Page | Covers |
-|---|------|--------|
-| 1 | [Using Privacy Pools](/protocol) | Lifecycle: deposit, approval, withdrawal, ragequit |
-| 2 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
-| 3 | [Frontend Integration](/build/integration) | SDK setup, deposit, relayed withdrawal, ragequit |
-| 4 | [UX Patterns](/build/ux-patterns) | Account management and frontend patterns |
-| 5 | [SDK Utilities](/reference/sdk) | Types and functions |
-
 ## Agent Workflows
 
-For developers using AI coding agents or LLM-powered tools.
+For developers using AI coding agents or LLM-powered tools after the main builder path is clear.
 
 | # | Page | Covers |
 |---|------|--------|
 | 1 | [Agent Setup](/build/agents) | Runtime setup (Claude Code, Codex, etc.) |
 | 2 | [Skill Library](/build/skills) | Load the skill file for your task |
 | 3 | [Frontend Integration](/build/integration) | SDK patterns, deposit/withdrawal implementation |
-| 4 | [Deployments](/deployments) | Chain addresses and `startBlock` values |
+| 4 | [Technical Reference](/reference) and [Deployments](/deployments) | Exact SDK/API details and chain-specific values |
 
 ## Contributing
 
@@ -73,4 +60,4 @@ For contributors working on the core codebase.
 |---|------|--------|
 | 1 | [Contributing](/build/contributing) | Repo structure, local setup, build and test commands |
 | 2 | [Contracts](/layers/contracts) and [ZK Circuits](/layers/zk) | Layer-specific reference |
-| 3 | [SDK Utilities](/reference/sdk) | SDK reference |
+| 3 | [Technical Reference](/reference) | SDK, API, deployment, and error reference |

@@ -18,7 +18,17 @@ keywords:
   - verifiers
 ---
 
-This page is the canonical source for contract addresses and `startBlock` values. Integrations should use the **Entrypoint (Proxy)** address for deposits and relayed withdrawals. Ragequit calls go directly to the pool contract address. The implementation address is listed for reference only.
+This is the lookup page for exact contract addresses, chain metadata, and `startBlock` values. If you are still learning the product or integration flow, start with [Build](/build) or [Using Privacy Pools](/protocol) and come back here when you need concrete chain values.
+
+:::info Use this page for
+- exact `Entrypoint`, `PrivacyPool`, verifier, and asset addresses
+- the chain-specific `startBlock` values used by `DataService`
+- verifying proxy vs implementation addresses when wiring integrations
+
+Verified against the deployment tables in the local protocol sources and the current production integration configuration.
+:::
+
+Integrations should use the **Entrypoint (Proxy)** address for deposits and relayed withdrawals. Ragequit calls go directly to the pool contract address. The implementation address is listed for reference only.
 
 Each chain section lists a `startBlock`, which is the earliest deployment block (WithdrawalVerifier) for that network. Use this value when initializing `DataService` to ensure all pool events are captured.
 
