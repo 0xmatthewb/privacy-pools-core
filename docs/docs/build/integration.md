@@ -203,9 +203,25 @@ const aspRoots = await fetch(
 if (!aspRoots.onchainMtRoot || aspRoots.mtRoot !== aspRoots.onchainMtRoot) {
   throw new Error("ASP tree has not converged, try again later");
 }
+
+// Confirm the on-chain ASP root matches the contract
+const latestRoot = await publicClient.readContract({
+  address: ENTRYPOINT_ADDRESS,
+  abi: [{
+    name: "latestRoot",
+    type: "function",
+    inputs: [],
+    outputs: [{ type: "uint256" }],
+    stateMutability: "view",
+  }],
+  functionName: "latestRoot",
+});
+if (BigInt(aspRoots.onchainMtRoot) !== latestRoot) {
+  throw new Error("ASP root does not match Entrypoint.latestRoot()");
+}
 ```
 
-Call `GET /{chainId}/public/mt-roots` with decimal `X-Pool-Scope`. If `onchainMtRoot` is `null` or `mtRoot !== onchainMtRoot`, wait and retry. Once they match, also confirm `onchainMtRoot === Entrypoint.latestRoot()` before generating a proof.
+Call `GET /{chainId}/public/mt-roots` with decimal `X-Pool-Scope`. If `onchainMtRoot` is `null` or `mtRoot !== onchainMtRoot`, wait and retry. Once they match, confirm `BigInt(onchainMtRoot) === Entrypoint.latestRoot()` before generating a proof.
 
 ## Relayed withdrawal
 
@@ -282,14 +298,11 @@ const commitment = poolAccount.children.length > 0
 const padSiblings = (siblings: bigint[]) =>
   [...siblings, ...Array(32 - siblings.length).fill(0n)];
 
-const stateMerkleProof = generateMerkleProof(
-  leavesResponse.stateTreeLeaves.map(BigInt),
-  commitment.hash
-);
-const aspMerkleProof = generateMerkleProof(
-  leavesResponse.aspLeaves.map(BigInt),
-  commitment.label
-);
+const stateLeaves = leavesResponse.stateTreeLeaves.map(BigInt);
+const aspLeaves = [...new Set(leavesResponse.aspLeaves)].map(BigInt).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+
+const stateMerkleProof = generateMerkleProof(stateLeaves, commitment.hash);
+const aspMerkleProof = generateMerkleProof(aspLeaves, commitment.label);
 
 const { nullifier: newNullifier, secret: newSecret } =
   accountService.createWithdrawalSecrets(commitment);
