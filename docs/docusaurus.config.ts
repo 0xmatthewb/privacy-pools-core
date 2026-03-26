@@ -5,7 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Privacy Pools Documentation",
   tagline: "Public deposits, private withdrawals, and integration guidance",
-  favicon: "img/favicon.ico",
+  favicon: "favicon/favicon.ico",
 
   url: "https://docs.privacypools.com",
   baseUrl: "/",
@@ -30,28 +30,32 @@ const config: Config = {
       tagName: "link",
       attributes: {
         rel: "icon",
-        href: "/img/favicon-light-96x96.png",
-        type: "image/png",
-        sizes: "96x96",
-        media: "(prefers-color-scheme: light)",
+        href: "/favicon/favicon.svg",
+        type: "image/svg+xml",
       },
     },
     {
       tagName: "link",
       attributes: {
         rel: "icon",
-        href: "/img/favicon-dark-96x96.png",
+        href: "/favicon/favicon-96x96.png",
         type: "image/png",
         sizes: "96x96",
-        media: "(prefers-color-scheme: dark)",
       },
     },
     {
       tagName: "link",
       attributes: {
         rel: "apple-touch-icon",
-        href: "/img/apple-touch-icon.png",
+        href: "/favicon/apple-touch-icon.png",
         sizes: "180x180",
+      },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "manifest",
+        href: "/favicon/site.webmanifest",
       },
     },
     {
