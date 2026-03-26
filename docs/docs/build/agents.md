@@ -3,7 +3,7 @@ sidebar_label: Agent Setup
 sidebar_position: 4
 title: Agent Setup
 slug: /build/agents
-description: Entry points, skill files, and setup for AI coding agents integrating with Privacy Pools.
+description: Entry points, skill files, and setup for developers using AI coding agents to build with Privacy Pools.
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 

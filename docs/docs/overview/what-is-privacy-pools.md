@@ -24,7 +24,7 @@ If a deposit is not approved (or the user prefers not to wait), the original dep
 |---|---|
 | Understand the protocol lifecycle | [Using Privacy Pools](/protocol) |
 | Build a frontend integration | [Build](/build) |
-| Integrate with agents | [Agent Setup](/build/agents) |
+| Use AI coding agents to build | [Agent Setup](/build/agents) |
 | Look up chain addresses and `startBlock` | [Deployments](/deployments) |
 
 ## System architecture overview

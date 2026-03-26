@@ -1,7 +1,7 @@
 ---
 title: Build with Privacy Pools
 slug: /build
-description: Recommended onboarding and implementation path for integrators and agent-assisted workflows.
+description: Recommended onboarding and implementation path for integrators, including guidance for developers using AI coding agents.
 keywords:
   - privacy pools
   - build
@@ -11,7 +11,7 @@ keywords:
   - agents
 ---
 
-This section is for teams integrating Privacy Pools into wallets, dapps, or agent workflows.
+This section is for teams adding Privacy Pools to wallets and dapps, including guidance for developers using AI coding agents.
 
 ## Recommended read order
 
