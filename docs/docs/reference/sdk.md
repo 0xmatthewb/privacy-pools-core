@@ -12,6 +12,8 @@ keywords:
   - integration
 ---
 
+Start with `AccountService` for account management, `DataService` for on-chain event scanning, and `proveWithdrawal` for the core withdrawal flow. The remaining utilities cover advanced scenarios like legacy account migration and direct contract interactions.
+
 ## `PrivacyPoolSDK`
 
 Main SDK class providing high-level protocol interaction.

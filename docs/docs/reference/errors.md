@@ -16,6 +16,10 @@ Revert reason names are taken directly from the Solidity interface definitions i
 
 For the contract interface definitions where these errors originate, see [Contracts Interfaces](/reference/contracts).
 
+:::tip Most common during integration
+Focus on `ContextMismatch`, `UnknownStateRoot`, and `IncorrectASPRoot` — these are the most common proof-submission failures. See [Common Integration Mistakes](#common-integration-mistakes) at the bottom of this page for debugging guidance.
+:::
+
 ## Contract Revert Reasons
 
 ### PrivacyPool Errors

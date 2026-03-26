@@ -114,6 +114,7 @@ The fee is deducted **on deposit**, not on withdrawal. The `value` emitted in th
 Each asset has a `minimumDepositAmount` configured on the [Entrypoint](/deployments). The contract enforces this and reverts with `MinimumDepositAmount` if the deposit is below the threshold. Check this before submitting:
 
 ```typescript
+// entrypointAddress: get from /deployments for your target chain
 const config = await publicClient.readContract({
   address: entrypointAddress,
   abi: [{

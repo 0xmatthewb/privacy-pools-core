@@ -38,7 +38,11 @@ sequenceDiagram
 
 
     Note over User: Has: nullifier, secret,<br/>label, value
-    User->>SDK: Prepare withdrawal(amount, relayer)
+
+    User->>Relayer: Request quote(amount, asset, recipient)
+    Relayer-->>User: feeCommitment (valid ~60s)
+
+    User->>SDK: Prepare withdrawal(amount, feeCommitment)
 
     activate SDK
     Note over SDK: Generate:<br/>newNullifier, newSecret
