@@ -5,7 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Privacy Pools Documentation",
   tagline: "Public deposits, private withdrawals, and integration guidance",
-  favicon: "favicon/favicon.svg",
+  favicon: "favicon/favicon.ico",
 
   url: "https://docs.privacypools.com",
   baseUrl: "/",
