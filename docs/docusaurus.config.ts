@@ -45,6 +45,14 @@ const config: Config = {
       },
     },
     {
+      tagName: "link",
+      attributes: {
+        rel: "apple-touch-icon",
+        href: "/img/apple-touch-icon.png",
+        sizes: "180x180",
+      },
+    },
+    {
       tagName: "meta",
       attributes: { property: "og:type", content: "website" },
     },
