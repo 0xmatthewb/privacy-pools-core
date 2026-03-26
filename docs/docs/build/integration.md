@@ -7,6 +7,9 @@ description: Step-by-step guide for integrating Privacy Pools deposits, withdraw
 keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integration]
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 This guide walks through integrating Privacy Pools deposits, withdrawals, and ragequit into a frontend application using the TypeScript SDK. It assumes you have a viem-based dapp and want to add compliant private transactions.
 
 ## Key References
@@ -139,13 +142,22 @@ const scope = await publicClient.readContract({
   }],
   functionName: "SCOPE",
 });
+// → bigint (e.g., 1715004n)
+
 // Index = number of existing deposits for this scope (0n for first, 1n for second, etc.)
 // Increment after each confirmed deposit. The index drives deterministic secret derivation.
 const { precommitment } = accountService.createDepositSecrets(scope as Hash, 0n);
+// → { precommitment: Hash, nullifier: Secret, secret: Secret }
 
-// 6. Simulate then deposit ETH via the Entrypoint
+// 6. Simulate then deposit via the Entrypoint
 const entrypointAddress = ENTRYPOINT_ADDRESS;
 const [account] = await walletClient.getAddresses();
+```
+
+<Tabs>
+<TabItem value="eth" label="ETH" default>
+
+```typescript
 const { request } = await publicClient.simulateContract({
   account,
   address: entrypointAddress,
@@ -162,6 +174,60 @@ const { request } = await publicClient.simulateContract({
 });
 const txHash = await walletClient.writeContract(request);
 await publicClient.waitForTransactionReceipt({ hash: txHash });
+```
+
+</TabItem>
+<TabItem value="erc20" label="ERC-20">
+
+```typescript
+const TOKEN_ADDRESS = "0x..." as `0x${string}`; // e.g., USDC
+const depositAmount = 10000000n; // 10 USDC (6 decimals)
+
+// Approve the Entrypoint to spend tokens
+const { request: approveRequest } = await publicClient.simulateContract({
+  account,
+  address: TOKEN_ADDRESS,
+  abi: [{
+    name: "approve",
+    type: "function",
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ type: "bool" }],
+    stateMutability: "nonpayable",
+  }],
+  functionName: "approve",
+  args: [entrypointAddress, depositAmount],
+});
+await walletClient.writeContract(approveRequest);
+
+// Deposit ERC-20 tokens
+const { request } = await publicClient.simulateContract({
+  account,
+  address: entrypointAddress,
+  abi: [{
+    name: "deposit",
+    type: "function",
+    inputs: [
+      { name: "_asset", type: "address" },
+      { name: "_value", type: "uint256" },
+      { name: "_precommitment", type: "uint256" },
+    ],
+    outputs: [{ name: "_commitment", type: "uint256" }],
+    stateMutability: "nonpayable",
+  }],
+  functionName: "deposit",
+  args: [TOKEN_ADDRESS, depositAmount, precommitment],
+});
+const txHash = await walletClient.writeContract(request);
+await publicClient.waitForTransactionReceipt({ hash: txHash });
+```
+
+</TabItem>
+</Tabs>
+
+```typescript
 
 // 7. Fetch deposit events to confirm and reconstruct state
 const deposits = await dataService.getDeposits({
@@ -170,6 +236,7 @@ const deposits = await dataService.getDeposits({
   scope: scope as Hash,
   deploymentBlock: START_BLOCK,
 });
+// → DepositEvent[] with { label, value, precommitment, blockNumber, txHash } per deposit
 
 // 8. Wait for ASP approval, then fetch roots
 const poolAddress = POOL_ADDRESS;
@@ -178,6 +245,7 @@ const aspRoots = await fetch(
   `${aspHost}/11155111/public/mt-roots`,
   { headers: { "X-Pool-Scope": scope.toString() } } // must be decimal
 ).then((r) => r.json());
+// → { mtRoot: string, onchainMtRoot: string | null }
 // Stop if ASP tree has not converged on-chain
 if (!aspRoots.onchainMtRoot || aspRoots.mtRoot !== aspRoots.onchainMtRoot) {
   throw new Error("ASP tree has not converged, try again later");
@@ -198,6 +266,7 @@ const quote = await fetch(`${relayerUrl}/relayer/quote`, {
     extraGas: false,
   }),
 }).then((r) => r.json());
+// → { feeBPS: string, feeCommitment: { withdrawalData: string, ... }, expiresAt: number }
 
 // 10. Build the Withdrawal struct by ABI-encoding RelayData client-side
 // feeReceiverAddress comes from /relayer/details, not the quote response
@@ -242,6 +311,7 @@ const stateMerkleProof = generateMerkleProof(
   leavesResponse.stateTreeLeaves.map(BigInt),
   commitment.hash
 );
+// → { root: bigint, index: number, siblings: bigint[] }
 const aspMerkleProof = generateMerkleProof(
   leavesResponse.aspLeaves.map(BigInt),
   commitment.label
@@ -268,6 +338,7 @@ const withdrawalProof = await sdk.proveWithdrawal(
     newNullifier,
   }
 );
+// → { proof: { pi_a, pi_b, pi_c }, publicSignals: string[] }
 
 // 12. Submit to relayer before the quote expires
 const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
@@ -282,6 +353,7 @@ const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
     feeCommitment: quote.feeCommitment,
   }, (_, v) => (typeof v === "bigint" ? v.toString() : v)),
 }).then((r) => r.json());
+// → { success: true, txHash: "0x..." } or { success: false, error: "..." }
 // Check relayResult.success because the relayer returns HTTP 200 even for failures
 ```
 
@@ -300,6 +372,7 @@ const commitmentProof = await sdk.proveCommitment(
   ragequitCommitment.nullifier,
   ragequitCommitment.secret
 );
+// → { proof: { pi_a, pi_b, pi_c }, publicSignals: string[4] }
 
 // Submit ragequit directly to the pool contract
 // Note: pB coordinates must be swapped for Solidity
