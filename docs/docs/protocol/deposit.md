@@ -70,8 +70,8 @@ graph TD
 | --------------- | ------------------------------------------------------------------------------- |
 | `value`         | The deposit amount after fees                                                   |
 | `label`         | Generated on-chain by the pool contract; read from the `Deposited` event |
-| `nullifier`     | Random value used to create unique commitments                                  |
-| `secret`        | Random value that helps secure the commitment                                   |
+| `nullifier`     | Random value whose hash is revealed at spend time to prevent double-spending                                  |
+| `secret`        | Random value that hides the nullifier inside the precommitment hash                                   |
 | `precommitment` | Hash(nullifier, secret)                                                         |
 
 ### Deposit Steps

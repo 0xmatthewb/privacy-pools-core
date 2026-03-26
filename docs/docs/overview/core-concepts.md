@@ -48,12 +48,12 @@ The scope appears in API headers (`X-Pool-Scope`) and proof inputs. Read it on-c
 
 ## State tree and ASP tree
 
-The protocol maintains two separate Merkle trees per pool:
+Each pool has two Merkle trees:
 
 - **State tree**: Contains commitment hashes (one leaf per deposit and one per change commitment created during withdrawal). Managed on-chain by the pool contract. Root read via `pool.currentRoot()`.
 - **ASP tree**: Contains approved labels. Managed off-chain by the ASP and periodically committed on-chain. Root read via `Entrypoint.latestRoot()` or the ASP API's `onchainMtRoot`.
 
-Withdrawal proofs must demonstrate inclusion in **both** trees: the state tree (proving the commitment exists) and the ASP tree (proving the deposit was approved).
+Withdrawal proofs must show membership in **both** trees: the state tree (the commitment exists) and the ASP tree (the deposit was approved).
 
 ### ASP
 
@@ -88,7 +88,7 @@ The protocol uses two ZK proof types:
 
 ## Privacy model
 
-Privacy Pools splits knowledge across participants so that no single party can link a deposit to its withdrawal.
+Each participant only sees part of the picture, so nobody can link a deposit to its withdrawal.
 
 | Party | Can see | Cannot see |
 |---|---|---|
@@ -98,7 +98,7 @@ Privacy Pools splits knowledge across participants so that no single party can l
 | **ASP** | All deposit labels, which labels are approved | Nullifiers, secrets, withdrawal recipients |
 | **On-chain observer** | Deposit amounts, withdrawal amounts, nullifier hashes | Link between any deposit and any withdrawal |
 
-The withdrawal ZK proof demonstrates that the withdrawer owns a valid, ASP-approved commitment in the pool without revealing _which_ commitment. The relayer submits the transaction on behalf of the user, breaking the on-chain address link between depositor and recipient.
+The ZK proof shows the withdrawer owns a valid, approved commitment without revealing which one. The relayer submits the transaction, so there is no on-chain link between the depositor and the recipient.
 
 The ASP sees deposit labels (which are public from deposit events) but never learns withdrawal destinations.
 

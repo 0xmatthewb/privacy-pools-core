@@ -138,7 +138,7 @@ After re-quoting, require the user to review and confirm again before proof gene
 
 ### State Root vs ASP Root
 
-Withdrawal proofs must demonstrate inclusion in two separate Merkle trees, each with its own root source and validation rule:
+Withdrawal proofs need Merkle inclusion in two trees, each validated against a different root:
 
 | | State Root | ASP Root |
 |---|-----------|----------|

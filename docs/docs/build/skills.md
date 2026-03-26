@@ -7,7 +7,7 @@ description: Task-specific skill files that agents can load for Privacy Pools in
 keywords: [privacy pools, skills, agent, deposit, withdrawal, ragequit, SKILL.md]
 ---
 
-Skills are optional, task-specific instruction files for Privacy Pools integration work. Load them by URL or from `.agents/skills/` in the repo when you want an agent to focus on a particular flow.
+Load by URL or from `.agents/skills/` in the repo.
 
 ## How to Use Skills
 

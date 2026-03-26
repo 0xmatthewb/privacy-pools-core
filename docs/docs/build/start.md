@@ -40,5 +40,5 @@ Privacy Pools has three user-facing flows: public deposits, private withdrawals 
 
 ## Other paths
 
-- Using an AI coding agent? Open [Agent Setup](/build/agents) and the [Skill Library](/build/skills).
-- Contributing to the codebase? Start with [Contributing](/build/contributing).
+- Using an AI coding agent? See [Agent Setup](/build/agents) and [Skill Library](/build/skills).
+- Contributing to the codebase? See [Contributing](/build/contributing).

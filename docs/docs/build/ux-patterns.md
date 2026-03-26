@@ -7,8 +7,6 @@ description: Recommended frontend patterns for account management, deposits, wit
 keywords: [privacy pools, UX, frontend, account, deposit, withdrawal, ragequit, recovery]
 ---
 
-For the step-by-step integration recipe, see [Frontend Integration](/build/integration).
-
 ## Account and Recovery
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. See [Deposit: Account and Recovery](/protocol/deposit#account-and-recovery) for the full onboarding rules.
@@ -28,7 +26,7 @@ For the step-by-step integration recipe, see [Frontend Integration](/build/integ
 - Tell the user that confirmed deposits may take time to become ASP-approved.
 - Track each deposit and each post-withdrawal change commitment inside the same pool-account tree.
 
-For the full deposit protocol mechanics, see [Deposit](/protocol/deposit).
+See [Deposit](/protocol/deposit) for the protocol mechanics.
 
 ## Private Withdrawal UX
 
@@ -61,7 +59,7 @@ Filter withdraw selectors to approved non-zero accounts for the active chain/sco
 - If proof generation takes noticeable time, surface progress phases such as `loading_circuits`, `generating_proof`, and `verifying_proof`.
 - After a successful withdrawal, insert the new change commitment back into local account state before allowing another spend.
 
-For the full withdrawal protocol mechanics, see [Withdrawal](/protocol/withdrawal).
+See [Withdrawal](/protocol/withdrawal) for the protocol mechanics.
 
 ## Ragequit UX
 
@@ -69,7 +67,7 @@ For the full withdrawal protocol mechanics, see [Withdrawal](/protocol/withdrawa
 - Ragequit returns the full balance to the original depositor address. It does not send funds to a separate recipient.
 - Do not present ragequit as the default answer to ordinary ASP review time. Keep pending deposits in a pending state unless the user explicitly chooses a public exit or private withdrawal is unavailable.
 
-For the full ragequit protocol mechanics, see [Ragequit](/protocol/ragequit).
+See [Ragequit](/protocol/ragequit) for the protocol mechanics.
 
 ## Next Steps
 

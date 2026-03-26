@@ -410,4 +410,3 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 | Contract errors, safety checks, and common mistakes | [Errors and Constraints](/reference/errors) |
 | SDK types, methods, and account reconstruction | [SDK Utilities](/reference/sdk) |
 
-Next, use [Using Privacy Pools](/protocol) for the product lifecycle, [UX Patterns](/build/ux-patterns) for production-facing states and copy, and [Technical Reference](/reference) when you need exact values.

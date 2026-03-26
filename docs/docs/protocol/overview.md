@@ -28,7 +28,7 @@ After deposit, the ASP evaluates the deposit and decides whether to add its labe
 
 ## Waiting for ASP approval
 
-The ASP reviews deposits asynchronously after they enter the pool. Show deposits as "pending" in the UI until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain. Private withdrawal stays unavailable until that convergence completes.
+The ASP reviews deposits asynchronously after they enter the pool. Show deposits as "pending" until the label appears in the ASP's approved set and the on-chain ASP root matches. Private withdrawal is blocked until then.
 
 For the technical convergence check and API endpoints, see the [Withdrawal page](/protocol/withdrawal#state-root-vs-asp-root) and the [ASP API Reference](/reference/asp-api).
 

@@ -95,7 +95,7 @@ Ragequit does not require ASP approval. It is the always-available public exit p
 - The user explicitly wants a public return to the original depositor address
 - The ASP service is unavailable
 
-In most product UX, pending ASP review should remain a pending state. Ragequit should be presented as an explicit public exit choice, not as the default next step during normal review time.
+While ASP review is in progress, keep the deposit in a pending state. Present ragequit as an explicit public exit choice, not as the default action during normal review time.
 
 Keep this option available at all times, but do not encourage it unless the user explicitly wants a public exit or private withdrawal is unavailable.
 
@@ -105,7 +105,7 @@ Only the address that made the original deposit can ragequit. The contract rever
 
 ### Mutual Exclusivity with Private Withdrawal
 
-Ragequit and private withdrawal are **mutually exclusive** on the same commitment. Both operations spend the commitment's nullifier. Once a commitment has been exited via either path, the nullifier is marked as spent and the other path will revert with `NullifierAlreadySpent`.
+Ragequit and private withdrawal are **mutually exclusive** on the same commitment. Both mark the nullifier as spent. Once a commitment has been exited either way, the other path reverts with `NullifierAlreadySpent`.
 
 :::info Change commitments after partial withdrawal
 A partial private withdrawal creates a new change commitment with a new nullifier. The original commitment's nullifier is spent, but the change commitment can still be ragequit (by the original depositor) or privately withdrawn.

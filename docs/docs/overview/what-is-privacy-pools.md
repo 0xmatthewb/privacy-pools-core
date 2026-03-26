@@ -16,7 +16,7 @@ keywords:
 
 On public blockchains, every transaction is visible. That transparency is useful, but it also means balances, counterparties, and transaction history can be pieced together by anyone watching the chain.
 
-Privacy Pools exists to make withdrawals private without giving up the parts of public blockchains that matter. Deposits still happen in public. What changes is the exit path: users can withdraw to a fresh address without creating an on-chain link back to the deposit address.
+Privacy Pools makes withdrawals private without sacrificing deposit transparency or protocol-level compliance. Deposits still happen in public. What changes is the exit path: users can withdraw to a fresh address without creating an on-chain link back to the deposit address.
 
 ## How Privacy Pools responds
 
@@ -28,7 +28,7 @@ A relayer submits the withdrawal transaction on the user's behalf, so there is n
 
 ## System architecture overview
 
-Privacy Pools' architecture consists of three distinct layers:
+Privacy Pools has three layers:
 
 ```mermaid
 flowchart TD
@@ -79,7 +79,7 @@ flowchart TD
 3. **[Association Set Provider (ASP) Layer](/layers/asp)**
    - Maintains the current set of approved deposit labels
    - Updates state through authorized accounts
-   - Gates private withdrawals without taking custody of user funds
+   - Required for private withdrawals, but never takes custody of user funds
 
 ## Key features
 

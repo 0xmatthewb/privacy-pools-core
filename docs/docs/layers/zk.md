@@ -31,7 +31,7 @@ The Privacy Pools protocol uses three main Circom circuits:
 
 ## Commitments
 
-Commitments are cryptographic primitives that allow users to commit to values while keeping them private. In Privacy Pools:
+Each deposit produces a commitment from four inputs:
 
 1. **Components**
    - Value: The amount of assets being committed
@@ -46,38 +46,6 @@ Commitments are cryptographic primitives that allow users to commit to values wh
    commitmentHash = PoseidonHash(value, label, precommitmentHash);
    ```
 
-### Basic Proof Concepts
+The circuits split inputs into public signals (visible on-chain: withdrawal amount, roots, context) and private signals (nullifiers, secrets, Merkle siblings).
 
-Privacy Pools uses Groth16 proofs with the following structure:
-
-1. **Public Inputs**
-   - Values visible on-chain
-   - Examples: withdrawal amount, roots, context
-   - Used for on-chain verification
-2. **Private Inputs**
-   - Values kept secret by the prover
-   - Examples: nullifiers, secrets, siblings
-   - Used to generate proofs
-3. **Circuit Signals**
-   - Internal values computed during proving
-   - Enforce mathematical constraints
-   - Connect public and private inputs
-
-### Verification Flow
-
-1. **Proof Generation**
-   - User provides private and public inputs
-   - Circuit computes internal signals
-   - Generates Groth16 proof elements:
-     - π_A: First elliptic curve point
-     - π_B: Second elliptic curve point (2x2 matrix)
-     - π_C: Third elliptic curve point
-2. **On-chain Verification**
-   - Contract receives proof and public signals
-   - Verifier performs pairing checks
-   - Validates against verification key
-   - Returns a boolean indicating validity
-3. **Proof Integration**
-   - Proofs are linked to protocol operations
-   - Results determine state transitions
-   - Failed verifications revert transactions
+The SDK generates a Groth16 proof (`pi_a`, `pi_b`, `pi_c`) from the circuit inputs. On-chain, `WithdrawalVerifier` or `CommitmentVerifier` runs a pairing check and reverts with `InvalidProof` if it fails.

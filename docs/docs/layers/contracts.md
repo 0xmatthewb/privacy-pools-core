@@ -32,18 +32,7 @@ The Privacy Pools protocol is built on three core contracts:
 
 ## Component interaction
 
-- User operations flow through the Entrypoint:
-  - Deposits route funds to appropriate pools
-  - Withdrawals can be direct to the Pool or relayed through the Entrypoint
-  - Fees are deducted and distributed after the pool returns the withdrawn amount
-- Privacy Pools handle:
-  - Asset custody, proof verification, and context/root validation
-  - State tree updates
-  - Nullifier tracking
-  - Ragequit operations
-- The ASP layer connects to contracts through:
-  - Root updates via authorized postman
-  - Label verification during withdrawals
+All user operations route through the Entrypoint, which delegates to the appropriate pool.
 
 ## State management basics
 
