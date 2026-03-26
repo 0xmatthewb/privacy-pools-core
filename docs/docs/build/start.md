@@ -6,7 +6,7 @@ description: Onboarding checklist and recommended implementation path for a Priv
 keywords: [privacy pools, getting started, integration, frontend, agent]
 ---
 
-Privacy Pools is a smart-contract protocol for **public deposits**, **private withdrawals**, and a **public ragequit fallback**. The SDK is TypeScript-based, built around `viem`, and intended for apps that want to guide users through deposit, approval, withdrawal, and recovery safely.
+Privacy Pools lets users deposit assets publicly, then withdraw them privately using zero-knowledge proofs. The TypeScript SDK (`viem`-based) handles deposits, withdrawals, and the public ragequit fallback.
 
 :::info
 These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).

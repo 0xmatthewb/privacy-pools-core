@@ -10,7 +10,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This guide walks through integrating Privacy Pools deposits, withdrawals, and ragequit into a frontend application using the TypeScript SDK.
+This guide walks through a full Privacy Pools frontend integration using the TypeScript SDK.
 
 ## Key References
 

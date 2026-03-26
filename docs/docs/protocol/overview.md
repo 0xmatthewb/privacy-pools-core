@@ -5,7 +5,7 @@ description: Lifecycle overview of Privacy Pools operations from deposit through
 keywords: [privacy pools, deposit, withdrawal, ragequit, ASP, lifecycle]
 ---
 
-Privacy Pools has three operations. Users deposit assets into a pool. Once approved by the ASP, they can withdraw privately through a relayer. At any time, the original depositor can ragequit to publicly reclaim funds.
+Users deposit assets into a pool. Once approved by the ASP, they can withdraw privately through a relayer. At any time, the original depositor can ragequit to publicly reclaim funds.
 
 ```mermaid
 flowchart LR

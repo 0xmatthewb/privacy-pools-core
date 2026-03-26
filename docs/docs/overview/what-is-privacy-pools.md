@@ -12,9 +12,7 @@ keywords:
   - compliance
 ---
 
-**Privacy Pools is a protocol for public deposits and private withdrawals on Ethereum. Users deposit assets publicly, then later withdraw privately with zero-knowledge proofs after their deposit label has been approved by an Association Set Provider (ASP).**
-
-Privacy Pools enables private withdrawals through a combination of zero-knowledge proofs and commitment schemes. Users deposit assets and later withdraw through a relayer, which submits the transaction on their behalf so there is no on-chain link between deposit and withdrawal addresses.
+**Privacy Pools is a protocol for private withdrawals on Ethereum.** Users deposit assets publicly, then withdraw privately with zero-knowledge proofs once their deposit has been approved by an Association Set Provider (ASP). A relayer submits the withdrawal transaction on their behalf, so there is no on-chain link between deposit and withdrawal addresses.
 
 Deposits are never blocked at entry, and anyone can deposit at any time. An [Association Set Provider (ASP)](/layers/asp) independently evaluates deposits after they enter the pool and maintains a set of approved labels. ASP approval is what unlocks the private withdrawal path.
 

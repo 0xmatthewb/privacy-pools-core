@@ -11,7 +11,7 @@ keywords:
   - public deposits
 ---
 
-Privacy Pools lets users make **public deposits** into shared pools, wait for **ASP review**, then make **private withdrawals** through a relayer. If they do not want to wait for approval, they can always [ragequit](/protocol/ragequit) publicly back to the original deposit address.
+Privacy Pools lets users deposit into shared pools, wait for ASP review, then withdraw privately through a relayer. If they do not want to wait for approval, they can always [ragequit](/protocol/ragequit) publicly back to the original deposit address.
 
 ## Recommended read order
 
