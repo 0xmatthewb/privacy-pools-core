@@ -14,6 +14,10 @@ keywords:
 
 Start with `AccountService` for account management, `DataService` for on-chain event scanning, and `proveWithdrawal` for the core withdrawal flow. The remaining utilities cover advanced scenarios like legacy account migration and direct contract interactions.
 
+:::info Version verified
+This page is verified against `@0xbow/privacy-pools-core-sdk@1.2.0`.
+:::
+
 ## `PrivacyPoolSDK`
 
 Main SDK class providing high-level protocol interaction.
@@ -40,7 +44,7 @@ The `Circuits` class implements `CircuitsInterface` and generates or verifies th
 - **Node.js:** pass `{ browser: false }` so artifacts load from disk rather than `fetch`.
 - You can also override `baseUrl` when serving artifacts from a custom location.
 
-The SDK fetches the configured circuit artifacts from `baseUrl` and does not currently add a separate digest-verification layer on top of that fetch.
+The SDK fetches the configured circuit artifacts from `baseUrl` and verifies each downloaded artifact against a built-in SHA-256 hash manifest. Unknown or mismatched artifacts are rejected at load time.
 
 ### Methods
 

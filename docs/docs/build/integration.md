@@ -43,7 +43,7 @@ done
 
 1. **Load deployment data**
    - Read chain-specific contract addresses and `startBlock` from [Deployments](/deployments)
-   - You need: `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope
+   - You need: `Entrypoint`, `PrivacyPool`, and the chain's `startBlock` for the target asset scope
 
 2. **Initialize SDK and contract helpers**
    - Create a `DataService` with a `ChainConfig[]` array (containing `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block
@@ -398,8 +398,11 @@ const { request: rqRequest } = await publicClient.simulateContract({
     pubSignals: commitmentProof.publicSignals.map(BigInt),
   }],
 });
-await walletClient.writeContract(rqRequest);
+const ragequitHash = await walletClient.writeContract(rqRequest);
+await publicClient.waitForTransactionReceipt({ hash: ragequitHash });
 ```
+
+Wait for the receipt before marking ragequit as complete. If you persist local account history, decode the confirmed `Ragequit` event from that receipt and store it alongside the spent commitment.
 
 For server-side signers, use `sdk.createContractInstance(...)` instead of a `WalletClient`.
 
