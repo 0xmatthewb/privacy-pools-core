@@ -28,7 +28,7 @@ Implement the deposit flow for Privacy Pools, covering ETH and ERC20 assets.
 4. **Approve token (ERC20 only).** Call `token.approve(entrypointAddress, amount)` before depositing. ETH deposits skip this step.
 5. **Submit deposit.** Call `Entrypoint.deposit(precommitment)` with `{ value: amount }` for ETH, or `Entrypoint.deposit(assetAddress, amount, precommitment)` for ERC20.
 6. **Parse the Deposited event.** Extract `label` and `committedValue` from the confirmed receipt. The `committedValue` is the post-vetting-fee amount.
-7. **Persist pool account state.** Store the label, committedValue, nullifier, and secret locally. Increment the deposit index for this scope.
+7. **Persist pool account state.** Store the label, committedValue, nullifier, and secret in memory or encrypted storage. Never log these values or include them in error messages. Increment the deposit index for this scope.
 
 ## What to Persist
 

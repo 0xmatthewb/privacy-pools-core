@@ -73,6 +73,10 @@ Create `DataService` with `startBlock` so event scans begin at the deployment bl
 
 New accounts should start from a mnemonic-backed `AccountService`. Returning users should restore from on-chain events.
 
+:::warning
+Never log, hardcode, or store mnemonics, nullifiers, or secrets in plaintext. Source the mnemonic from secure user input and keep derived secrets in memory only. Do not include any of these values in error messages, analytics, or browser storage.
+:::
+
 ```typescript
 import {
   AccountService,
