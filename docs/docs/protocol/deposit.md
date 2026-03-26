@@ -11,6 +11,7 @@ keywords:
   - commitment
 ---
 
+Users deposit ETH or ERC-20 tokens into a pool through the Entrypoint, creating a commitment that can later be spent via private withdrawal or ragequit.
 
 ## Protocol Flow
 

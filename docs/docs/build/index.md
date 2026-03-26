@@ -43,4 +43,4 @@ This section is for teams adding Privacy Pools to wallets, dapps, and other prod
 - Pull the target chain's `Entrypoint`, `PrivacyPool`, and `startBlock` from [Deployments](/deployments) when wiring the integration.
 - Quote late in the withdrawal flow and discard quotes when inputs change or expire.
 - Verify ASP root parity before generating a withdrawal proof.
-- Keep ragequit available as the public self-custodial exit path.
+- Keep ragequit available as the public exit path for the original depositor.

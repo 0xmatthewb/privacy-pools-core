@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-Ragequit lets the original depositor publicly reclaim their funds back to the deposit address at any time, with no ASP approval needed. Its purpose is to keep the system self-custodial even when private withdrawal is unavailable. Privacy Pools is designed for users to deposit, wait for ASP approval, and withdraw privately. The contract only checks that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. Use the privacy-preserving [withdrawal](/protocol/withdrawal) path when recipient privacy matters.
+Ragequit is a public exit: the original depositor reclaims their full balance back to the deposit address, at any time, with no ASP approval. The contract checks that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. When recipient privacy matters, use the [private withdrawal](/protocol/withdrawal) path instead.
 
 ## Protocol Flow
 

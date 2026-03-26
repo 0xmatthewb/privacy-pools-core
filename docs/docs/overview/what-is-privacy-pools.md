@@ -24,7 +24,7 @@ Privacy Pools lets users deposit assets into a shared pool, then later withdraw 
 
 An [Association Set Provider (ASP)](/layers/asp) reviews deposits after they enter the pool and maintains the set of approved labels. ASP approval unlocks the private withdrawal path, but it does not block deposits and it does not custody user funds.
 
-A relayer submits the withdrawal transaction on the user's behalf, so there is no on-chain link between the deposit address and the withdrawal recipient. The intended path is deposit, ASP approval, then private withdrawal. [Ragequit](/protocol/ragequit) remains available to keep the system self-custodial if private withdrawal is unavailable.
+A relayer submits the withdrawal transaction on the user's behalf, so there is no on-chain link between the deposit address and the withdrawal recipient. If private withdrawal is unavailable, the original depositor can always [ragequit](/protocol/ragequit) to reclaim funds publicly.
 
 ## System architecture overview
 
@@ -86,7 +86,7 @@ flowchart TD
 - **Deposits are never blocked**: Anyone can deposit at any time. The ASP evaluates deposits after entry, not before.
 - **Privacy via relayed withdrawals**: A relayer submits the withdrawal transaction, so the recipient address has no on-chain link to the depositor.
 - **Partial withdrawals**: Users can withdraw part of a deposit and keep the remaining balance in the pool.
-- **[Ragequit](/protocol/ragequit) preserves self-custody**: The original depositor can always exit publicly back to the deposit address if private withdrawal is unavailable.
+- **[Ragequit](/protocol/ragequit)**: The original depositor can always exit publicly back to the deposit address, even without ASP approval.
 - **Compliance without custody**: The ASP reviews deposits, but users keep full control of their funds.
 
 If you want the full lifecycle in one place, read [Using Privacy Pools](/protocol). If you are integrating the protocol into an app, start with [Build](/build).

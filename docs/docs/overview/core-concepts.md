@@ -99,8 +99,8 @@ Privacy Pools splits knowledge across participants so that no single party can l
 | Party | Can see | Cannot see |
 |---|---|---|
 | **Depositor** | Their own secrets, label, deposit value | Other depositors' secrets |
-| **Recipient** | Withdrawn amount arriving at their address | Which deposit funded it, depositor identity |
-| **Relayer** | Proof validity, recipient address, fee amount | Deposit source, nullifier, commitment linkage |
+| **Recipient** | The withdrawal amount | Which deposit funded it, depositor identity |
+| **Relayer** | Proof validity, recipient address, fee amount | Deposit source, nullifier, which deposit funded it |
 | **ASP** | All deposit labels, which labels are approved | Nullifiers, secrets, withdrawal recipients |
 | **On-chain observer** | Deposit amounts, withdrawal amounts, nullifier hashes | Link between any deposit and any withdrawal |
 

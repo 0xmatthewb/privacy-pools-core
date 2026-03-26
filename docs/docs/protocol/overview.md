@@ -28,7 +28,7 @@ After deposit, the ASP evaluates the deposit and decides whether to add its labe
 
 ## Waiting for ASP approval
 
-The ASP reviews deposits asynchronously. Show deposits as "pending" until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain. Private withdrawal should stay unavailable until approval lands on-chain. Ragequit exists to preserve self-custody if private withdrawal is unavailable, not as the default response to ordinary approval wait time.
+The ASP reviews deposits asynchronously after they enter the pool. Show deposits as "pending" in the UI until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain. Private withdrawal stays unavailable until that convergence completes.
 
 For the technical convergence check and API endpoints, see the [Withdrawal page](/protocol/withdrawal#state-root-vs-asp-root) and the [ASP API Reference](/reference/asp-api).
 
