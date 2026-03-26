@@ -20,15 +20,9 @@ Node 18+, viem 2.x, a browser or Node.js environment, and the target chain's add
 
 **Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
 
-**Serve circuit artifacts:** the SDK's `Circuits` class fetches `.wasm`, `.zkey`, and `.vkey` files at runtime from a URL you provide via `baseUrl`. You need six files in your public directory: `commitment.wasm`, `commitment.zkey`, `commitment.vkey`, `withdraw.wasm`, `withdraw.zkey`, `withdraw.vkey`. These are built from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits). Copy them from a monorepo build or from the [production app's artifacts](https://app.privacypools.com/artifacts/).
+**Serve circuit artifacts:** the SDK's `Circuits` class fetches six files at runtime from a URL you set via `baseUrl`: `commitment.wasm`, `commitment.zkey`, `commitment.vkey`, `withdraw.wasm`, `withdraw.zkey`, `withdraw.vkey`. Place them in your app's public directory under `/artifacts/`.
 
-```bash
-# Example: download from the production app
-mkdir -p public/artifacts
-for f in commitment.wasm commitment.zkey commitment.vkey withdraw.wasm withdraw.zkey withdraw.vkey; do
-  curl -o "public/artifacts/$f" "https://app.privacypools.com/artifacts/$f"
-done
-```
+These files come from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits). Build them from the monorepo (`yarn workspace @privacy-pool-core/circuits build`) and copy the output to your public directory. The SDK verifies each file's SHA-256 hash at load time and rejects mismatches.
 
 Fill the chain-specific values from [Deployments](/deployments) for the network you are integrating.
 

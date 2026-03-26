@@ -58,13 +58,20 @@ Returns the current ASP tree root for a pool.
 
 **Required header:** `X-Pool-Scope`
 
+**Example request (Sepolia):**
+
+```bash
+curl -s https://dw.0xbow.io/11155111/public/mt-roots \
+  -H "X-Pool-Scope: 4916574638117198869413701114161172350986437430914933850166949084132905299523"
+```
+
 **Response:**
 
 ```json
 {
-  "mtRoot": "123456789...",
-  "createdAt": "2025-04-01T12:00:00.000Z",
-  "onchainMtRoot": "123456789..."
+  "mtRoot": "19475835126872665814539381965879757584413782543818621439526181973847498820417",
+  "createdAt": "2026-03-24T18:32:01.442Z",
+  "onchainMtRoot": "19475835126872665814539381965879757584413782543818621439526181973847498820417"
 }
 ```
 
@@ -107,12 +114,27 @@ Returns both the ASP-approved labels and the state tree commitment hashes for a 
 
 **Required header:** `X-Pool-Scope`
 
-**Response:**
+**Example request (Sepolia):**
+
+```bash
+curl -s https://dw.0xbow.io/11155111/public/mt-leaves \
+  -H "X-Pool-Scope: 4916574638117198869413701114161172350986437430914933850166949084132905299523"
+```
+
+**Response (truncated):**
 
 ```json
 {
-  "aspLeaves": ["123456...", "789012..."],
-  "stateTreeLeaves": ["345678...", "901234..."]
+  "aspLeaves": [
+    "7624001181217688498561025801392897425498046498032406262701775850681068701814",
+    "15038888953879800554895438285095128573103046920691113517745975382024210757847",
+    "..."
+  ],
+  "stateTreeLeaves": [
+    "19308027029298183519623813294040930214305494832920373936729820498382255220074",
+    "3817183230255921647834684021994289830985246904629639891237982157610609397519",
+    "..."
+  ]
 }
 ```
 
@@ -140,6 +162,12 @@ Until a deposit is approved, private withdrawal is unavailable. [Ragequit](/prot
 
 Returns the health status of the ASP API for a given chain.
 
+**Example request (Sepolia):**
+
+```bash
+curl -s https://dw.0xbow.io/11155111/health/liveness
+```
+
 **Response:**
 
 ```json
@@ -151,6 +179,12 @@ Returns the health status of the ASP API for a given chain.
 ### `GET /{chainId}/health/asp`
 
 Returns pool-level leaf counts, useful for sanity-checking whether the ASP is indexing a given pool.
+
+**Example request (Sepolia):**
+
+```bash
+curl -s https://dw.0xbow.io/11155111/health/asp
+```
 
 **Response:**
 

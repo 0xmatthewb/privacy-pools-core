@@ -47,6 +47,73 @@ function getRelayerHost(chainId: number): string {
 
 Returns a fee quote for a relayed withdrawal. When `recipient` is included, the response contains a signed `feeCommitment` that must be passed to `/relayer/request`.
 
+**Example request (Sepolia, fee estimate only):**
+
+```bash
+curl -s -X POST https://testnet-relayer.privacypools.com/relayer/quote \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chainId": 11155111,
+    "amount": "1000000000000000000",
+    "asset": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    "extraGas": false
+  }'
+```
+
+**Example response (fee estimate only):**
+
+```json
+{
+  "baseFeeBPS": "10",
+  "feeBPS": "17",
+  "gasPrice": "1089675357",
+  "detail": {
+    "relayTxCost": {
+      "gas": "650000",
+      "eth": "708288982050000"
+    }
+  }
+}
+```
+
+**Example request (Sepolia, with recipient for signed commitment):**
+
+```bash
+curl -s -X POST https://testnet-relayer.privacypools.com/relayer/quote \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chainId": 11155111,
+    "amount": "1000000000000000000",
+    "asset": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    "extraGas": false,
+    "recipient": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+  }'
+```
+
+**Example response (with signed commitment):**
+
+```json
+{
+  "baseFeeBPS": "10",
+  "feeBPS": "17",
+  "gasPrice": "1089675357",
+  "detail": {
+    "relayTxCost": {
+      "gas": "650000",
+      "eth": "708288982050000"
+    }
+  },
+  "feeCommitment": {
+    "expiration": 1744676669549,
+    "withdrawalData": "0x000000000000000000000000349746ab142b5d0d65899d9bcb6f2cd53ab084d80000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000000000000000000000000000000110d9316ec000",
+    "asset": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    "amount": "1000000000000000000",
+    "extraGas": false,
+    "signedRelayerCommitment": "0xa1b2c3...signed_bytes...f4e5d6"
+  }
+}
+```
+
 **Request body:**
 
 ```json
@@ -258,6 +325,12 @@ Returns relayer configuration for a specific chain and asset. Use this to check 
 |-----------|------|----------|-------------|
 | `chainId` | `number` | Yes | Target chain ID. |
 | `assetAddress` | `string` | Yes | Asset contract address. |
+
+**Example request (Sepolia, native ETH):**
+
+```bash
+curl -s "https://testnet-relayer.privacypools.com/relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+```
 
 **Response:**
 
