@@ -12,9 +12,9 @@ keywords:
 ---
 
 
-## Overview - Role in the Protocol
+## Role in the Protocol
 
-The Association Set Provider is a crucial compliance layer that controls which deposits can be privately withdrawn from Privacy Pools. It maintains a set of approved labels and provides the data necessary for cryptographic proofs of label inclusion, bridging privacy with regulatory requirements.
+The Association Set Provider is the compliance layer that controls which deposits can be privately withdrawn from Privacy Pools. It maintains a set of approved labels and provides the data necessary for cryptographic proofs of label inclusion, bridging privacy with regulatory requirements.
 
 ## Core Responsibilities
 

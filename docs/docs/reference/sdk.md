@@ -102,7 +102,7 @@ class AccountService {
   static initializeWithEvents(
     dataService: DataService,
     config:
-      | { mnemonic: string; poolConcurrency?: number }
+      | { mnemonic: string }
       | { service: AccountService },
     pools: PoolInfo[],
   ): Promise<{ account: AccountService; legacyAccount?: AccountService; errors: PoolEventsError[] }>;

@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-The merkle tree circuit (`merkleTree.circom`) implements efficient inclusion proofs:
+The Merkle tree circuit (`merkleTree.circom`) implements efficient inclusion proofs:
 
 ```cpp
 template LeanIMTInclusionProof(maxDepth) {

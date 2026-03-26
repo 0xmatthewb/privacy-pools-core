@@ -75,7 +75,7 @@ These errors are defined in `IState.sol` and triggered by internal state operati
 | Error | Triggered By | Description |
 |-------|-------------|-------------|
 | `NullifierAlreadySpent` | `withdraw`, `ragequit` | The commitment's nullifier has already been spent. This commitment was already exited via withdrawal or ragequit. Withdrawal and ragequit are mutually exclusive on the same commitment. |
-| `NotYetRagequitteable` | - | Defined in the interface for a potential future waiting period, but the current contract implementation does not enforce any timing constraint on ragequit. |
+| `NotYetRagequitteable` | - | Reserved. Not enforced in the current implementation. |
 | `OnlyEntrypoint` | internal | A function restricted to the Entrypoint was called by another address. |
 | `MaxTreeDepthReached` | `deposit` | The state Merkle tree has reached its maximum capacity. |
 

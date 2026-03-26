@@ -20,7 +20,7 @@ keywords: [privacy pools, contributing, monorepo, testing, development]
 - [`contracts`](/layers/contracts)
 - [`circuits`](/layers/zk)
 - [`sdk`](/reference/sdk)
-- `relayer`
+- [`relayer`](/reference/relayer-api)
 
 ## Installation
 

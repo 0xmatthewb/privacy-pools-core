@@ -16,10 +16,10 @@ The PrivacyPool contract is an abstract contract that implements core privacy po
 
 1. Manages commitments and nullifiers
 2. Processes deposits and withdrawals
-3. Handles merkle tree state
+3. Handles Merkle tree state
 4. Validates zero-knowledge proofs
 
-The contract extends the State base contract which manages the merkle tree and nullifier state.
+The contract extends the State base contract which manages the Merkle tree and nullifier state.
 
 ## Key Components
 

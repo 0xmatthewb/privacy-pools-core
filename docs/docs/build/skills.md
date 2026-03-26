@@ -21,3 +21,5 @@ See [Agent Setup](/build/agents) for tool-specific loading instructions.
 | **Deposit** | Deposit flow implementation | `privacy-pools-deposit` | `.agents/skills/privacy-pools-deposit/SKILL.md` | [View](https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md) |
 | **Withdrawal** | Relayed withdrawal implementation | `privacy-pools-withdraw` | `.agents/skills/privacy-pools-withdraw/SKILL.md` | [View](https://docs.privacypools.com/agent-skills/privacy-pools-withdraw/SKILL.md) |
 | **Ragequit** | Ragequit (public exit) implementation | `privacy-pools-ragequit` | `.agents/skills/privacy-pools-ragequit/SKILL.md` | [View](https://docs.privacypools.com/agent-skills/privacy-pools-ragequit/SKILL.md) |
+
+After loading a skill, follow [Frontend Integration](/build/integration) for the full implementation recipe.

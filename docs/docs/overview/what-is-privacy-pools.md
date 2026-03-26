@@ -82,7 +82,6 @@ flowchart TD
 3. **[Association Set Provider (ASP) Layer](/layers/asp)**
    - Maintains the current set of approved deposit labels
    - Updates state through authorized accounts
-   - Enables regulatory compliance without compromising privacy
 
 ## Key features and capabilities
 
