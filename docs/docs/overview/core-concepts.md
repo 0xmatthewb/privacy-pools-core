@@ -11,20 +11,9 @@ keywords:
   - ASP
 ---
 
-Privacy Pools uses zero-knowledge proofs to let a user spend an approved deposit without revealing which deposit they own. The core pieces are commitments, nullifiers, and two Merkle trees: one for pool state and one for ASP-approved labels.
+A user deposits into a pool, waits for ASP approval, then withdraws privately with a zero-knowledge proof. The proof shows they own a valid, approved deposit without revealing which one. This page covers the building blocks that make that possible.
 
-## Zero-knowledge proofs in Privacy Pools
-
-The protocol uses two proof types:
-
-- **[Commitment proofs](/layers/zk/commitment)** prove ownership of a commitment. They are used for [ragequit](/protocol/ragequit).
-- **[Withdrawal proofs](/layers/zk/withdrawal)** prove ownership of a valid, ASP-approved commitment and the correctness of the withdrawal state transition.
-
-Merkle inclusion proofs are embedded inside those circuits. They show that a commitment is in the pool's state tree and that its label is in the ASP tree, without revealing the leaf position.
-
-## Commitments and nullifiers
-
-Commitments are the core data structure that makes privacy possible. They record a deposit in a way that lets the depositor prove ownership later without revealing which deposit they own.
+## Commitments
 
 Each deposit creates a commitment: a cryptographic record composed of:
 
@@ -66,15 +55,20 @@ The protocol maintains two separate Merkle trees per pool:
 
 Withdrawal proofs must demonstrate inclusion in **both** trees: the state tree (proving the commitment exists) and the ASP tree (proving the deposit was approved).
 
-### What is an ASP?
+### ASP
 
-An Association Set Provider (ASP) is an off-chain service that reviews deposits after they enter the pool and maintains a Merkle tree of approved deposit labels. It does not custody funds or block deposits, and anyone can deposit at any time.
+An Association Set Provider (ASP) is an off-chain service that reviews deposits and maintains a Merkle tree of approved labels. It does not custody funds or block deposits. ASP approval unlocks the private withdrawal path; without it, the depositor can still [ragequit](/protocol/ragequit). The ASP never learns withdrawal destinations or nullifier secrets. See [ASP Layer](/layers/asp) for how it works on-chain.
 
-ASP approval unlocks the private withdrawal path. Without it, the original depositor still has ragequit as the public self-custodial exit back to the deposit address. The ASP never learns withdrawal destinations or nullifier secrets.
+### Relayer
 
-### What is a relayer?
+A relayer submits withdrawal transactions on the user's behalf so the recipient address never appears as the on-chain sender.
 
-A relayer is an independent service that submits withdrawal transactions on behalf of users. Because the relayer (not the user) sends the on-chain transaction, the recipient address never appears as the transaction sender, preserving privacy.
+## Proof types
+
+The protocol uses two ZK proof types:
+
+- **[Commitment proofs](/layers/zk/commitment)** prove ownership of a commitment. Used for [ragequit](/protocol/ragequit).
+- **[Withdrawal proofs](/layers/zk/withdrawal)** prove ownership of an ASP-approved commitment and the correctness of the state transition. Merkle inclusion proofs for both trees are embedded inside the circuit.
 
 ## Basic operations
 
