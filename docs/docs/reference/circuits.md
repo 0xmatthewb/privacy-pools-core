@@ -107,7 +107,7 @@ The SDK does not recompute labels. Instead, it reads them from on-chain `Deposit
 
 ## `publicSignals` Ordering
 
-The relayer and contract expect `publicSignals` as a fixed-length array. The SDK produces these automatically, but non-SDK integrators must match this exact order.
+Non-SDK integrators must match this exact signal order.
 
 **Withdrawal proof (8 elements):**
 

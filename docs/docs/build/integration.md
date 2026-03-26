@@ -10,7 +10,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This guide walks through integrating Privacy Pools deposits, withdrawals, and ragequit into a frontend application using the TypeScript SDK. It assumes you have a viem-based dapp and want to add compliant private transactions.
+This guide walks through integrating Privacy Pools deposits, withdrawals, and ragequit into a frontend application using the TypeScript SDK.
 
 ## Key References
 
@@ -25,7 +25,7 @@ This guide walks through integrating Privacy Pools deposits, withdrawals, and ra
 ## Minimal Frontend Recipe
 
 :::info Prerequisites
-Node 18+ (monorepo development requires 20+; see [Contributing](/build/contributing)), viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain. See [Deployments](/deployments) for chain addresses and `startBlock` values.
+Node 18+, viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain. See [Deployments](/deployments) for chain addresses and `startBlock` values.
 - SDK version: 1.2.0 (`@0xbow/privacy-pools-core-sdk`)
 :::
 
@@ -100,12 +100,12 @@ const ENTRYPOINT_ADDRESS = "0x..." as `0x${string}`;
 const START_BLOCK = 123456n;
 const RPC_URL = "https://sepolia.infura.io/v3/YOUR_KEY";
 
-// 1. Initialize SDK with circuit artifacts (set baseUrl for browser)
+// 1. Initialize SDK
 const sdk = new PrivacyPoolSDK(
   new Circuits({ baseUrl: window.location.origin })
 );
 
-// 2. Create DataService for reading on-chain events
+// 2. Create DataService
 const dataService = new DataService([
   {
     chainId: 11155111,
@@ -115,7 +115,6 @@ const dataService = new DataService([
   },
 ]);
 
-// 3. Create clients
 const publicClient = createPublicClient({
   chain: sepolia,
   transport: http(RPC_URL),
@@ -125,7 +124,7 @@ const walletClient = createWalletClient({
   transport: custom(window.ethereum!),
 });
 
-// 4. Create an AccountService from a recovery phrase
+// 4. Create AccountService
 const accountService = new AccountService(dataService, {
   mnemonic: "your recovery phrase ...",
 });
@@ -142,15 +141,12 @@ const scope = await publicClient.readContract({
   }],
   functionName: "SCOPE",
 });
-// → bigint (e.g., 1715004n)
 
-// Index = number of existing deposits for this scope (0n for first, 1n for second, etc.)
-// Increment after each confirmed deposit. The index drives deterministic secret derivation.
+// Index = number of existing deposits for this scope
 const { precommitment } = accountService.createDepositSecrets(scope as Hash, 0n);
 // → { precommitment: Hash, nullifier: Secret, secret: Secret }
 
-// 6. Simulate then deposit via the Entrypoint
-const entrypointAddress = ENTRYPOINT_ADDRESS;
+// 6. Deposit via the Entrypoint
 const [account] = await walletClient.getAddresses();
 ```
 
@@ -160,7 +156,7 @@ const [account] = await walletClient.getAddresses();
 ```typescript
 const { request } = await publicClient.simulateContract({
   account,
-  address: entrypointAddress,
+  address: ENTRYPOINT_ADDRESS,
   abi: [{
     name: "deposit",
     type: "function",
@@ -198,14 +194,14 @@ const { request: approveRequest } = await publicClient.simulateContract({
     stateMutability: "nonpayable",
   }],
   functionName: "approve",
-  args: [entrypointAddress, depositAmount],
+  args: [ENTRYPOINT_ADDRESS, depositAmount],
 });
 await walletClient.writeContract(approveRequest);
 
 // Deposit ERC-20 tokens
 const { request } = await publicClient.simulateContract({
   account,
-  address: entrypointAddress,
+  address: ENTRYPOINT_ADDRESS,
   abi: [{
     name: "deposit",
     type: "function",
@@ -229,17 +225,16 @@ await publicClient.waitForTransactionReceipt({ hash: txHash });
 
 ```typescript
 
-// 7. Fetch deposit events to confirm and reconstruct state
+// 7. Fetch deposit events
 const deposits = await dataService.getDeposits({
   chainId: 11155111,
   address: POOL_ADDRESS,
   scope: scope as Hash,
   deploymentBlock: START_BLOCK,
 });
-// → DepositEvent[] with { label, value, precommitment, blockNumber, txHash } per deposit
+// → DepositEvent[]
 
 // 8. Wait for ASP approval, then fetch roots
-const poolAddress = POOL_ADDRESS;
 const aspHost = "https://dw.0xbow.io"; // Sepolia. See /reference/asp-api for host selection.
 const aspRoots = await fetch(
   `${aspHost}/11155111/public/mt-roots`,
@@ -273,34 +268,28 @@ const quote = await fetch(`${relayerUrl}/relayer/quote`, {
 const relayerDetails = await fetch(
   `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
 ).then((r) => r.json());
-// The client encodes RelayData (not the relayer) because the proof's
-// context is bound to the withdrawal struct. If the relayer set `data`,
-// it could redirect funds to a different recipient.
+// Client-side encoding binds the proof to this recipient
 const withdrawalData = encodeAbiParameters(
   parseAbiParameters("address recipient, address feeRecipient, uint256 relayFeeBPS"),
   [recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS)]
 );
-const withdrawal = { processooor: entrypointAddress, data: withdrawalData };
+const withdrawal = { processooor: ENTRYPOINT_ADDRESS, data: withdrawalData };
 const context = BigInt(calculateContext(withdrawal, scope as Hash));
 
 // Fetch ASP leaves and state tree leaves from the ASP API
-// Response shape: { stateTreeLeaves: string[], aspLeaves: string[] }
-// Both are flat arrays of decimal-encoded bigints
+// → { stateTreeLeaves: string[], aspLeaves: string[] } (decimal bigints)
 const leavesResponse = await fetch(
   `${aspHost}/11155111/public/mt-leaves`,
   { headers: { "X-Pool-Scope": scope.toString() } }
 ).then((r) => r.json());
 
 // Pick the pool account to spend (reconstructed from AccountService)
-// poolAccounts is a Map<scope, PoolAccount[]>
-// Each PoolAccount has deposit (original) and children (change commitments from partial withdrawals)
 const poolAccounts = accountService.account.poolAccounts;
 const poolAccountsArray = [...poolAccounts.values()].flat();
 if (poolAccountsArray.length === 0) {
   throw new Error("No pool accounts found, deposit first");
 }
 const poolAccount = poolAccountsArray[0];
-// The spendable commitment is the latest: last child, or the deposit if no children
 const commitment = poolAccount.children.length > 0
   ? poolAccount.children[poolAccount.children.length - 1]
   : poolAccount.deposit;
@@ -322,7 +311,6 @@ const { nullifier: newNullifier, secret: newSecret } =
   accountService.createWithdrawalSecrets(commitment);
 
 // Roots come from the Merkle proof results, not separate contract calls
-// proveWithdrawal accepts AccountCommitment directly (no wrapping needed)
 const withdrawalProof = await sdk.proveWithdrawal(
   commitment,
   {
@@ -359,13 +347,11 @@ const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
 
 ### Ragequit (Public Exit)
 
-Ragequit lets the original depositor reclaim funds publicly without ASP approval. It calls the pool contract directly (not via relayer). Only the address that submitted the original deposit can ragequit. Other addresses will revert with `OnlyOriginalDepositor`.
+Ragequit lets the original depositor reclaim funds publicly, bypassing ASP approval. Only the depositing address can call it.
 
 ```typescript
 // Generate a commitment proof for ragequit
-// Use an AccountCommitment from the pool account (has nullifier + secret)
 const ragequitCommitment = commitment; // AccountCommitment from pool account
-// Fields are already bigints, so no conversion is needed
 const commitmentProof = await sdk.proveCommitment(
   ragequitCommitment.value,
   ragequitCommitment.label,
@@ -378,7 +364,7 @@ const commitmentProof = await sdk.proveCommitment(
 // Note: pB coordinates must be swapped for Solidity
 const { request: rqRequest } = await publicClient.simulateContract({
   account,
-  address: poolAddress,
+  address: POOL_ADDRESS,
   abi: [{
     name: "ragequit",
     type: "function",
@@ -409,11 +395,11 @@ const { request: rqRequest } = await publicClient.simulateContract({
 await walletClient.writeContract(rqRequest);
 ```
 
-For server-side signers, use `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` instead of a `WalletClient`. See [SDK Utilities](/reference/sdk) for the full API surface.
+For server-side signers, use `sdk.createContractInstance(...)` instead of a `WalletClient`.
 
 ### Log Fetch Configuration
 
-`DataService` accepts an optional `logFetchConfig` second argument (a `Map<number, Partial<LogFetchConfig>>`) that controls how event logs are fetched per chain. Tuning these values prevents RPC rate-limit errors in production.
+`DataService` accepts an optional `logFetchConfig` second argument (a `Map<number, Partial<LogFetchConfig>>`) that controls how event logs are fetched per chain.
 
 | Chain | `chainId` | `blockChunkSize` |
 |---|---|---|
@@ -421,7 +407,7 @@ For server-side signers, use `sdk.createContractInstance(rpcUrl, chain, entrypoi
 | Optimism | `10` | `12_000_000` |
 | Arbitrum One | `42161` | `48_000_000` |
 
-Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRetries`, and `retryBaseDelayMs`. See [SDK Utilities](/reference/sdk) for the full `LogFetchConfig` type.
+Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRetries`, and `retryBaseDelayMs`.
 
 ## Key integration rules
 
@@ -429,8 +415,6 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 2. **Recovery phrase first.** Require users to save their recovery phrase before their first deposit. Never expose raw note material in clipboard or copy/paste flows.
 3. **Quote on review, re-quote on change.** Request relayer quotes on the review step. If amount, recipient, or relayer changes, or the quote expires, discard and re-quote.
 4. **ASP root parity.** Always verify the ASP tree has converged on-chain (`mtRoot === onchainMtRoot`) before generating a withdrawal proof.
-
-For the complete set of frontend patterns covering account management, deposit flows, withdrawal UX, and ragequit handling, see [UX Patterns](/build/ux-patterns).
 
 ## Next Steps
 

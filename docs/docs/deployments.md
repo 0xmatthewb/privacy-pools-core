@@ -20,6 +20,8 @@ keywords:
 
 This page is the canonical source for contract addresses and `startBlock` values. Integrations should use the **Entrypoint (Proxy)** address for deposits and relayed withdrawals. Ragequit calls go directly to the pool contract address. The implementation address is listed for reference only.
 
+Each chain section lists a `startBlock`, which is the earliest deployment block (WithdrawalVerifier) for that network. Use this value when initializing `DataService` to ensure all pool events are captured.
+
 To resolve a chain + asset into pool metadata at runtime, call `Entrypoint.assetConfig(assetAddress)`, which returns the pool address, minimum deposit, and fee configuration. For scope, call `pool.SCOPE()`.
 
 ## Ethereum Mainnet (Chain ID: 1)
@@ -54,7 +56,7 @@ To resolve a chain + asset into pool metadata at runtime, call `Entrypoint.asset
 
 ### Deployment Start Block
 
-Use **`22153709n`** as `startBlock` when initializing `DataService` for Ethereum Mainnet. This is the earliest deployment block (WithdrawalVerifier) and ensures all pool events are captured.
+Use **`22153709n`** as `startBlock` when initializing `DataService` for Ethereum Mainnet.
 
 ## Arbitrum (Chain ID: 42161)
 
@@ -77,7 +79,7 @@ Use **`22153709n`** as `startBlock` when initializing `DataService` for Ethereum
 
 ### Deployment Start Block
 
-Use **`404391795n`** as `startBlock` when initializing `DataService` for Arbitrum. This is the earliest deployment block (WithdrawalVerifier) and ensures all pool events are captured.
+Use **`404391795n`** as `startBlock` when initializing `DataService` for Arbitrum.
 
 ## OP Mainnet (Chain ID: 10)
 
@@ -99,7 +101,7 @@ Use **`404391795n`** as `startBlock` when initializing `DataService` for Arbitru
 
 ### Deployment Start Block
 
-Use **`144288139n`** as `startBlock` when initializing `DataService` for OP Mainnet. This is the earliest deployment block (WithdrawalVerifier) and ensures all pool events are captured.
+Use **`144288139n`** as `startBlock` when initializing `DataService` for OP Mainnet.
 
 ## OP Sepolia (Chain ID: 11155420)
 
@@ -121,7 +123,7 @@ Use **`144288139n`** as `startBlock` when initializing `DataService` for OP Main
 
 ### Deployment Start Block
 
-Use **`32854673n`** as `startBlock` when initializing `DataService` for OP Sepolia. This is the earliest deployment block (WithdrawalVerifier) and ensures all pool events are captured.
+Use **`32854673n`** as `startBlock` when initializing `DataService` for OP Sepolia.
 
 ## Sepolia Testnet (Chain ID: 11155111)
 
@@ -144,7 +146,7 @@ Use **`32854673n`** as `startBlock` when initializing `DataService` for OP Sepol
 
 ### Deployment Start Block
 
-Use **`8461450n`** as `startBlock` when initializing `DataService` for Sepolia. This is the earliest deployment block (WithdrawalVerifier) and ensures all pool events are captured.
+Use **`8461450n`** as `startBlock` when initializing `DataService` for Sepolia.
 
 ## Starknet (Chain ID: SN_MAIN)
 
@@ -166,10 +168,3 @@ The TypeScript SDK (`@0xbow/privacy-pools-core-sdk`) targets EVM chains only. St
 | USDC | `0x78d8a02f3a7073dfd6c7a4ea3e15ba217a3196ecf6487b09a03800d69092879` | `0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8` |
 | STRK | `0x2f35b62fff4fbf6188c758e5e1f92d98193ea179d42142746101660168a1d13` | `0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d` |
 
-## Related references
-
-| Reference | Page |
-|-----------|------|
-| SDK initialization with deployment addresses | [SDK Utilities](/reference/sdk) |
-| ASP host selection per chain | [ASP API Reference](/reference/asp-api) |
-| Relayer host selection per chain | [Relayer API Reference](/reference/relayer-api) |

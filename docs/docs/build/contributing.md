@@ -7,8 +7,6 @@ description: How to set up the Privacy Pools monorepo, run tests, and contribute
 keywords: [privacy pools, contributing, monorepo, testing, development]
 ---
 
-This page covers local setup for the Privacy Pools monorepo, including build and test commands for contracts, circuits, SDK, and relayer.
-
 ## Prerequisites
 
 - Node.js (v20 or later)
@@ -19,10 +17,10 @@ This page covers local setup for the Privacy Pools monorepo, including build and
 
 ## Project Structure
 
-- `contracts`: [Solidity smart contracts](/layers/contracts)
-- `circuits`: [Zero-knowledge circuits](/layers/zk) in Circom
-- `sdk`: [TypeScript SDK](/reference/sdk) for interacting with the protocol
-- `relayer`: Relay service for privacy-preserving withdrawals
+- [`contracts`](/layers/contracts)
+- [`circuits`](/layers/zk)
+- [`sdk`](/reference/sdk)
+- `relayer`
 
 ## Installation
 
@@ -192,10 +190,6 @@ RAGEQUIT_VERIFIER_ADDRESS=     # required
 
 The SDK ships a `.env.example` with an optional `HYPERSYNC_API_KEY`. No `.env` is required to build or run the test suite.
 
-### Circuits
-
-No `.env` file is required. Circom compilation and tests run without environment configuration.
-
 ### Relayer
 
 Required fields: `chain_id`, `rpc_url`, `signer_private_key`, and contract addresses. Optional: `cors_allow_all` (defaults to false), `allowed_domains`, and `sqlite_db_path`.
@@ -232,7 +226,7 @@ Required fields: `chain_id`, `rpc_url`, `signer_private_key`, and contract addre
 
 ## Docs Site
 
-The documentation site uses Docusaurus v3.7.0 with `onBrokenLinks: "throw"`. Always run a build to verify link integrity before submitting changes:
+The documentation site uses Docusaurus v3.7.0 with `onBrokenLinks: "throw"`.
 
 ```bash
 cd docs

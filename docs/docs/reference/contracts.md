@@ -144,8 +144,6 @@ interface IEntrypoint {
 
 `IPrivacyPool.withdraw()` is the direct pool path: caller must equal `Withdrawal.processooor`, so funds go to that signer. `IEntrypoint.relay()` is the relayed path: `Withdrawal.processooor` must be the Entrypoint, and recipient plus fee routing comes from `RelayData`.
 
-Deposits and relayed withdrawals go through the Entrypoint proxy. Use the **Entrypoint (Proxy)** address from [Deployments](/deployments) for these operations. Ragequit calls go directly to the pool contract address.
-
 ## Events
 
 Integrator-relevant events emitted during deposits, withdrawals, and ragequit operations.
@@ -219,6 +217,4 @@ ProofLib provides typed accessors for each public signal. These are `internal pu
 
 **RagequitProof:** `commitmentHash()`, `nullifierHash()`, `value()`, `label()`
 
-For the circuit-level constraints behind these proof structs, see [Circuits Interfaces](/reference/circuits).
-
-For the full integration recipe, see [Frontend Integration](/build/integration). For contract errors, see [Errors and Constraints](/reference/errors).
+See also: [Circuits Interfaces](/reference/circuits), [Errors and Constraints](/reference/errors).

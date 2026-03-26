@@ -88,17 +88,7 @@ These errors are defined in `IState.sol` and triggered by internal state operati
 
 ### Root Staleness
 
-The state root and ASP root can become stale between fetching data and submitting a transaction:
-
-- **State root**: The contract accepts the last 64 roots (circular buffer). A recently fetched root is usually still valid, but high-activity pools may cycle through roots quickly.
-- **ASP root**: Must be the **latest** root exactly. If the ASP pushes a new root to the Entrypoint between proof generation and submission, the transaction will revert with `IncorrectASPRoot`. Re-fetch the ASP root, verify parity with `Entrypoint.latestRoot()`, and regenerate the proof.
-
-### ASP Root Parity
-
-The `onchainMtRoot` from the ASP `mt-roots` endpoint may temporarily differ from `Entrypoint.latestRoot()` if the ASP has computed a new root that has not been pushed on-chain yet.
-
-- The `mt-leaves` endpoint returns leaves corresponding to `mtRoot` (the database root), not `onchainMtRoot`.
-- If these values diverge, wait and re-fetch until they converge before building a proof.
+See the [State Root vs ASP Root](/protocol/withdrawal#state-root-vs-asp-root) comparison for root validation rules.
 
 ## Common Integration Mistakes
 
@@ -129,17 +119,16 @@ headers['X-Pool-Scope'] = scope.toString(); // "1715004"
 
 ### Scanning Events from Genesis
 
-When using `DataService` for event reconstruction, always initialize with the deployment `startBlock` from the [Deployments](/deployments) page. Scanning from `0n` works but is unnecessarily slow and may hit RPC provider limits.
+Always use the deployment `startBlock` from [Deployments](/deployments).
 
 ### Submitting Duplicate Precommitments
 
-Each precommitment hash can only be used once on-chain. If a deposit transaction reverts or is never mined, the precommitment is not consumed, so you can retry with the same index. Only increment the index after a confirmed successful deposit. The contract reverts with `PrecommitmentAlreadyUsed` if a precommitment was already used in a successful deposit.
+Each precommitment hash can only be used once on-chain. If a deposit transaction reverts or is never mined, the precommitment is not consumed, so you can retry with the same index. Only increment the index after a confirmed successful deposit.
 
 ### Forgetting to Refresh After a Withdrawal
 
 After a withdrawal, a new reduced-value or zero-value change commitment may be inserted into the state tree. Before generating the next withdrawal proof, re-fetch state tree leaves and rebuild the Merkle proof.
 
-- Persist zero-value change commitments for history reconstruction, but do not treat them as spendable balances.
 - Using stale leaves will produce an invalid state root.
 
 ### Using Raw Event Value Instead of Committed Value

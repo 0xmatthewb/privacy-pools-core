@@ -26,7 +26,7 @@ After deposit, the ASP evaluates the deposit and decides whether to add its labe
 
 ## Waiting for Approval
 
-The ASP reviews deposits asynchronously. Approval times vary, and if a deposit is not approved promptly, ragequit is always available as a fallback (see [Ragequit](/protocol/ragequit)). Show deposits as "pending" until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain.
+The ASP reviews deposits asynchronously. Approval times vary, and if a deposit is not approved promptly, ragequit is always available as a fallback. Show deposits as "pending" until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain.
 
 For the technical convergence check and API endpoints, see the [Withdrawal page](/protocol/withdrawal#state-root-vs-asp-root) and the [ASP API Reference](/reference/asp-api).
 
@@ -34,7 +34,7 @@ For the technical convergence check and API endpoints, see the [Withdrawal page]
 
 Once approved, the user can withdraw privately through a relayer. A zero-knowledge proof demonstrates ownership and ASP membership without revealing which deposit is being spent. The relayer submits the transaction so the withdrawal address has no on-chain link to the depositor.
 
-Partial withdrawals are supported. Each withdrawal creates a change commitment with the remaining balance, which can be spent in a future withdrawal. Change commitments do not need fresh ASP approval because the withdrawal proof already demonstrated membership. Change commitments can be ragequit by the original depositor, since they share the same label and the depositor mapping persists.
+Partial withdrawals are supported. Each withdrawal creates a change commitment with the remaining balance, which can be spent in a future withdrawal. Change commitments inherit ASP approval from the withdrawal proof and can be ragequit by the original depositor (same label, same depositor mapping).
 
 ## [Ragequit](/protocol/ragequit)
 
@@ -49,4 +49,4 @@ A public exit that returns the full balance to the original depositor address. R
 | **Who can call** | Anyone with the recovery phrase (a BIP-39 mnemonic that derives all deposit secrets) | Only the original depositor address |
 | **Partial amounts** | Yes, creates a change commitment | No, full balance only |
 
-**The recovery phrase and the deposit wallet control different things.** The recovery phrase derives the secrets needed for private withdrawal and can be used from any address. Ragequit can only be called from the wallet that made the original deposit. Neither is a universal fallback: losing the recovery phrase blocks private withdrawal, and losing access to the deposit wallet blocks ragequit.
+**The recovery phrase and the deposit wallet control different things.** Neither is a universal fallback: losing the recovery phrase blocks private withdrawal, and losing access to the deposit wallet blocks ragequit.

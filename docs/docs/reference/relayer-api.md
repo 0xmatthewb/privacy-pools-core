@@ -130,9 +130,6 @@ The `feeCommitment` expires approximately **60 seconds** after the quote respons
 - Recipient address
 - Relayer selection
 - `extraGas` toggle
-- Quote expiration
-
-After re-quoting, require the user to review and confirm again before proof generation.
 
 **Fee validation:** Before using the quoted fee, verify it does not exceed the on-chain maximum:
 
@@ -230,7 +227,7 @@ if (!result.success) {
 }
 ```
 
-The relayer API does not support cancellation. If a `feeCommitment` has expired, request a new quote.
+The relayer API does not support cancellation.
 
 ### Handling Failures
 

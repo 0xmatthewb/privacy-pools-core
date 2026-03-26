@@ -35,16 +35,16 @@ graph TD
 The protocol uses three hash constructions:
 
 - **Commitment Hash**: `Poseidon(value, label, precommitmentHash)`, the on-chain leaf in the state Merkle tree.
-- **Precommitment Hash**: `Poseidon(nullifier, secret)`, submitted at deposit time. Because it hides the nullifier, the contract cannot link this precommitment to the nullifier hash that will later appear during withdrawal.
+- **Precommitment Hash**: `Poseidon(nullifier, secret)`, submitted at deposit time. Hides the nullifier from the contract.
 - **Nullifier Hash**: `Poseidon(nullifier)`, revealed on-chain during withdrawal or ragequit.
   - The contract records it and rejects any future attempt to spend the same commitment (`NullifierAlreadySpent`).
-  - The nullifier itself stays private; only its hash is public, so observers cannot reconstruct the precommitment or link the withdrawal back to the original deposit.
+  - The nullifier itself stays private; only its hash is public.
 
-Each pool has a **scope**, a unique `uint256` identifier derived from the pool address, chain ID, and asset: `keccak256(abi.encodePacked(poolAddress, chainId, asset)) % SNARK_SCALAR_FIELD` (where `SNARK_SCALAR_FIELD` is the prime field order of the BN254 curve, ensuring the value fits inside a ZK circuit signal). Scope is used in API headers (`X-Pool-Scope`) and proof inputs to identify which pool an operation targets. You read it on-chain via `pool.SCOPE()`.
+Each pool has a **scope**, a unique `uint256` identifier derived from the pool address, chain ID, and asset: `keccak256(abi.encodePacked(poolAddress, chainId, asset)) % SNARK_SCALAR_FIELD` (the BN254 prime field order). Scope is used in API headers (`X-Pool-Scope`) and proof inputs to identify which pool an operation targets. You read it on-chain via `pool.SCOPE()`.
 
 ## Zero-knowledge proofs in Privacy Pools
 
-Privacy Pools uses [zero-knowledge proofs](/layers/zk) to demonstrate valid statements about private information without revealing that information. The protocol employs two proof types:
+The protocol employs two proof types:
 
 - **[Commitment Proofs](/layers/zk/commitment)**: Verify ownership of a commitment (used in ragequit)
 - **[Withdrawal Proofs](/layers/zk/withdrawal)**: Verify ownership, inclusion in both state and ASP trees, and valid value transitions. Withdrawal proofs embed [Merkle inclusion proofs](/layers/zk/lean-imt) to demonstrate membership in each tree without revealing the leaf position

@@ -7,8 +7,6 @@ description: Entry points, skill files, and setup for AI coding agents integrati
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
-This page helps AI coding agents and LLM-powered tools get set up for Privacy Pools integration work. It covers skill file discovery, circuit initialization, and tool-specific configuration for Claude Code, Codex, and other IDEs.
-
 ## Reference Table
 
 | Resource | URL | Purpose |
@@ -20,10 +18,6 @@ This page helps AI coding agents and LLM-powered tools get set up for Privacy Po
 | [llms-full.txt](https://docs.privacypools.com/llms-full.txt) | Hosted | Complete LLM corpus with all docs pages |
 | `CLAUDE.md` | Repo root | Claude Code guide for repo-specific workflows |
 | `AGENTS.md` | Repo root | Build commands, security constraints, and repo structure for coding agents |
-
-## Skill Library
-
-See the [Skill Library](/build/skills) for the full list of available skills with descriptions and hosted URLs.
 
 ## Skill File Locations
 
@@ -41,8 +35,6 @@ The repo-local skill files live under `.agents/skills/`:
     privacy-pools-ragequit/
       SKILL.md
 ```
-
-The skill files exist in two places with identical content. `.agents/skills/` is for IDE agents that scan the repo locally. `docs/static/agent-skills/` is the source for the hosted URLs above.
 
 ## Circuit Initialization
 
@@ -81,7 +73,7 @@ done
 For agents that ingest a single document, two corpus files are available:
 
 - [`llms.txt`](https://docs.privacypools.com/llms.txt): lightweight site index with page titles and URLs. Good for quick orientation or retrieval-augmented pipelines that fetch pages on demand.
-- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt): complete corpus with all docs pages inlined (~16k words / ~20-25k tokens). Best when the agent can consume the full context in one pass. If your agent has a smaller context window, use `llms.txt` and fetch individual pages on demand.
+- [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt): complete corpus with all docs pages (~20-25k tokens).
 
 Individual skill files can also be fetched directly by URL (e.g., `https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md`) without loading the full corpus.
 

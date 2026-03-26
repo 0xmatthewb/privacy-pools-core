@@ -7,7 +7,7 @@ description: Recommended frontend patterns for account management, deposits, wit
 keywords: [privacy pools, UX, frontend, account, deposit, withdrawal, ragequit, recovery]
 ---
 
-Practical frontend patterns for Privacy Pools integrations. For the step-by-step integration recipe, see [Frontend Integration](/build/integration).
+For the step-by-step integration recipe, see [Frontend Integration](/build/integration).
 
 ## Account and Recovery
 
@@ -27,14 +27,12 @@ Practical frontend patterns for Privacy Pools integrations. For the step-by-step
 - Parse the confirmed `Deposited` event immediately and store the resulting pool account locally rather than waiting for a later rescan.
 - Tell the user that confirmed deposits may take time to become ASP-approved.
 - Track each deposit and each post-withdrawal change commitment inside the same pool-account tree.
-- Parse confirmed receipts and persist them in pool-account state. Do not expose raw note material in copy/paste or clipboard flows.
 
 For the full deposit protocol mechanics, see [Deposit](/protocol/deposit).
 
 ## Private Withdrawal UX
 
 Before enabling withdrawal, verify:
-- Wallet is connected and account state is loaded.
 - At least one relayer is available.
 - The selected pool account has positive balance and ASP approval.
 
@@ -66,7 +64,6 @@ For the full withdrawal protocol mechanics, see [Withdrawal](/protocol/withdrawa
 
 - Keep ragequit on its own action path with a clear warning that it is a public exit.
 - Ragequit returns the full balance to the original depositor address. It does not send funds to a separate recipient.
-- Handle wallet rejections and user cancellations gracefully without retry loops or error telemetry.
 
 For the full ragequit protocol mechanics, see [Ragequit](/protocol/ragequit).
 

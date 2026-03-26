@@ -10,11 +10,7 @@ keywords:
   - fees
 ---
 
-A withdrawal moves funds out of the pool to any recipient address. A zero-knowledge proof demonstrates ownership of a valid, ASP-approved commitment without revealing which one. A relayer submits the transaction so the recipient has no on-chain link to the depositor.
-
----
-
-Frontend integrations should use relayed withdrawal. A relayer submits `Entrypoint.relay()` for the user, which preserves recipient privacy and matches the production app flow.
+A withdrawal moves funds out of the pool to any recipient address. A zero-knowledge proof demonstrates ownership of a valid, ASP-approved commitment without revealing which one. Frontend integrations should use relayed withdrawal: a relayer submits `Entrypoint.relay()` for the user, which preserves recipient privacy and matches the production app flow.
 
 **Happy path at a glance:**
 
@@ -163,10 +159,6 @@ After a withdrawal, a new change commitment is always inserted into the state tr
 
 Persist zero-value change commitments for account-history reconstruction, but do not surface them as spendable balances.
 
-:::warning Stale leaves produce invalid proofs
-Using stale leaves after a withdrawal will produce an invalid state root. Always re-fetch leaves and rebuild Merkle proofs before generating a new withdrawal proof from the same pool account.
-:::
-
 ### Context Generation
 
 The `context` signal binds the proof to specific withdrawal parameters:
@@ -186,7 +178,5 @@ context = uint256(keccak256(abi.encode(
 - `withdrawal.processooor` must equal `msg.sender`
 - the pool pays the signer directly
 - recipient privacy is lost compared with the relayed flow
-
-Keep it documented for protocol completeness and error handling, not as a user-facing UX option.
 
 </details>

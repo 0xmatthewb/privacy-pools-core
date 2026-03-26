@@ -88,7 +88,7 @@ sequenceDiagram
 
 ### Unconditional Availability
 
-Ragequit does not require ASP approval. The contract enforces no ASP-related checks; only that the caller is the original depositor, the commitment exists in the state tree, and the nullifier has not been spent. This makes ragequit the always-available public exit path when:
+Ragequit does not require ASP approval. It is the always-available public exit path when:
 
 - A deposit has not yet been approved by the ASP (most deposits are approved within 1 hour, but some may take up to 7 days)
 - A label has been retroactively removed from the ASP approved set
@@ -97,9 +97,7 @@ Ragequit does not require ASP approval. The contract enforces no ASP-related che
 
 ### Original Depositor Restriction
 
-Only the address that submitted the original deposit can call ragequit for that commitment. The contract stores `depositors[label] = msg.sender` at deposit time and checks `depositors[label] == msg.sender` on ragequit. If a different address calls ragequit, the transaction reverts with `OnlyOriginalDepositor`.
-
-This means ragequit cannot be delegated to another wallet. The original depositing address must submit the ragequit transaction.
+Only the address that made the original deposit can ragequit. The contract reverts with `OnlyOriginalDepositor` otherwise.
 
 ### Mutual Exclusivity with Private Withdrawal
 
@@ -108,12 +106,6 @@ Ragequit and private withdrawal are **mutually exclusive** on the same commitmen
 :::info Change commitments after partial withdrawal
 A partial private withdrawal creates a new change commitment with a new nullifier. The original commitment's nullifier is spent, but the change commitment can still be ragequit (by the original depositor) or privately withdrawn.
 :::
-
-### When to Use Ragequit
-
-Ragequit is a public exit. It sacrifices privacy because the on-chain transaction links the deposit to the exit and returns funds to the original depositor address. Use the privacy-preserving [relayed withdrawal](/protocol/withdrawal) path when the deposit is ASP-approved and the user wants the private flow.
-
-Frontend integrations should keep ragequit visually separate from the private withdrawal flow and label it clearly as a public exit.
 
 ## Next steps
 

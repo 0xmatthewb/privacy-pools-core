@@ -86,13 +86,6 @@ function updatePoolConfiguration(IERC20 _asset, uint256 _minimumDepositAmount, u
 function windDownPool(IPrivacyPool _pool) external;
 ```
 
-These functions allow:
-
-- Registration of new privacy pools
-- Removal of existing pools
-- Configuration updates
-- Graceful shutdown of pools
-
 ### 4. ASP Root Management
 
 ```solidity
@@ -107,11 +100,8 @@ Maintains withdrawal validation data:
 
 ### Security Features
 
-1. **Reentrancy Protection**: Uses OpenZeppelin's ReentrancyGuard
-2. **Access Control**: Role-based permissions for sensitive operations
-3. **Fee Validation**: Ensures fees cannot exceed 100%
-4. **Balance Verification**: Checks pool state consistency after operations
-5. **Upgradability**: UUPS pattern with owner-controlled upgrades
+1. **Fee Validation**: Ensures fees cannot exceed 100%
+2. **Balance Verification**: Checks pool state consistency after operations
 
 ### Fee Management
 

@@ -179,13 +179,12 @@ class DataService {
 }
 ```
 
-`DataService` is fully standalone. It does not require `PrivacyPoolSDK` or a private key. Initialize it with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`). Use it for read-only event scanning and account reconstruction in contexts where a signer is not available (e.g., indexers, dashboards, or pre-login state reconstruction).
+`DataService` is fully standalone.
 
 `DataService` fetches logs in chunked, rate-limited ranges:
 
 - Always initialize with the deployment `startBlock` from the [Deployments](/deployments) page rather than `0n`. Scanning from genesis works but is unnecessarily slow and may hit RPC provider limits.
 - Use the optional second constructor argument when you need per-chain fetch overrides (chunk size, concurrency, delay, retries).
-- Zero-value withdrawal events are preserved so account reconstruction stays correct for full-withdrawal chains, even though zero-value change commitments are not spendable.
 
 `getDeposits` starts from `pool.deploymentBlock` if present, falling back to the chain's configured `startBlock`. `getWithdrawals` and `getRagequits` accept an optional `fromBlock` parameter for incremental fetching, defaulting to `pool.deploymentBlock`.
 
@@ -371,20 +370,12 @@ interface RagequitEvent {
 
 Pool accounts are reconstructed from on-chain events with `AccountService`:
 
-- When initialized from `{ mnemonic }`, the SDK may also return `legacyAccount` so migrated histories can be reconciled.
-- Retry failed scopes with `{ service: account }` only for non-migration retries.
-- If the original restore depended on `legacyAccount`, rerun the failed scopes with `{ mnemonic }` so legacy discovery runs again.
-
-For advanced event-collection flows, `AccountService` also accepts `poolConcurrency` in its constructor to limit how many pools are fetched in parallel while collecting events with `getEvents()`. The default is `2`.
-
 ```typescript
 const accountService = new AccountService(dataService, {
   mnemonic,
   poolConcurrency: 4,
 });
 ```
-
-`initializeWithEvents(...)` does not expose a `poolConcurrency` override; it uses the default internally.
 
 ```typescript
 import { AccountService, DataService } from "@0xbow/privacy-pools-core-sdk";
@@ -416,8 +407,6 @@ const migratedRetry = await AccountService.initializeWithEvents(
 );
 // migratedRetry.account / migratedRetry.legacyAccount = rerun failed migrated scopes
 ```
-
-The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search. On mnemonic-based initialization, it also scans the legacy derivation path before continuing with current-key deposits and withdrawals.
 
 After initialization:
 

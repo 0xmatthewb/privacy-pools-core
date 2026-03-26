@@ -134,7 +134,7 @@ Most deposits are approved within 1 hour, though some may take up to 7 days. Whi
 
 ### `GET /{chainId}/health/liveness`
 
-Returns the health status of the ASP API for a given chain. Use before making data calls to verify the service is reachable.
+Returns the health status of the ASP API for a given chain.
 
 **Response:**
 
@@ -221,7 +221,7 @@ Returns the number of deposits above a given amount threshold for a pool. Useful
 | 404 | `X-Pool-Scope` present but does not match any known pool (including hex-encoded scope values). |
 | 403 / 429 | Rate limiting. Retry with exponential backoff. |
 
-Rate-limit details are not published. Treat HTTP 403, 429, or any equivalent throttle response as a backoff signal.
+Rate-limit details are not published. Retry with exponential backoff.
 
 ## On-Chain Supplemental Access
 

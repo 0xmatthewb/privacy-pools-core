@@ -57,5 +57,4 @@ Each Privacy Pool maintains:
    - Tracks spent nullifiers to prevent double-spending
 3. **Deposit Records**
    - Maps labels to original depositor addresses
-   - Emits deposit amounts in events (not stored in contract state)
    - Enables direct recovery through ragequit

@@ -143,11 +143,6 @@ modifier validWithdrawal(Withdrawal memory _withdrawal, ProofLib.WithdrawProof m
 }
 ```
 
-3. **Proof Verification**
-   - Validates zero-knowledge proofs using Groth16 verifiers
-   - Verifies nullifier hash uniqueness
-   - Checks commitment existence
-
 ### Asset Handling
 
 The contract is abstract and requires implementation of two key functions:
@@ -162,4 +157,3 @@ These are implemented differently for:
 - Native ETH (PrivacyPoolSimple)
 - ERC20 tokens (PrivacyPoolComplex)
 
-The PrivacyPool contract provides a foundation for implementing privacy-preserving asset pools with strong security guarantees and efficient state management. It is designed to be extended for specific asset types while maintaining consistent privacy and security properties.
