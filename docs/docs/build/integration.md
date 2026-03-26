@@ -209,7 +209,7 @@ Call `GET /{chainId}/public/mt-roots` with decimal `X-Pool-Scope`. If `onchainMt
 
 ## Relayed withdrawal
 
-Relayed withdrawal is the standard frontend path. Request the quote late in the flow, treat the quote's `feeCommitment.withdrawalData` as canonical, and submit the proof before the quote expires.
+Relayed withdrawal is the standard frontend path. Request the quote late in the flow, build `withdrawal.data` by ABI-encoding the recipient, relayer fee address, and fee BPS client-side, and submit the proof before the quote expires.
 
 ```typescript
 import {
@@ -348,7 +348,7 @@ if (!relayResult.success) {
 - Select withdrawal candidates from `accountService.account.poolAccounts.get(scope)`, not from a flattened cross-chain list.
 - Only offer pool accounts whose latest commitment has a non-zero balance and whose label is approved in the current ASP leaf set.
 - For pools that configure an external ASP, merge the 0xbow ASP leaves with the external provider's leaves, remove duplicates, sort ascending, and generate the ASP Merkle proof from that merged label set.
-- Use `GET /relayer/details` for UX validation such as `minWithdrawAmount` and fee display. When a quote already includes `feeCommitment.withdrawalData`, do not rebuild `withdrawal.data` from `/relayer/details`.
+- Use `GET /relayer/details` for the relayer's `feeReceiverAddress` (needed for ABI-encoding `withdrawal.data`) and for UX validation such as `minWithdrawAmount` and fee display.
 
 ## Ragequit
 
