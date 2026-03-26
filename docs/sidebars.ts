@@ -99,21 +99,8 @@ const sidebars: SidebarsConfig = {
       label: "Technical Reference",
       collapsible: false,
       link: {
-        type: "generated-index",
-        slug: "/reference",
-        title: "Technical Reference",
-        description:
-          "SDK, contract, circuit, API, and deployment reference material for Privacy Pools.",
-        keywords: [
-          "privacy pools",
-          "sdk",
-          "contracts",
-          "circuits",
-          "reference",
-          "api",
-          "deployments",
-          "errors",
-        ],
+        type: "doc",
+        id: "reference/index",
       },
       items: [
         "deployments",

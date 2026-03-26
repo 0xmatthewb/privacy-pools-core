@@ -105,8 +105,8 @@ const PERSONAS = [
     title: "Build with Agents",
     icon: IconCpu,
     description: "Set up Claude Code, Codex, or other AI coding agents for Privacy Pools work.",
-    link: "/build/start",
-    label: "Start here",
+    link: "/build/agents",
+    label: "Agent setup",
   },
 ];
 
@@ -170,14 +170,14 @@ export default function Home(): React.JSX.Element {
   return (
     <Layout
       title="Privacy Pools Documentation"
-      description="Technical documentation for the Privacy Pools protocol — private withdrawals with regulatory compliance on Ethereum."
+      description="Technical documentation for Privacy Pools — public deposits, private withdrawals, and developer integration guidance."
     >
       <main className={styles.main}>
         {/* Hero */}
         <section className={styles.hero}>
           <h1 className={styles.heroTitle}>Privacy Pools Documentation</h1>
           <p className={styles.heroDeck}>
-            A compliant way to transact anonymously on Ethereum.
+            Public deposits, private withdrawals, and a public fallback exit.
           </p>
           <div className={styles.heroActions}>
             <SearchTrigger />
