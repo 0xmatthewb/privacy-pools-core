@@ -52,18 +52,17 @@ sequenceDiagram
     Relayer->>Entrypoint: relay(withdrawal, proof, scope)
 
     activate Entrypoint
+    Entrypoint->>Entrypoint: Validate amount, processooor, scope
     Entrypoint->>Pool: withdraw(withdrawal, proof)
 
     activate Pool
-    Pool->>Pool: Verify processooor is Entrypoint
+    Pool->>Pool: Verify processooor, context, roots
     Pool->>Pool: Verify proof
-    Pool->>Entrypoint: Check proof uses latest ASP root
-
-    Pool->>Pool: Update state<br/>Record spent nullifier
-    Pool->>Entrypoint: Transfer full amount
+    Pool->>Pool: Update state and nullifier
+    Pool->>Entrypoint: Transfer withdrawn amount
     deactivate Pool
 
-    Entrypoint->>Entrypoint: Calculate fees
+    Entrypoint->>Entrypoint: Decode relay data and validate fee
     Entrypoint->>User: Transfer(amount - fees)
     Entrypoint->>Relayer: Pay relayer fee
 
@@ -113,10 +112,15 @@ The relayer returns HTTP 200 for both success and application-level failures. Al
    - Submit transaction to Entrypoint
    - Pay gas fees
 3. **Entrypoint Processing**
-   - Verify proof and context
-   - Process withdrawal through pool
-   - Handle fee distribution
-   - Transfer assets to recipient
+   - Verify withdrawn amount is non-zero
+   - Verify `withdrawal.processooor == address(this)` and resolve the pool from `scope`
+   - Call `pool.withdraw(...)`
+   - Decode `RelayData`, validate the relay fee, and transfer assets to the recipient and fee recipient
+4. **Pool Processing**
+   - Verify `msg.sender == withdrawal.processooor`
+   - Verify `context`, known state root, and latest ASP root
+   - Verify the Groth16 proof
+   - Spend the nullifier, insert the change commitment, and transfer the withdrawn amount back to the Entrypoint
 
 ### Quote Lifecycle
 

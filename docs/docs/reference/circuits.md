@@ -57,9 +57,9 @@ Validates withdrawal proofs: proves ownership of a commitment, inclusion in both
 | `existingSecret` | field | Secret of the existing commitment |
 | `newNullifier` | field | Nullifier for the change commitment |
 | `newSecret` | field | Secret for the change commitment |
-| `stateSiblings[32]` | field[] | State tree Merkle proof siblings |
+| `stateSiblings[32]` | field[] | State tree Merkle proof siblings. Current integrations pad sibling arrays to length 32 and pass the actual depth separately |
 | `stateIndex` | field | Leaf index in the state tree |
-| `ASPSiblings[32]` | field[] | ASP tree Merkle proof siblings |
+| `ASPSiblings[32]` | field[] | ASP tree Merkle proof siblings. Current integrations pad sibling arrays to length 32 and pass the actual depth separately |
 | `ASPIndex` | field | Leaf index in the ASP tree |
 
 ### Public Outputs
@@ -117,9 +117,9 @@ Non-SDK integrators must match this exact signal order.
 | 1 | `existingNullifierHash` | Poseidon hash of the spent nullifier |
 | 2 | `withdrawnValue` | Amount withdrawn |
 | 3 | `stateRoot` | Pool state Merkle root |
-| 4 | `stateTreeDepth` | Depth of the state tree (32) |
+| 4 | `stateTreeDepth` | Depth of the state tree (bounded by 32; current integrations commonly pass `32` with padded siblings) |
 | 5 | `ASPRoot` | ASP Merkle root |
-| 6 | `ASPTreeDepth` | Depth of the ASP tree (32) |
+| 6 | `ASPTreeDepth` | Depth of the ASP tree (bounded by 32; current integrations commonly pass `32` with padded siblings) |
 | 7 | `context` | `uint256(keccak256(abi.encode(withdrawal, scope))) % SNARK_SCALAR_FIELD` |
 
 **Ragequit proof (4 elements):**

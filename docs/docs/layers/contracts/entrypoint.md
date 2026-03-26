@@ -70,10 +70,10 @@ function relay(IPrivacyPool.Withdrawal calldata _withdrawal, ProofLib.WithdrawPr
 
 Handles relayed withdrawals by:
 
-1. Verifying withdrawal proofs
-2. Processing withdrawals through privacy pools
-3. Distributing funds between recipient and relayer (if used)
-4. Enforcing security checks on pool state
+1. Verifying the withdrawn amount is non-zero
+2. Verifying `withdrawal.processooor == address(this)` and resolving the pool from `scope`
+3. Calling `pool.withdraw(...)`, where proof, context, and root checks actually happen
+4. Decoding relay data, enforcing the max relay fee, and distributing funds between recipient and fee recipient
 
 ### 3. Pool Management
 

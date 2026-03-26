@@ -38,6 +38,8 @@ Before enabling withdrawal, verify:
 
 Filter withdraw selectors to approved non-zero accounts for the active chain/scope and pick a sensible default automatically.
 
+- Surface review statuses clearly. In addition to approved / pending / declined states, the production website also shows `poi_required` as a user-facing `POA Needed` state that prompts the user to provide more documentation before approval can continue.
+
 - Resolve ENS names to a final address before the review step, using mainnet (`chainId = 1`) resolution.
   - Display reverse ENS alongside the resolved address.
   - Unresolved input must block submit.

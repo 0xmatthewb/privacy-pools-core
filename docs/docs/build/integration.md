@@ -68,7 +68,7 @@ done
 5. **Perform the relayed withdrawal**
    1. **Fetch ASP roots and verify convergence:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`). If `onchainMtRoot` is `null` or `mtRoot !== onchainMtRoot`, stop because the ASP tree has not converged on-chain yet. Once they match, confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
    2. **Request a relayer quote:** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`
-   3. **Build Merkle proofs:** generate `stateMerkleProof` from pool state leaves (keyed by commitment hash) and `aspMerkleProof` from ASP leaves (keyed by label)
+   3. **Build Merkle proofs:** generate `stateMerkleProof` from pool state leaves (keyed by commitment hash) and `aspMerkleProof` from ASP leaves (keyed by label). For pools with an external ASP, merge all ASP leaf sources, remove duplicates, and sort ascending before generating the ASP proof
    4. **Generate the withdrawal proof:** call `proveWithdrawal` with the Merkle proofs, verified roots, withdrawal amount, relayer-provided context, change secrets from `accountService.createWithdrawalSecrets(commitment)`, and tree depth `32n` for both state and ASP trees
    5. **Submit via relayer:** send the proof to `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on testnets
 
@@ -90,7 +90,6 @@ import {
 import type { Hash } from "@0xbow/privacy-pools-core-sdk";
 import {
   createPublicClient, createWalletClient, custom, http,
-  encodeAbiParameters, parseAbiParameters,
 } from "viem";
 import { sepolia } from "viem/chains";
 
@@ -195,7 +194,8 @@ const { request: approveRequest } = await publicClient.simulateContract({
   functionName: "approve",
   args: [ENTRYPOINT_ADDRESS, depositAmount],
 });
-await walletClient.writeContract(approveRequest);
+const approveHash = await walletClient.writeContract(approveRequest);
+await publicClient.waitForTransactionReceipt({ hash: approveHash });
 
 // Deposit ERC-20 tokens
 const { request } = await publicClient.simulateContract({
@@ -246,7 +246,7 @@ if (!aspRoots.onchainMtRoot || aspRoots.mtRoot !== aspRoots.onchainMtRoot) {
 const relayerUrl = "https://fastrelay.xyz"; // testnet: https://testnet-relayer.privacypools.com
 const withdrawAmount = 5000000000000000n; // 0.005 ETH
 const recipient = "0x..." as `0x${string}`;
-const quote = await fetch(`${relayerUrl}/relayer/quote`, {
+const quoteResponse = await fetch(`${relayerUrl}/relayer/quote`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -256,19 +256,19 @@ const quote = await fetch(`${relayerUrl}/relayer/quote`, {
     recipient,
     extraGas: false,
   }),
-}).then((r) => r.json());
-// → { feeBPS: string, feeCommitment: { withdrawalData: string, ... }, expiresAt: number }
+});
+if (!quoteResponse.ok) {
+  throw new Error(`Relayer quote failed: ${quoteResponse.status}`);
+}
+const quote = await quoteResponse.json();
+// → { feeBPS: string, feeCommitment: { expiration, withdrawalData, ... } }
 
 // 9. Build Withdrawal struct
-// feeReceiverAddress comes from /relayer/details, not the quote response
-const relayerDetails = await fetch(
-  `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
-).then((r) => r.json());
-const withdrawalData = encodeAbiParameters(
-  parseAbiParameters("address recipient, address feeRecipient, uint256 relayFeeBPS"),
-  [recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS)]
-);
-const withdrawal = { processooor: ENTRYPOINT_ADDRESS, data: withdrawalData };
+// The signed feeCommitment is the canonical source for relayed withdrawal.data
+const withdrawal = {
+  processooor: ENTRYPOINT_ADDRESS,
+  data: quote.feeCommitment.withdrawalData as `0x${string}`,
+};
 const context = BigInt(calculateContext(withdrawal, scope));
 
 // → { stateTreeLeaves: string[], aspLeaves: string[] } (decimal bigints)
@@ -277,11 +277,20 @@ const leavesResponse = await fetch(
   { headers: { "X-Pool-Scope": scope.toString() } }
 ).then((r) => r.json());
 
-const allPoolAccounts = [...accountService.account.poolAccounts.values()].flat();
-if (allPoolAccounts.length === 0) {
-  throw new Error("No pool accounts found, deposit first");
+const accountsForScope = accountService.account.poolAccounts.get(scope) ?? [];
+if (accountsForScope.length === 0) {
+  throw new Error("No pool accounts found for this scope");
 }
-const poolAccount = allPoolAccounts[0];
+const approvedAccounts = accountsForScope.filter((poolAccount) => {
+  const latestCommitment = poolAccount.children.length > 0
+    ? poolAccount.children[poolAccount.children.length - 1]
+    : poolAccount.deposit;
+  return latestCommitment.value > 0n && leavesResponse.aspLeaves.includes(poolAccount.label.toString());
+});
+const poolAccount = approvedAccounts[0];
+if (!poolAccount) {
+  throw new Error("No ASP-approved non-zero account found for this scope");
+}
 const commitment = poolAccount.children.length > 0
   ? poolAccount.children[poolAccount.children.length - 1]
   : poolAccount.deposit;
@@ -318,7 +327,7 @@ const withdrawalProof = await sdk.proveWithdrawal(
 // → { proof: { pi_a, pi_b, pi_c }, publicSignals: string[] }
 
 // 11. Submit to relayer before the quote expires
-const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
+const relayResponse = await fetch(`${relayerUrl}/relayer/request`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -329,9 +338,22 @@ const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
     chainId: 11155111,
     feeCommitment: quote.feeCommitment,
   }, (_, v) => (typeof v === "bigint" ? v.toString() : v)), // bigint -> string for JSON
-}).then((r) => r.json());
-// Relayer returns HTTP 200 even on failure; always check relayResult.success
+});
+if (!relayResponse.ok) {
+  throw new Error(`Relayer request failed: ${relayResponse.status}`);
+}
+const relayResult = await relayResponse.json();
+if (!relayResult.success) {
+  throw new Error(`Relayer rejected withdrawal: ${relayResult.error}`);
+}
 ```
+
+### Account Selection and External ASPs
+
+- Select withdrawal candidates from `accountService.account.poolAccounts.get(scope)`, not from a flattened cross-chain list.
+- Only offer pool accounts whose latest commitment has a non-zero balance and whose label is approved in the current ASP leaf set.
+- For pools that configure an external ASP, merge the 0xbow ASP leaves with the external provider's leaves, remove duplicates, sort ascending, and generate the ASP Merkle proof from that merged label set.
+- Use `GET /relayer/details` for UX validation such as `minWithdrawAmount` and fee display. When a quote already includes `feeCommitment.withdrawalData`, do not rebuild `withdrawal.data` from `/relayer/details`.
 
 ### Ragequit (Public Exit)
 
@@ -409,4 +431,3 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 | Relayer quote, request, and details endpoints | [Relayer API Reference](/reference/relayer-api) |
 | Contract errors, safety checks, and common mistakes | [Errors and Constraints](/reference/errors) |
 | SDK types, methods, and account reconstruction | [SDK Utilities](/reference/sdk) |
-

@@ -40,7 +40,7 @@ The `Circuits` class implements `CircuitsInterface` and generates or verifies th
 - **Node.js:** pass `{ browser: false }` so artifacts load from disk rather than `fetch`.
 - You can also override `baseUrl` when serving artifacts from a custom location.
 
-Every downloaded circuit artifact (`wasm`, `vkey`, and `zkey`) is verified against a registered SHA-256 digest before use, including when `baseUrl` is overridden.
+The SDK fetches the configured circuit artifacts from `baseUrl` and does not currently add a separate digest-verification layer on top of that fetch.
 
 ### Methods
 
@@ -78,6 +78,38 @@ class PrivacyPoolSDK {
 ```
 
 `proveWithdrawal(...)` accepts either the nested `Commitment` shape returned by SDK commitment helpers or the flat `AccountCommitment` shape returned by account-reconstruction flows.
+
+## `AccountService`
+
+`AccountService` is the main SDK surface for deposit-secret derivation, account reconstruction, and change-secret creation.
+
+```tsx
+class AccountService {
+  constructor(
+    dataService: DataService,
+    config: { mnemonic: string; poolConcurrency?: number },
+  );
+
+  createDepositSecrets(
+    scope: Hash,
+    index?: bigint,
+  ): { nullifier: Secret; secret: Secret; precommitment: Hash };
+
+  createWithdrawalSecrets(
+    commitment: AccountCommitment,
+  ): { nullifier: Secret; secret: Secret };
+
+  static initializeWithEvents(
+    dataService: DataService,
+    config:
+      | { mnemonic: string; poolConcurrency?: number }
+      | { service: AccountService },
+    pools: PoolInfo[],
+  ): Promise<{ account: AccountService; legacyAccount?: AccountService; errors: PoolEventsError[] }>;
+}
+```
+
+Use `account.poolAccounts.get(scope)` to work within the active pool only. For withdrawals, select the latest non-zero commitment from the current scope after you have refreshed ASP review status for that scope.
 
 ## `ContractInteractionsService`
 
@@ -306,9 +338,9 @@ interface WithdrawalProofInput {
   stateMerkleProof: LeanIMTMerkleProof<bigint>;  // State tree inclusion proof
   aspMerkleProof: LeanIMTMerkleProof<bigint>;    // ASP tree inclusion proof
   stateRoot: Hash;                           // Current state root
-  stateTreeDepth: bigint;                    // Always 32n
+  stateTreeDepth: bigint;                    // Current integrations commonly pass 32n with padded siblings
   aspRoot: Hash;                             // Current ASP root
-  aspTreeDepth: bigint;                      // Always 32n
+  aspTreeDepth: bigint;                      // Current integrations commonly pass 32n with padded siblings
   newSecret: Secret;                         // New secret for change commitment
   newNullifier: Secret;                      // New nullifier for change commitment
 }

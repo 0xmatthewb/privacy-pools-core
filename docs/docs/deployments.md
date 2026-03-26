@@ -32,7 +32,7 @@ To resolve a chain + asset into pool metadata at runtime, call `Entrypoint.asset
 |----------|---------|-----------------|
 | WithdrawalVerifier | `0x022891f938ae7fdc8ab9ead0fbf50aba8c897d6d` | `22153709` |
 | CommitmentVerifier | `0xa45aca8604a73d80c551faad6355a5c3a5565ec6` | `22153710` |
-| Entrypoint (Implementation) | `0xdd8aa0560a08e39c0b3a84bba356bc025afbd4c1` | `22153711` |
+| Entrypoint (Implementation) | `0x15e355024de1cdc74addea7ebdf98418ba5b1a2c` | `22153711` |
 | Entrypoint (Proxy) | `0x6818809eefce719e480a7526d76bd3e561526b46` | `22153713` |
 
 ### Pool Contracts
@@ -167,4 +167,3 @@ The TypeScript SDK (`@0xbow/privacy-pools-core-sdk`) targets EVM chains only. St
 | ETH | `0x1575a7d243bf929bea1eead2a33dfb25dad16df1af7a34f61caea22e4ec57fb` | `0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7` |
 | USDC | `0x78d8a02f3a7073dfd6c7a4ea3e15ba217a3196ecf6487b09a03800d69092879` | `0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8` |
 | STRK | `0x2f35b62fff4fbf6188c758e5e1f92d98193ea179d42142746101660168a1d13` | `0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d` |
-

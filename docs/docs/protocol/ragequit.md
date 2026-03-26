@@ -22,7 +22,7 @@ sequenceDiagram
     participant SDK
     participant Pool
     participant State as State Tree
-    participant RQ as RagequitVerifier
+    participant RQ as CommitmentVerifier
 
     Note over User,State: User has original commitment parameters<br/>(value, label, nullifier, secret)
 

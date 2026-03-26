@@ -14,7 +14,7 @@ keywords:
 
 The Association Set Provider (ASP) publishes an HTTP API that integrators use to fetch Merkle tree data for withdrawal proofs. The ASP is operated by 0xbow and serves both approved labels (the ASP tree) and state tree leaves (commitment hashes) for each pool.
 
-## Base URLs
+## Hosts
 
 | Environment | Host |
 |-------------|------|
@@ -122,6 +122,10 @@ Returns both the ASP-approved labels and the state tree commitment hashes for a 
 | `stateTreeLeaves` | `string[]` | All commitment hashes as decimal bigint strings, in tree insertion order. |
 
 No pagination. The full leaf arrays are returned in a single response.
+
+:::note External ASPs
+Some integrations merge leaves from more than one ASP source. In those cases, merge the leaf sets, remove duplicates, sort them in ascending bigint order, and build the ASP Merkle proof from that merged set.
+:::
 
 **Checking if a deposit is ASP-approved:**
 

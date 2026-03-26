@@ -19,7 +19,7 @@ The Privacy Pools protocol is built on three core contracts:
 1. **[Entrypoint](/layers/contracts/entrypoint)**
    - Central access point for deposits
    - Manages pool registry and ASP root updates
-   - Handles fee collection and relay operations
+   - Handles relay routing and fee distribution
    - Controls protocol-wide settings
 2. **[Privacy Pools](/layers/contracts/privacy-pools)**
    - `PrivacyPoolSimple`: Handles native asset (ETH)
@@ -35,9 +35,9 @@ The Privacy Pools protocol is built on three core contracts:
 - User operations flow through the Entrypoint:
   - Deposits route funds to appropriate pools
   - Withdrawals can be direct to the Pool or relayed through the Entrypoint
-  - Fees are deducted and distributed
+  - Fees are deducted and distributed after the pool returns the withdrawn amount
 - Privacy Pools handle:
-  - Asset custody and proof verification
+  - Asset custody, proof verification, and context/root validation
   - State tree updates
   - Nullifier tracking
   - Ragequit operations

@@ -28,6 +28,6 @@ template LeanIMTInclusionProof(maxDepth) {
 Key features:
 
 - Dynamic tree depth
-- Optimized batch processing
+- Single-leaf inclusion proofs
 - Single-child node optimization
 - Path validation

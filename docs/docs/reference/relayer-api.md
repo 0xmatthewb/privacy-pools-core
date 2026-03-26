@@ -17,7 +17,7 @@ The relayer is a separate service from the [ASP API](/reference/asp-api). It sub
 
 The public production relayer is operated by Fat Solutions. The relayer code is open-source (`packages/relayer` in the monorepo) and anyone can host their own instance.
 
-## Base URLs
+## Hosts
 
 | Environment | Host |
 |-------------|------|
@@ -64,7 +64,7 @@ Returns a fee quote for a relayed withdrawal. When `recipient` is included, the 
 | `chainId` | `number` | Yes | Target chain ID. |
 | `amount` | `string` | Yes | Withdrawal amount as a decimal bigint string in the token's smallest unit. |
 | `asset` | `string` | Yes | Asset address. Use `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE` for ETH. |
-| `extraGas` | `boolean` | Yes | When `true`, requests an additional native gas-token drop as part of the withdrawal. Only supported for non-native assets. Native-asset quotes must use `false`. |
+| `extraGas` | `boolean` | No | When `true`, requests an additional native gas-token drop as part of the withdrawal. Only supported for non-native assets. Native-asset quotes must use `false`. Defaults to `false` when omitted. |
 | `recipient` | `string` | No | Final recipient address. When provided, the response includes a signed `feeCommitment`. Omit for a fee estimate only. |
 
 **Response (without recipient, fee estimate only):**
@@ -109,7 +109,7 @@ Returns a fee quote for a relayed withdrawal. When `recipient` is included, the 
 
 | Response Field | Type | Description |
 |----------------|------|-------------|
-| `baseFeeBPS` | `string` | Base relayer fee in basis points. |
+| `baseFeeBPS` | `string` | Fixed relayer fee component in basis points. |
 | `feeBPS` | `string` | Total fee in basis points (includes gas cost component). |
 | `gasPrice` | `string` | Current gas price used for the quote. |
 | `detail.relayTxCost.gas` | `string` | Estimated gas units for the relay transaction. |
@@ -119,6 +119,8 @@ Returns a fee quote for a relayed withdrawal. When `recipient` is included, the 
 | `detail.extraGasTxCost.gas` | `string` | Gas units for the extra-gas transfer transaction. Only present when `extraGas: true`. |
 | `detail.extraGasTxCost.eth` | `string` | Cost of the extra-gas transfer in wei. Only present when `extraGas: true`. |
 | `feeCommitment` | `object` | Signed fee commitment (only present when `recipient` is provided). |
+
+Use `feeCommitment.withdrawalData` as the canonical `withdrawal.data` payload for relayed withdrawals. `GET /relayer/details` is still useful for UX checks such as `minWithdrawAmount`, but you should not rebuild `withdrawal.data` from it when the quote already supplies the signed value.
 
 ### Quote Lifecycle
 
@@ -273,7 +275,7 @@ Returns relayer configuration for a specific chain and asset. Use this to check 
 | Field | Type | Description |
 |-------|------|-------------|
 | `chainId` | `number` | Chain ID. |
-| `feeBPS` | `string` | Base fee in basis points. |
+| `feeBPS` | `string` | Fixed fee component in basis points. |
 | `minWithdrawAmount` | `string` | Minimum withdrawal amount (in token smallest unit). |
 | `feeReceiverAddress` | `string` | Address that receives the relay fee. For standard withdrawals, use this as `feeRecipient` in `RelayData`. When using `feeCommitment` from the quote, the `withdrawalData` already encodes the correct fee routing. |
 | `assetAddress` | `string` | Asset address. |
