@@ -34,4 +34,4 @@ Privacy Pools lets users make **public deposits** into shared pools, wait for **
 - Deposits are public. Privacy starts at withdrawal time, not deposit time.
 - ASP approval unlocks the private withdrawal path, but it does not block deposits.
 - Ragequit is always the public fallback.
-- The recovery phrase and the deposit wallet control different exit paths and both matter.
+- The recovery phrase and the deposit wallet control different exit paths, and both matter.

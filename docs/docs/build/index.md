@@ -11,7 +11,7 @@ keywords:
   - agents
 ---
 
-This section is for teams integrating Privacy Pools into wallets, dapps, backend services, or agent-assisted development workflows.
+This section is for teams integrating Privacy Pools into wallets, dapps, backend services, or agent workflows.
 
 ## Recommended read order
 
@@ -26,7 +26,7 @@ This section is for teams integrating Privacy Pools into wallets, dapps, backend
 1. [Agent Setup](/build/agents) for Claude, Codex, and repo-entry guidance.
 2. [Skill Library](/build/skills) for task-specific instructions.
 3. [Frontend Integration](/build/integration) for the canonical implementation path.
-4. [Deployments](/deployments) for authoritative addresses and chain metadata.
+4. [Deployments](/deployments) for contract addresses and chain metadata.
 
 ## Production checklist
 
