@@ -1,5 +1,5 @@
 /**
- * Swizzled DocItem/Content (eject) — adds PageActions button beside the H1 title.
+ * Swizzled DocItem/Content (eject). Adds PageActions button beside the H1 title.
  * No config-level alternative exists for injecting components into the title row.
  *
  * Based on @docusaurus/theme-classic v3.7.0 DocItem/Content (MIT license).
@@ -17,7 +17,7 @@ import PageActions from "../../../components/PageActions";
 import styles from "./styles.module.css";
 
 /**
- * Resolve the page title — either from the markdown H1 (contentTitle)
+ * Resolve the page title: either from the markdown H1 (contentTitle)
  * or from metadata when the markdown has no H1.
  */
 function usePageTitle(): string | null {

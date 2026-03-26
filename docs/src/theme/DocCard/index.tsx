@@ -1,5 +1,5 @@
 /**
- * Swizzled DocCard (eject) — removes auto-injected emoji icons from
+ * Swizzled DocCard (eject). Removes auto-injected emoji icons from
  * generated-index cards. No config-level alternative exists for this.
  *
  * Based on @docusaurus/theme-classic v3.7.0 DocCard (MIT license).

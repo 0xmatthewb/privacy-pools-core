@@ -170,7 +170,7 @@ export default function Home(): React.JSX.Element {
   return (
     <Layout
       title="Privacy Pools Documentation"
-      description="Technical documentation for Privacy Pools — public deposits, private withdrawals, and developer integration guidance."
+      description="Technical documentation for Privacy Pools: public deposits, private withdrawals, and developer integration guidance."
     >
       <main className={styles.main}>
         {/* Hero */}

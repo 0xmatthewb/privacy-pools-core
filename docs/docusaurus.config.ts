@@ -14,7 +14,7 @@ const config: Config = {
 
   onBrokenLinks: "throw",
   clientModules: ["./src/searchKeyboardShortcut.ts"],
-  /* Font stylesheet first — Docusaurus emits stylesheets before headTags,
+  /* Font stylesheet first. Docusaurus emits stylesheets before headTags,
      so preconnect hints go here as objects to fire before the font request. */
   stylesheets: [
     { href: "https://fonts.googleapis.com", rel: "preconnect" },
