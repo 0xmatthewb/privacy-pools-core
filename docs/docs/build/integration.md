@@ -124,12 +124,12 @@ const walletClient = createWalletClient({
   transport: custom(window.ethereum!),
 });
 
-// 4. Create AccountService
+// 3. Create AccountService
 const accountService = new AccountService(dataService, {
   mnemonic: "your recovery phrase ...",
 });
 
-// 5. Read the pool scope and derive deposit secrets
+// 4. Read the pool scope and derive deposit secrets
 const scope = await publicClient.readContract({
   address: POOL_ADDRESS,
   abi: [{
@@ -140,13 +140,12 @@ const scope = await publicClient.readContract({
     stateMutability: "view",
   }],
   functionName: "SCOPE",
-});
+}) as Hash;
 
-// Index = number of existing deposits for this scope
-const { precommitment } = accountService.createDepositSecrets(scope as Hash, 0n);
-// → { precommitment: Hash, nullifier: Secret, secret: Secret }
+// index = number of existing deposits for this scope (0 for first deposit)
+const { precommitment } = accountService.createDepositSecrets(scope, 0n);
 
-// 6. Deposit via the Entrypoint
+// 5. Deposit via the Entrypoint
 const [account] = await walletClient.getAddresses();
 ```
 
@@ -224,29 +223,26 @@ await publicClient.waitForTransactionReceipt({ hash: txHash });
 </Tabs>
 
 ```typescript
-
-// 7. Fetch deposit events
+// 6. Fetch deposit events
 const deposits = await dataService.getDeposits({
   chainId: 11155111,
   address: POOL_ADDRESS,
-  scope: scope as Hash,
+  scope,
   deploymentBlock: START_BLOCK,
 });
-// → DepositEvent[]
 
-// 8. Wait for ASP approval, then fetch roots
+// 7. Wait for ASP approval, then fetch roots
 const aspHost = "https://dw.0xbow.io"; // Sepolia. See /reference/asp-api for host selection.
 const aspRoots = await fetch(
   `${aspHost}/11155111/public/mt-roots`,
   { headers: { "X-Pool-Scope": scope.toString() } } // must be decimal
 ).then((r) => r.json());
 // → { mtRoot: string, onchainMtRoot: string | null }
-// Stop if ASP tree has not converged on-chain
 if (!aspRoots.onchainMtRoot || aspRoots.mtRoot !== aspRoots.onchainMtRoot) {
   throw new Error("ASP tree has not converged, try again later");
 }
 
-// 9. Request a relayer quote
+// 8. Request a relayer quote
 const relayerUrl = "https://fastrelay.xyz"; // testnet: https://testnet-relayer.privacypools.com
 const withdrawAmount = 5000000000000000n; // 0.005 ETH
 const recipient = "0x..." as `0x${string}`;
@@ -263,54 +259,47 @@ const quote = await fetch(`${relayerUrl}/relayer/quote`, {
 }).then((r) => r.json());
 // → { feeBPS: string, feeCommitment: { withdrawalData: string, ... }, expiresAt: number }
 
-// 10. Build the Withdrawal struct by ABI-encoding RelayData client-side
+// 9. Build Withdrawal struct
 // feeReceiverAddress comes from /relayer/details, not the quote response
 const relayerDetails = await fetch(
   `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
 ).then((r) => r.json());
-// Client-side encoding binds the proof to this recipient
 const withdrawalData = encodeAbiParameters(
   parseAbiParameters("address recipient, address feeRecipient, uint256 relayFeeBPS"),
   [recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS)]
 );
 const withdrawal = { processooor: ENTRYPOINT_ADDRESS, data: withdrawalData };
-const context = BigInt(calculateContext(withdrawal, scope as Hash));
+const context = BigInt(calculateContext(withdrawal, scope));
 
-// Fetch ASP leaves and state tree leaves from the ASP API
 // → { stateTreeLeaves: string[], aspLeaves: string[] } (decimal bigints)
 const leavesResponse = await fetch(
   `${aspHost}/11155111/public/mt-leaves`,
   { headers: { "X-Pool-Scope": scope.toString() } }
 ).then((r) => r.json());
 
-// Pick the pool account to spend (reconstructed from AccountService)
-const poolAccounts = accountService.account.poolAccounts;
-const poolAccountsArray = [...poolAccounts.values()].flat();
-if (poolAccountsArray.length === 0) {
+const allPoolAccounts = [...accountService.account.poolAccounts.values()].flat();
+if (allPoolAccounts.length === 0) {
   throw new Error("No pool accounts found, deposit first");
 }
-const poolAccount = poolAccountsArray[0];
+const poolAccount = allPoolAccounts[0];
 const commitment = poolAccount.children.length > 0
   ? poolAccount.children[poolAccount.children.length - 1]
   : poolAccount.deposit;
 
-// Build Merkle proofs from both trees
-// State tree leaves are commitment hashes; ASP tree leaves are labels
+// State tree: keyed by commitment hash. ASP tree: keyed by label.
 const stateMerkleProof = generateMerkleProof(
   leavesResponse.stateTreeLeaves.map(BigInt),
   commitment.hash
 );
-// → { root: bigint, index: number, siblings: bigint[] }
 const aspMerkleProof = generateMerkleProof(
   leavesResponse.aspLeaves.map(BigInt),
   commitment.label
 );
 
-// 11. Generate the withdrawal proof
+// 10. Generate the withdrawal proof
 const { nullifier: newNullifier, secret: newSecret } =
   accountService.createWithdrawalSecrets(commitment);
 
-// Roots come from the Merkle proof results, not separate contract calls
 const withdrawalProof = await sdk.proveWithdrawal(
   commitment,
   {
@@ -328,7 +317,7 @@ const withdrawalProof = await sdk.proveWithdrawal(
 );
 // → { proof: { pi_a, pi_b, pi_c }, publicSignals: string[] }
 
-// 12. Submit to relayer before the quote expires
+// 11. Submit to relayer before the quote expires
 const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -339,10 +328,9 @@ const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
     scope: scope.toString(),
     chainId: 11155111,
     feeCommitment: quote.feeCommitment,
-  }, (_, v) => (typeof v === "bigint" ? v.toString() : v)),
+  }, (_, v) => (typeof v === "bigint" ? v.toString() : v)), // bigint -> string for JSON
 }).then((r) => r.json());
-// → { success: true, txHash: "0x..." } or { success: false, error: "..." }
-// Check relayResult.success because the relayer returns HTTP 200 even for failures
+// Relayer returns HTTP 200 even on failure; always check relayResult.success
 ```
 
 ### Ragequit (Public Exit)
@@ -350,18 +338,14 @@ const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
 Ragequit lets the original depositor reclaim funds publicly, bypassing ASP approval. Only the depositing address can call it.
 
 ```typescript
-// Generate a commitment proof for ragequit
-const ragequitCommitment = commitment; // AccountCommitment from pool account
 const commitmentProof = await sdk.proveCommitment(
-  ragequitCommitment.value,
-  ragequitCommitment.label,
-  ragequitCommitment.nullifier,
-  ragequitCommitment.secret
+  commitment.value,
+  commitment.label,
+  commitment.nullifier,
+  commitment.secret
 );
-// → { proof: { pi_a, pi_b, pi_c }, publicSignals: string[4] }
 
-// Submit ragequit directly to the pool contract
-// Note: pB coordinates must be swapped for Solidity
+// pB coordinates are swapped (x,y -> y,x) per Solidity's groth16 verifier convention
 const { request: rqRequest } = await publicClient.simulateContract({
   account,
   address: POOL_ADDRESS,

@@ -115,8 +115,7 @@ interface ContractInteractionsService {
 
   getScope(privacyPoolAddress: Address): Promise<bigint>;
 
-  // ⚠️ Misleading name: calls Entrypoint.latestRoot(), not pool.currentRoot().
-  // You must pass the Entrypoint address, not a pool address. See note below.
+  // See warning below: reads Entrypoint.latestRoot(), not pool.currentRoot()
   getStateRoot(privacyPoolAddress: Address): Promise<bigint>;
 
   getStateSize(privacyPoolAddress: Address): Promise<bigint>;
@@ -147,8 +146,13 @@ import { createPublicClient, http } from "viem";
 const client = createPublicClient({ transport: http(rpcUrl) });
 const stateRoot = await client.readContract({
   address: privacyPoolAddress,
-  abi: [{ name: "currentRoot", type: "function", inputs: [],
-          outputs: [{ type: "uint256" }], stateMutability: "view" }],
+  abi: [{
+    name: "currentRoot",
+    type: "function",
+    inputs: [],
+    outputs: [{ type: "uint256" }],
+    stateMutability: "view",
+  }],
   functionName: "currentRoot",
 });
 ```

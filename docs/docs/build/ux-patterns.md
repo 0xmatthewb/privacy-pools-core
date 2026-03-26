@@ -42,13 +42,14 @@ Filter withdraw selectors to approved non-zero accounts for the active chain/sco
   - Display reverse ENS alongside the resolved address.
   - Unresolved input must block submit.
   ```typescript
-  import { normalize } from "viem/ens"; // normalize from viem/ens
+  import { normalize } from "viem/ens";
   const resolved = await publicClient.getEnsAddress({ name: normalize(input) });
   ```
 - Fetch `GET /relayer/details` early enough to validate `minWithdrawAmount`.
   - If a partial withdrawal would leave a non-zero remainder below that minimum, warn clearly and offer: withdraw less, withdraw max, or leave the remainder for a later public exit.
   ```typescript
-  const details = await fetch(`${relayerUrl}/relayer/details?chainId=${chainId}&assetAddress=${asset}`).then(r => r.json());
+  const url = `${relayerUrl}/relayer/details?chainId=${chainId}&assetAddress=${asset}`;
+  const details = await fetch(url).then(r => r.json());
   ```
 - Use `GET /{chainId}/public/deposits-larger-than` to show an anonymity-set estimate while the user edits the amount.
 - Request the signed `feeCommitment` only after the final recipient is known on review.

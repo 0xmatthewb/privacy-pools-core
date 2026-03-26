@@ -127,7 +127,8 @@ const config = await publicClient.readContract({
   functionName: "assetConfig",
   args: [assetAddress],
 });
-if (amount < config[1]) {
+const [, minimumDepositAmount] = config;
+if (amount < minimumDepositAmount) {
   throw new Error("Deposit below minimum");
 }
 ```

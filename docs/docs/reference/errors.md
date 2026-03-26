@@ -107,7 +107,7 @@ These are two separate Merkle trees with different sources and validation rules:
 
 The `X-Pool-Scope` header must be a decimal string. Hex-encoded scope values will not match any pool (the API treats the header as a literal string lookup), and the API returns 404 rather than a validation error.
 
-```ts
+```typescript
 // Wrong: hex string, API returns 404
 const scope = '0x1a2b3c';
 headers['X-Pool-Scope'] = scope;
