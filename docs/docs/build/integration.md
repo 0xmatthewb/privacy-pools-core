@@ -10,7 +10,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Use this page when you are wiring a real Privacy Pools integration into a frontend or wallet. It covers the builder happy path first, then points you to reference pages only when you need exact values or schemas.
+Use this page when you are wiring the full Privacy Pools integration into a frontend or wallet. If you are still on the first pass, start with [Start Here](/build/start) and come back here when you are ready to wire the full flow and production details.
 
 ## Use this page for
 
@@ -428,3 +428,5 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 | Relayer quote, request, and details endpoints | [Relayer API Reference](/reference/relayer-api) |
 | Contract errors, safety checks, and common mistakes | [Errors and Constraints](/reference/errors) |
 | SDK types, methods, and account reconstruction | [SDK Utilities](/reference/sdk) |
+
+Next, use [Using Privacy Pools](/protocol) for the product lifecycle, [UX Patterns](/build/ux-patterns) for production-facing states and copy, and [Technical Reference](/reference) when you need exact values.

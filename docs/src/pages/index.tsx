@@ -83,7 +83,7 @@ const PERSONAS = [
   {
     title: "Builders",
     icon: IconCode,
-    description: "Build frontend flows for deposit, withdrawal, and account management.",
+    description: "Build deposit, approval, withdrawal, and ragequit flows.",
     link: "/build/start",
     label: "Start here",
   },
@@ -181,8 +181,8 @@ export default function Home(): React.JSX.Element {
           </p>
           <div className={styles.heroActions}>
             <SearchTrigger />
-            <Link to="/overview/what-is-privacy-pools" className={styles.introButton}>
-              Intro <span className={styles.introArrow}>→</span>
+            <Link to="/build/start" className={styles.introButton}>
+              Start integrating <span className={styles.introArrow}>→</span>
             </Link>
           </div>
         </section>

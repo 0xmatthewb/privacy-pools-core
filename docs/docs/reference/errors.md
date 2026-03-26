@@ -12,9 +12,17 @@ keywords:
   - integration
 ---
 
-Revert reason names are taken directly from the Solidity interface definitions in the contracts package. This page covers integrator-facing errors. Admin and governance errors (pool registration, fee configuration, IPFS CID validation, etc.) are omitted.
+Use this page when a transaction, proof, or event scan fails, or when you need the exact contract and SDK constraints behind a guide page.
 
 For the contract interface definitions where these errors originate, see [Contracts Interfaces](/reference/contracts).
+
+:::info Use this page for
+- exact revert names and the conditions that usually trigger them
+- the most common proof-submission and event-scan failures
+- checking whether an issue belongs to a lifecycle guide or the exact contract rules
+
+Verified against the current contracts package, SDK v1.2.0, and the integration guidance in these docs.
+:::
 
 :::tip Most common during integration
 Focus on `ContextMismatch`, `UnknownStateRoot`, and `IncorrectASPRoot`, which are the most common proof-submission failures. See [Common Integration Mistakes](#common-integration-mistakes) at the bottom of this page for debugging guidance.

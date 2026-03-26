@@ -2,19 +2,33 @@
 sidebar_label: Start Here
 sidebar_position: 1
 title: Start Here
-description: Onboarding checklist and recommended implementation path for a Privacy Pools integration.
+description: Quickstart and implementation path for a Privacy Pools integration.
 keywords: [privacy pools, getting started, integration, frontend, agent]
 ---
 
-Privacy Pools lets users deposit assets publicly, then withdraw them privately using zero-knowledge proofs. The TypeScript SDK (`viem`-based) handles deposits, withdrawals, and the public ragequit fallback.
+Privacy Pools lets users deposit assets publicly, wait for ASP approval, then withdraw them privately through a relayer. If approval is delayed or privacy is not needed, the original depositor can ragequit and exit publicly. This page is the fastest path from zero to a first working integration.
 
 :::info
 These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).
 :::
 
-## Before You Write Code
+## What You Are Building
 
-Make sure you have all five of these inputs first:
+- A public deposit flow from the user's wallet
+- A private relayed withdrawal flow after ASP approval
+- A public ragequit fallback for the original depositor
+
+## Public vs Private
+
+| Flow | What is public | What stays private |
+|------|----------------|-------------------|
+| Deposit | The asset, amount, depositor, and on-chain commitment | The secrets that allow a later spend |
+| Relayed withdrawal | The relayer transaction and recipient payout | Which deposit funded the withdrawal |
+| Ragequit | The depositor and exit are linked on-chain | No private spend path is preserved |
+
+## Minimum Prerequisites
+
+Make sure you have these five inputs first:
 
 1. The target chain and asset you want to support.
 2. The correct `Entrypoint`, `PrivacyPool`, and `startBlock` values once you are ready to wire that chain. Use [Deployments](/deployments) as the lookup page for those values.
@@ -22,42 +36,40 @@ Make sure you have all five of these inputs first:
 4. A plan for both private withdrawal and public [ragequit](/protocol/ragequit).
 5. A user-facing recovery flow before the first deposit.
 
-## Default builder path
+## Quickstart Path
 
-1. Read [Using Privacy Pools](/protocol) to understand the product behavior before writing code.
-2. Implement the happy path from [Frontend Integration](/build/integration).
+1. Read [Using Privacy Pools](/protocol) to understand the lifecycle your product needs to reflect.
+2. Follow [Frontend Integration](/build/integration) for the first working deposit, approval, withdrawal, and ragequit pass.
 3. Add approval, recovery, quote-refresh, and status handling from [UX Patterns](/build/ux-patterns).
 4. Use [Technical Reference](/reference) when you need exact types, schemas, or contract behavior.
 
 Use [Deployments](/deployments) when you need chain addresses, chain metadata, or `startBlock` for the specific network you are wiring.
+
+## First Implementation Pass
+
+1. Serve the circuit artifacts and initialize `PrivacyPoolSDK` plus `DataService`.
+2. Create or restore a mnemonic-backed account with `AccountService`.
+3. Implement deposit and persist the confirmed `label` plus post-fee `committedValue`.
+4. Show the deposit as pending until ASP approval converges on-chain.
+5. Implement relayed withdrawal from approved, non-zero pool accounts.
+6. Keep ragequit visible as the public fallback path for the original depositor.
 
 ## Core Concepts
 
 | Term | Meaning |
 |------|---------|
 | **Scope** | Unique identifier for each pool, derived from the asset and contract address. Used in API headers and proof inputs. |
-| **Commitment** | A hash that records a deposit on-chain. Derived from the deposit's value, label, and secrets. |
-| **Label** | Per-deposit identifier. The ASP approves deposits by adding their label to the approved set. |
-| **ASP** | Association Set Provider: off-chain service that evaluates deposits and maintains an approved Merkle tree. |
-| **Recovery phrase** | BIP-39 mnemonic that derives all deposit secrets. If lost, funds cannot be withdrawn privately. Must be saved before depositing. |
+| **Label** | Per-deposit identifier. The ASP approves deposits by adding the label to the approved set. |
+| **Recovery phrase** | BIP-39 mnemonic that derives all deposit secrets. If lost, funds cannot be withdrawn privately. |
+| **Deposit wallet** | The wallet that made the original deposit. It is required for ragequit, even if the recovery phrase is still available. |
 
-## Agent Workflows
+## What To Open Next
 
-For developers using AI coding agents or LLM-powered tools after the main builder path is clear.
+- [Using Privacy Pools](/protocol) if you are shaping the user journey and need the lifecycle in one place
+- [Frontend Integration](/build/integration) if you are ready to wire the real integration
+- [Technical Reference](/reference) if you need exact SDK, API, or chain details
 
-| # | Page | Covers |
-|---|------|--------|
-| 1 | [Agent Setup](/build/agents) | Runtime setup (Claude Code, Codex, etc.) |
-| 2 | [Skill Library](/build/skills) | Load the skill file for your task |
-| 3 | [Frontend Integration](/build/integration) | SDK patterns, deposit/withdrawal implementation |
-| 4 | [Technical Reference](/reference) and [Deployments](/deployments) | Exact SDK/API details and chain-specific values |
+## Other Paths
 
-## Contributing
-
-For contributors working on the core codebase.
-
-| # | Page | Covers |
-|---|------|--------|
-| 1 | [Contributing](/build/contributing) | Repo structure, local setup, build and test commands |
-| 2 | [Contracts](/layers/contracts) and [ZK Circuits](/layers/zk) | Layer-specific reference |
-| 3 | [Technical Reference](/reference) | SDK, API, deployment, and error reference |
+- If you are using an AI coding agent, finish this page once, then open [Agent Setup](/build/agents) and the [Skill Library](/build/skills).
+- If you are working on the repo itself, start with [Contributing](/build/contributing), then use [Protocol Components](/layers) and [Technical Reference](/reference) as needed.

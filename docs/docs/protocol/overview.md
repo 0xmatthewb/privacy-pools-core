@@ -5,6 +5,8 @@ description: Lifecycle overview of Privacy Pools operations from deposit through
 keywords: [privacy pools, deposit, withdrawal, ragequit, ASP, lifecycle]
 ---
 
+Use this page to understand the lifecycle your product should reflect. If you are integrating Privacy Pools for the first time, start with [Start Here](/build/start), then come back here when you want the user journey in one place.
+
 Users deposit assets into a pool. Once approved by the ASP, they can withdraw privately through a relayer. At any time, the original depositor can ragequit to publicly reclaim funds.
 
 ```mermaid
@@ -50,3 +52,9 @@ A public exit that returns the full balance to the original depositor address. R
 | **Partial amounts** | Yes, creates a change commitment | No, full balance only |
 
 **The recovery phrase and the deposit wallet control different things.** Neither is a universal fallback: losing the recovery phrase blocks private withdrawal, and losing access to the deposit wallet blocks ragequit.
+
+## Next Steps
+
+- Open [Start Here](/build/start) for the fastest path to a working integration
+- Use [Frontend Integration](/build/integration) when you are ready to implement the flow
+- Use [Technical Reference](/reference) for exact SDK, API, and chain details

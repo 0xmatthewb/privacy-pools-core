@@ -11,7 +11,7 @@ keywords:
   - agents
 ---
 
-Guides for adding Privacy Pools to wallets and dapps. Start with the builder path below, then use the reference pages when you need exact values, schemas, or contract behavior.
+Guides for adding Privacy Pools to wallets and dapps. If you are integrating Privacy Pools for the first time, start with [Start Here](/build/start). Use the path below, then open reference pages only when you need exact values, schemas, or contract behavior.
 
 ## Recommended read order
 
@@ -22,6 +22,12 @@ Guides for adding Privacy Pools to wallets and dapps. Start with the builder pat
 5. [Technical Reference](/reference) when you need exact SDK, API, contract, or deployment details.
 
 [Deployments](/deployments) is the lookup page for chain addresses, chain metadata, and `startBlock`. Use it when you are wiring a specific target chain, not as an onboarding step by itself.
+
+## Common Entry Points
+
+- Start with [Start Here](/build/start) if you want the fastest path to a working integration.
+- Open [Deployments](/deployments) when you need addresses, chain metadata, or `startBlock`.
+- Open [Agent Setup](/build/agents) after the builder path is clear and you want agent-specific help.
 
 ## If you are using agents
 
