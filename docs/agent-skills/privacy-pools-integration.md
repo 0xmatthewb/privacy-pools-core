@@ -28,8 +28,9 @@ This skill covers high-level integration planning. For step-by-step implementati
 
 ## Docs
 
+- [Start Here](/build/start)
 - [Integration guide](/build/integration)
 - [Deposit flow](/protocol/deposit)
 - [Withdrawal flow](/protocol/withdrawal)
 - [Ragequit flow](/protocol/ragequit)
-- [Deployments](/deployments)
+- [Deployments](/deployments) for exact chain values and `startBlock`

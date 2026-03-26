@@ -8,10 +8,10 @@
 
 ## Guardrails
 
-- Ragequit is unconditionally available, no ASP prerequisite
+- Ragequit is unconditionally available — no ASP prerequisite
 - Only the original depositor can ragequit a commitment
 - A ragequit commitment cannot later be privately withdrawn
-- Ragequit is a public on-chain exit with no privacy
+- Ragequit is a public on-chain exit — no privacy
 
 # Privacy Pools Ragequit
 

@@ -2,6 +2,7 @@
 
 ## Read Order
 
+1. https://docs.privacypools.com/build/start (local: `docs/docs/build/start.md`)
 1. https://docs.privacypools.com/build/integration (local: `docs/docs/build/integration.md`)
 1. https://docs.privacypools.com/protocol/deposit (local: `docs/docs/protocol/deposit.md`)
 1. https://docs.privacypools.com/protocol/withdrawal (local: `docs/docs/protocol/withdrawal.md`)
@@ -45,8 +46,9 @@ This skill covers high-level integration planning. For step-by-step implementati
 
 ## Docs
 
+- [Start Here](/build/start)
 - [Integration guide](/build/integration)
 - [Deposit flow](/protocol/deposit)
 - [Withdrawal flow](/protocol/withdrawal)
 - [Ragequit flow](/protocol/ragequit)
-- [Deployments](/deployments)
+- [Deployments](/deployments) for exact chain values and `startBlock`

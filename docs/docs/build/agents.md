@@ -82,6 +82,8 @@ For agents that work from a single document, two corpus files are available:
 - [`llms.txt`](https://docs.privacypools.com/llms.txt): lightweight site index with page titles and URLs. Good for quick orientation or retrieval-augmented pipelines that fetch pages on demand.
 - [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt): complete corpus with all docs pages (~20-25k tokens).
 
+Individual skill files are mirrored in the repo under `.agents/skills/` and in the hosted site bundle under `docs/static/agent-skills/`.
+
 Individual skill files can also be fetched directly by URL (e.g., `https://docs.privacypools.com/agent-skills/privacy-pools-deposit/SKILL.md`) without loading the full corpus.
 
 IDE-based agents such as Cursor, Copilot, and Windsurf can discover skill files from the `.agents/skills/` directory at the repository root.

@@ -20,10 +20,10 @@ This is a monorepo with the following packages:
 ## Quick Start
 
 - Getting started: https://docs.privacypools.com/build/start (local: `docs/docs/build/start.md`)
+- Integration guide: https://docs.privacypools.com/build/integration (local: `docs/docs/build/integration.md`)
 - Agent workflows: https://docs.privacypools.com/build/agents (local: `docs/docs/build/agents.md`)
 - Skill library: https://docs.privacypools.com/build/skills (local: `docs/docs/build/skills.md`)
-- Deployments: https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
-- Integration guide: https://docs.privacypools.com/build/integration (local: `docs/docs/build/integration.md`)
+- Deployments lookup: https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
 
 ## How to Use Skills
 

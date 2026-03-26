@@ -5,7 +5,7 @@
       "description": "End-to-end Privacy Pools integration planning",
       "fragment": "privacy-pools-integration.md",
       "docsRoutes": ["/build/integration", "/build/start", "/protocol/deposit", "/protocol/withdrawal", "/protocol/ragequit", "/deployments"],
-      "readOrder": ["/build/integration", "/protocol/deposit", "/protocol/withdrawal", "/protocol/ragequit", "/deployments"],
+      "readOrder": ["/build/start", "/build/integration", "/protocol/deposit", "/protocol/withdrawal", "/protocol/ragequit", "/deployments"],
       "guardrails": ["Use relayed withdrawals as the only user-facing path: fastrelay.xyz on production chains and testnet-relayer.privacypools.com on published testnets", "Never expose deposit secrets, nullifiers, or raw note material in copy/paste flows", "Verify ASP root parity before proof submission", "Use deployment startBlock for event scans, not genesis"]
     },
     {

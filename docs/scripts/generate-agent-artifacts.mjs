@@ -109,10 +109,10 @@ This is a monorepo with the following packages:
 ## Quick Start
 
 - Getting started: ${DOCS_BASE_URL}/build/start (local: \`docs/docs/build/start.md\`)
+- Integration guide: ${DOCS_BASE_URL}/build/integration (local: \`docs/docs/build/integration.md\`)
 - Agent workflows: ${DOCS_BASE_URL}/build/agents (local: \`docs/docs/build/agents.md\`)
 - Skill library: ${DOCS_BASE_URL}/build/skills (local: \`docs/docs/build/skills.md\`)
-- Deployments: ${DOCS_BASE_URL}/deployments (local: \`docs/docs/deployments.md\`)
-- Integration guide: ${DOCS_BASE_URL}/build/integration (local: \`docs/docs/build/integration.md\`)
+- Deployments lookup: ${DOCS_BASE_URL}/deployments (local: \`docs/docs/deployments.md\`)
 
 ## How to Use Skills
 
@@ -173,31 +173,34 @@ Route all Privacy Pools tasks through the docs below.
 
 ## Key Docs
 
+- Getting started: \`docs/docs/build/start.md\`
 - Frontend integration guide: \`docs/docs/build/integration.md\`
+- Technical reference: \`docs/docs/reference/index.md\`
 - Agent workflows: \`docs/docs/build/agents.md\`
-- Deployments and start blocks: \`docs/docs/deployments.md\`
+- Deployments lookup: \`docs/docs/deployments.md\`
 - Skill library: \`docs/docs/build/skills.md\`
 
 ## Quick Start
 
 - Getting started: ${DOCS_BASE_URL}/build/start
+- Frontend integration guide: ${DOCS_BASE_URL}/build/integration
 - Agent workflows: ${DOCS_BASE_URL}/build/agents
 - Skill library: ${DOCS_BASE_URL}/build/skills
-- Deployments: ${DOCS_BASE_URL}/deployments
+- Deployments lookup: ${DOCS_BASE_URL}/deployments
 
 ## Recommended Read Order
 
-1. Read \`docs/docs/build/agents.md\` for agent workflow setup and skill discovery.
-2. Read \`docs/docs/build/integration.md\` for the SDK integration recipe.
+1. Read \`docs/docs/build/start.md\` for prerequisites, shared terminology, and the default builder path.
+2. Read \`docs/docs/build/integration.md\` for the canonical SDK integration recipe.
 3. Read the relevant protocol flow: \`docs/docs/protocol/deposit.md\`, \`withdrawal.md\`, or \`ragequit.md\`.
-4. Pull addresses/startBlock from \`docs/docs/deployments.md\`.
-5. Check API references in \`docs/docs/reference/\` as needed.
+4. Check \`docs/docs/reference/\` when you need exact SDK, API, contract, or error details.
+5. Pull addresses and \`startBlock\` from \`docs/docs/deployments.md\` when wiring a specific chain.
 
 ## Quick Task Router
 
-- If the task is first-time protocol integration, start with \`docs/docs/build/integration.md\`.
+- If the task is first-time protocol integration, start with \`docs/docs/build/start.md\`, then \`docs/docs/build/integration.md\`.
 - If the task needs API payloads or edge-case handling, check \`docs/docs/reference/\`.
-- If the task needs chain addresses/start blocks, use \`docs/docs/deployments.md\`.
+- If the task needs chain addresses or \`startBlock\`, use \`docs/docs/deployments.md\`.
 - If the task is about agent file behavior/discovery, use \`docs/docs/build/agents.md\`.
 
 ## Available Skills
