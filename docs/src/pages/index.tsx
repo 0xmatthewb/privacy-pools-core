@@ -83,7 +83,7 @@ const PERSONAS = [
   {
     title: "Builders",
     icon: IconCode,
-    description: "Build deposit, approval, withdrawal, and ragequit flows.",
+    description: "Add Privacy Pools to your wallet or dapp with the TypeScript SDK.",
     link: "/build/start",
     label: "Start here",
   },
@@ -97,7 +97,7 @@ const PERSONAS = [
   {
     title: "Users",
     icon: IconShield,
-    description: "Understand how deposits, withdrawals, and ragequit work.",
+    description: "Learn how deposits, private withdrawals, and ragequit work end to end.",
     link: "/protocol",
     label: "Protocol lifecycle",
   },
@@ -177,12 +177,12 @@ export default function Home(): React.JSX.Element {
         <section className={styles.hero}>
           <h1 className={styles.heroTitle}>Privacy Pools Documentation</h1>
           <p className={styles.heroDeck}>
-            Public deposits, private withdrawals, and a public fallback exit.
+            A compliant way to transact anonymously on Ethereum.
           </p>
           <div className={styles.heroActions}>
             <SearchTrigger />
-            <Link to="/build/start" className={styles.introButton}>
-              Start integrating <span className={styles.introArrow}>→</span>
+            <Link to="/overview/what-is-privacy-pools" className={styles.introButton}>
+              Intro <span className={styles.introArrow}>→</span>
             </Link>
           </div>
         </section>
