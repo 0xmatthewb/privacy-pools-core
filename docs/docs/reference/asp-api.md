@@ -70,7 +70,7 @@ curl -s https://dw.0xbow.io/11155111/public/mt-roots \
 ```json
 {
   "mtRoot": "19475835126872665814539381965879757584413782543818621439526181973847498820417",
-  "createdAt": "2026-03-24T18:32:01.442Z",
+  "createdAt": 1711302721442,
   "onchainMtRoot": "19475835126872665814539381965879757584413782543818621439526181973847498820417"
 }
 ```
@@ -78,7 +78,7 @@ curl -s https://dw.0xbow.io/11155111/public/mt-roots \
 | Field | Type | Description |
 |-------|------|-------------|
 | `mtRoot` | `string` | Latest ASP Merkle root from the ASP database (decimal bigint string). May be ahead of on-chain if a new root has not been pushed yet. |
-| `createdAt` | `string` | ISO 8601 timestamp of this root. |
+| `createdAt` | `number` | Unix timestamp in milliseconds. |
 | `onchainMtRoot` | `string \| null` | The root value currently committed on-chain via `Entrypoint.latestRoot()`. Use this value as the proof's `aspRoot`. `null` when no root has been pushed on-chain for the pool yet. |
 
 **Root parity check:** The proof's `aspRoot` must exactly match `Entrypoint.latestRoot()`. Always verify:

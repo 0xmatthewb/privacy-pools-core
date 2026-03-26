@@ -102,7 +102,7 @@ The ZK proof shows the withdrawer owns a valid, approved commitment without reve
 
 The ASP sees deposit labels (which are public from deposit events) but never learns withdrawal destinations.
 
-For the full deposit-to-withdrawal lifecycle, see [Using Privacy Pools](/protocol).
+See [Using Privacy Pools](/protocol) for the deposit-to-withdrawal lifecycle.
 
 ## Next steps
 

@@ -215,7 +215,7 @@ import {
 } from "@0xbow/privacy-pools-core-sdk";
 import type { Hash } from "@0xbow/privacy-pools-core-sdk";
 
-const relayerUrl = "https://fastrelay.xyz"; // testnet: https://testnet-relayer.privacypools.com
+const relayerUrl = "https://testnet-relayer.privacypools.com"; // mainnet: https://fastrelay.xyz
 const withdrawAmount = 5000000000000000n; // 0.005 ETH
 const recipient = "0x..." as `0x${string}`;
 

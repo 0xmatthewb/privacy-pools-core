@@ -18,7 +18,7 @@ On public blockchains, every transaction is visible. That transparency is useful
 
 Privacy Pools makes withdrawals private without sacrificing deposit transparency or protocol-level compliance. Deposits still happen in public. What changes is the exit path: users can withdraw to a fresh address without creating an on-chain link back to the deposit address.
 
-## How Privacy Pools responds
+## How it works
 
 Privacy Pools lets users deposit assets into a shared pool, then later withdraw them privately with a zero-knowledge proof. That proof shows the user controls a valid deposit and is allowed to spend it, without revealing which deposit is being spent.
 
@@ -89,4 +89,4 @@ flowchart TD
 - **[Ragequit](/protocol/ragequit)**: The original depositor can always exit publicly back to the deposit address, even without ASP approval.
 - **Compliance without custody**: The ASP reviews deposits, but users keep full control of their funds.
 
-If you want the full lifecycle in one place, read [Using Privacy Pools](/protocol). If you are integrating the protocol into an app, start with [Build](/build).
+Read [Using Privacy Pools](/protocol) for the full lifecycle, or jump to [Build](/build) to start integrating.
