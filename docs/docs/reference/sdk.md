@@ -12,16 +12,6 @@ keywords:
   - integration
 ---
 
-Start with `AccountService` for account management, `DataService` for on-chain event scanning, and `proveWithdrawal` for the core withdrawal flow. The remaining utilities cover advanced scenarios like legacy account migration and direct contract interactions.
-
-:::info Use this page for
-- exact SDK class behavior, helper semantics, and TypeScript types
-- understanding what the published SDK does vs what guide pages summarize
-- checking integration details like account reconstruction and contract-helper behavior
-
-Verified against `@0xbow/privacy-pools-core-sdk@1.2.0`.
-:::
-
 ## `PrivacyPoolSDK`
 
 Main SDK class providing high-level protocol interaction.

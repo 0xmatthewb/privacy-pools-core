@@ -8,10 +8,6 @@ keywords: [privacy pools, getting started, integration, frontend, agent]
 
 Privacy Pools gives builders three user-facing flows to support: public deposits, private withdrawals after ASP approval, and a public ragequit path so the original depositor can always exit. This page is the shortest path from zero to a first working integration.
 
-:::info
-These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).
-:::
-
 ## What You Are Building
 
 - A public deposit flow from the user's wallet

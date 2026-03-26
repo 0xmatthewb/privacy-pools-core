@@ -12,17 +12,7 @@ keywords:
   - integration
 ---
 
-When a transaction, proof, or event scan fails, this is the page to open. It ties the guide-level symptoms back to the exact contract and SDK rules.
-
 For the contract interface definitions where these errors originate, see [Contracts Interfaces](/reference/contracts).
-
-:::info Use this page for
-- exact revert names and the conditions that usually trigger them
-- the most common proof-submission and event-scan failures
-- checking whether an issue belongs to a lifecycle guide or the exact contract rules
-
-Verified against the current contracts package, SDK v1.2.0, and the integration guidance in these docs.
-:::
 
 :::tip Most common during integration
 Focus on `ContextMismatch`, `UnknownStateRoot`, and `IncorrectASPRoot`, which are the most common proof-submission failures. See [Common Integration Mistakes](#common-integration-mistakes) at the bottom of this page for debugging guidance.

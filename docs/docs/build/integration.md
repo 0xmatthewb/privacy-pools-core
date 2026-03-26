@@ -21,10 +21,7 @@ This guide is for the full Privacy Pools frontend or wallet integration. If you 
 ## What you need before starting
 
 :::info Prerequisites
-Node 18+, viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain.
-
-- SDK version: 1.2.0 (`@0xbow/privacy-pools-core-sdk`)
-- Use [Deployments](/deployments) as the lookup page for target-chain addresses and `startBlock`
+Node 18+, viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain. Use [Deployments](/deployments) for target-chain addresses and `startBlock`.
 :::
 
 Before you start, make sure you have:

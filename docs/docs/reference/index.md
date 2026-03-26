@@ -12,16 +12,6 @@ keywords:
   - deployments
 ---
 
-This section is for exact values, schemas, and contract behavior. Start with the guide pages, then come here when you need precise SDK, API, contract, or deployment details. Within this section, [Deployments](/deployments) is the lookup page for exact chain values, not part of the initial tutorial flow.
-
-:::info Verified sources
-This reference section is aligned to three sources of truth:
-
-- Contracts and circuits from the local `privacy-pools-core-main` repo
-- `@0xbow/privacy-pools-core-sdk@1.2.0`
-- The production website integration patterns
-:::
-
 ## Read in this order
 
 1. [Deployments](/deployments) for chain addresses and `startBlock` values once you know which network you are wiring.
@@ -41,9 +31,3 @@ This reference section is aligned to three sources of truth:
 | [ASP API](/reference/asp-api) | Roots, leaves, health checks, and chain discovery |
 | [Relayer API](/reference/relayer-api) | Quote, relay request, fee commitment, and failure handling |
 | [Errors and Constraints](/reference/errors) | Revert reasons, validation rules, and common failure modes |
-
-## How this section fits with the guides
-
-- Guide pages explain the sequence of actions and user-facing behavior.
-- Reference pages own exact field names, defaults, schemas, and validation rules.
-- When both a guide and a reference page mention the same concept, use the reference page as the canonical source for exact shapes and parameter details.
