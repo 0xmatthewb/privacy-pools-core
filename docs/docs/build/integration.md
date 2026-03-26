@@ -34,6 +34,7 @@ import {
 } from "@0xbow/privacy-pools-core-sdk";
 import {
   createPublicClient, createWalletClient, custom, http,
+  encodeAbiParameters, parseAbiParameters,
 } from "viem";
 import { sepolia } from "viem/chains";
 
@@ -80,6 +81,7 @@ import type { Hash } from "@0xbow/privacy-pools-core-sdk";
 
 const accountService = new AccountService(dataService, {
   mnemonic: "your recovery phrase ...",
+  poolConcurrency: 1,
 });
 
 const scope = await publicClient.readContract({
@@ -94,8 +96,9 @@ const scope = await publicClient.readContract({
   functionName: "SCOPE",
 }) as Hash;
 
-// index = number of existing deposits for this scope (0 for first deposit)
-const { precommitment } = accountService.createDepositSecrets(scope, 0n);
+// index = number of existing pool accounts for this scope
+const existingAccounts = accountService.account.poolAccounts.get(scope) ?? [];
+const { precommitment } = accountService.createDepositSecrets(scope, BigInt(existingAccounts.length));
 const [account] = await walletClient.getAddresses();
 ```
 
@@ -235,9 +238,20 @@ if (!quoteResponse.ok) {
 }
 const quote = await quoteResponse.json();
 
+// Fetch relayer address for fee routing
+const relayerDetails = await fetch(
+  `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
+).then((r) => r.json());
+
+// ABI-encode RelayData client-side (the proof context is bound to this struct)
+const withdrawalData = encodeAbiParameters(
+  parseAbiParameters("address recipient, address feeRecipient, uint256 relayFeeBPS"),
+  [recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS)]
+);
+
 const withdrawal = {
   processooor: ENTRYPOINT_ADDRESS,
-  data: quote.feeCommitment.withdrawalData as `0x${string}`,
+  data: withdrawalData,
 };
 const context = BigInt(calculateContext(withdrawal, scope));
 
@@ -264,6 +278,10 @@ const commitment = poolAccount.children.length > 0
   ? poolAccount.children[poolAccount.children.length - 1]
   : poolAccount.deposit;
 
+// Pad siblings to the circuit's fixed tree depth
+const padSiblings = (siblings: bigint[]) =>
+  [...siblings, ...Array(32 - siblings.length).fill(0n)];
+
 const stateMerkleProof = generateMerkleProof(
   leavesResponse.stateTreeLeaves.map(BigInt),
   commitment.hash
@@ -281,8 +299,14 @@ const withdrawalProof = await sdk.proveWithdrawal(
   {
     context,
     withdrawalAmount: withdrawAmount,
-    stateMerkleProof,
-    aspMerkleProof,
+    stateMerkleProof: {
+      ...stateMerkleProof,
+      siblings: padSiblings(stateMerkleProof.siblings as bigint[]),
+    },
+    aspMerkleProof: {
+      ...aspMerkleProof,
+      siblings: padSiblings(aspMerkleProof.siblings as bigint[]),
+    },
     stateRoot: stateMerkleProof.root as Hash,
     stateTreeDepth: 32n,
     aspRoot: aspMerkleProof.root as Hash,
@@ -291,6 +315,12 @@ const withdrawalProof = await sdk.proveWithdrawal(
     newNullifier,
   }
 );
+
+// Verify locally before submitting to the relayer
+const proofValid = await sdk.verifyWithdrawal(withdrawalProof);
+if (!proofValid) {
+  throw new Error("Withdrawal proof failed local verification");
+}
 
 const relayResponse = await fetch(`${relayerUrl}/relayer/request`, {
   method: "POST",
