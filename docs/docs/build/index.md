@@ -23,12 +23,6 @@ This section is for teams adding Privacy Pools to wallets, dapps, and other prod
 
 [Deployments](/deployments) is the lookup page for chain addresses, chain metadata, and `startBlock`. Use it when you are wiring a specific target chain, not as an onboarding step by itself.
 
-## Common entry points
-
-- Start with [Start Here](/build/start) if you want the fastest path to a working integration.
-- Open [Deployments](/deployments) when you need addresses, chain metadata, or `startBlock`.
-- Open [Agent Setup](/build/agents) after the builder path is clear and you want agent-specific help.
-
 ## If you are using agents
 
 1. [Agent Setup](/build/agents) for Claude, Codex, and repo-entry guidance.

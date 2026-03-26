@@ -18,17 +18,9 @@ The Association Set Provider is the compliance layer that controls which deposit
 
 ## Core Responsibilities
 
-- Manages list of approved deposit labels
-- Provides inclusion proofs for [withdrawals](/protocol/withdrawal)
-- Enables label revocation when needed
-- Maintains compliance without compromising privacy
-
-## Integration Points
-
-- Interacts with [Entrypoint](/layers/contracts/entrypoint) via authorized postmen
-- Provides roots for withdrawal validation
-- Determines withdrawal eligibility
-- Enforces protocol compliance rules
+- Maintains the Merkle tree of approved deposit labels
+- Publishes updated roots to the [Entrypoint](/layers/contracts/entrypoint) via authorized postmen (`ASP_POSTMAN` role)
+- Serves label and state-tree leaves through the [ASP API](/reference/asp-api) so clients can build withdrawal proofs
 
 ## Operation - Label Management
 
@@ -51,12 +43,11 @@ The Association Set Provider is the compliance layer that controls which deposit
 ### Set Validation
 
 - Withdrawals require the proof's ASP root to match the latest root exactly (`Entrypoint.latestRoot()`)
-- Proof must demonstrate label inclusion
-- Failed validations trigger [ragequit](/protocol/ragequit) option
+- The withdrawal proof must demonstrate label inclusion in the ASP tree
 
 ### Wind Down Process
 
-- Labels can be removed from ASP set
-- Removal triggers withdrawal restrictions
-- Original depositors can [ragequit](/protocol/ragequit)
+- Labels can be removed from the ASP set
+- Once a label is removed, private withdrawal is no longer possible for that commitment
+- The original depositor can still [ragequit](/protocol/ragequit)
 
