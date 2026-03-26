@@ -75,7 +75,7 @@ flowchart TD
    - Asset-specific [Privacy Pools](/layers/contracts/privacy-pools) that hold funds and manage state
 2. **[Zero-Knowledge Layer](/layers/zk)**
    - [Commitment circuits](/layers/zk/commitment) for secure deposit registration
-   - [Withdrawal circuits](/layers/zk/withdrawal) that enable private asset withdrawals
+   - [Withdrawal circuits](/layers/zk/withdrawal) for private exits
    - On-chain verifiers that validate circuit proofs
 3. **[Association Set Provider (ASP) Layer](/layers/asp)**
    - Maintains the current set of approved deposit labels
@@ -87,4 +87,4 @@ flowchart TD
 - **Privacy via relayed withdrawals**: A relayer submits the withdrawal transaction, so the recipient address has no on-chain link to the depositor.
 - **Partial Withdrawals**: Users can withdraw portions of their deposits while maintaining privacy.
 - **[Ragequit](/protocol/ragequit) is always available**: Original depositors can publicly reclaim their funds at any time, even if the ASP has not approved the deposit.
-- **Compliance without custody**: The ASP handles compliance, but users keep full control of their funds.
+- **Compliance without custody**: The ASP reviews deposits, but users keep full control of their funds.

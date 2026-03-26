@@ -156,4 +156,4 @@ Frontends should use mnemonic-backed pool accounts. See the [Integration Guide](
 
 Each precommitment hash can only be used once across all pools. The Entrypoint tracks used precommitments and reverts with `PrecommitmentAlreadyUsed` on duplicates.
 
-If a deposit transaction reverts or is never mined, the precommitment is not consumed and you can retry with the same index. Only increment after a confirmed deposit.
+If a deposit transaction reverts or is never mined, the precommitment is not consumed and you can retry with the same deposit index. Only increment the index after a confirmed deposit.

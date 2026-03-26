@@ -51,7 +51,11 @@ The protocol uses three hash constructions:
   - The contract records it and rejects any future attempt to spend the same commitment (`NullifierAlreadySpent`).
   - The nullifier itself stays private; only its hash is public.
 
-Each pool has a **scope**, a unique `uint256` identifier derived from the pool address, chain ID, and asset: `keccak256(abi.encodePacked(poolAddress, chainId, asset)) % SNARK_SCALAR_FIELD` (the BN254 prime field order). Scope is used in API headers (`X-Pool-Scope`) and proof inputs to identify which pool an operation targets. You read it on-chain via `pool.SCOPE()`.
+Each pool has a **scope**, a unique `uint256` derived from the pool address, chain ID, and asset:
+
+`keccak256(abi.encodePacked(poolAddress, chainId, asset)) % SNARK_SCALAR_FIELD`
+
+The scope appears in API headers (`X-Pool-Scope`) and proof inputs. Read it on-chain via `pool.SCOPE()`.
 
 ## Zero-knowledge proofs in Privacy Pools
 
