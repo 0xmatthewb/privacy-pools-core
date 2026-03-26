@@ -11,7 +11,7 @@ keywords:
   - ASP
 ---
 
-A user deposits into a pool, waits for ASP approval, then withdraws privately with a zero-knowledge proof. The proof shows they own a valid, approved deposit without revealing which one. This page covers the building blocks that make that possible.
+A user deposits into a pool, waits for ASP approval, then withdraws privately with a zero-knowledge proof. The proof shows they own a valid, approved deposit without revealing which one.
 
 ## Commitments
 

@@ -7,6 +7,8 @@ description: Recommended frontend patterns for account management, deposits, wit
 keywords: [privacy pools, UX, frontend, account, deposit, withdrawal, ragequit, recovery]
 ---
 
+These patterns assume your SDK is wired up per [Frontend Integration](/build/integration). They cover the UX details that the integration recipe does not: account recovery edge cases, approval states, quote timing, and ragequit presentation.
+
 ## Account and Recovery
 
 - Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. See [Deposit: Account and Recovery](/protocol/deposit#account-and-recovery) for the full onboarding rules.

@@ -17,10 +17,12 @@ keywords: [privacy pools, contributing, monorepo, testing, development]
 
 ## Project Structure
 
-- [`contracts`](/layers/contracts)
-- [`circuits`](/layers/zk)
-- [`sdk`](/reference/sdk)
-- [`relayer`](/reference/relayer-api)
+All packages live under `packages/` in the monorepo:
+
+- [`contracts`](/layers/contracts) — Solidity (Entrypoint, pools, verifiers)
+- [`circuits`](/layers/zk) — Circom (commitment, withdrawal, Merkle inclusion)
+- [`sdk`](/reference/sdk) — TypeScript SDK for integrators
+- [`relayer`](/reference/relayer-api) — Relay service for private withdrawals
 
 ## Installation
 
@@ -192,7 +194,7 @@ The SDK ships a `.env.example` with an optional `HYPERSYNC_API_KEY`. No `.env` i
 
 ### Relayer
 
-Required fields: `chain_id`, `rpc_url`, `signer_private_key`, and contract addresses. Optional: `cors_allow_all` (defaults to false), `allowed_domains`, and `sqlite_db_path`.
+The example below targets a local Anvil node. For testnet or mainnet, replace `rpc_url`, `signer_private_key`, and the contract addresses with values from [Deployments](/deployments).
 
 ```json
 {
