@@ -10,12 +10,12 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Use this page when you are wiring the full Privacy Pools integration into a frontend or wallet. If you are still on the first pass, start with [Start Here](/build/start) and come back here when you are ready to wire the full flow and production details.
+This guide is for the full Privacy Pools frontend or wallet integration. If you are still getting oriented, read [Start Here](/build/start) first. Come back here when you are ready to wire the real deposit, approval, withdrawal, and ragequit flows.
 
-## Use this page for
+## What this guide covers
 
 - wiring the standard browser or wallet integration path
-- implementing public deposit, private relayed withdrawal, and public ragequit
+- implementing public deposit, private relayed withdrawal, and public ragequit as the self-custodial exit path
 - knowing when to jump to [Deployments](/deployments), [SDK Utilities](/reference/sdk), or the API references for exact values
 
 ## What you need before starting
@@ -404,7 +404,7 @@ For server-side signers, use `sdk.createContractInstance(...)` instead of a `Wal
 4. Request relayer quotes on the review step, and re-quote if amount, recipient, relayer, optional gas-token drop, or expiration changes.
 5. Verify ASP root parity before generating a withdrawal proof.
 6. Wait for the receipt before marking deposit, relay, or ragequit as complete.
-7. Keep ragequit available as the public fallback path.
+7. Keep ragequit available as the public self-custodial exit path, but do not foreground it over the private withdrawal flow.
 
 ### DataService tuning
 

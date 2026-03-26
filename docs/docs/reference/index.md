@@ -12,7 +12,7 @@ keywords:
   - deployments
 ---
 
-Use this section when you need exact values, schemas, or contract behavior. For the end-to-end implementation path, start with [Build](/build). For the product lifecycle, start with [Using Privacy Pools](/protocol). Within this section, [Deployments](/deployments) is the lookup page for exact chain values, not part of the initial tutorial flow.
+This section is for exact values, schemas, and contract behavior. Start with the guide pages, then come here when you need precise SDK, API, contract, or deployment details. Within this section, [Deployments](/deployments) is the lookup page for exact chain values, not part of the initial tutorial flow.
 
 :::info Verified sources
 This reference section is aligned to three sources of truth:
@@ -22,7 +22,7 @@ This reference section is aligned to three sources of truth:
 - The production website integration patterns
 :::
 
-## Recommended read order
+## Read in this order
 
 1. [Deployments](/deployments) for chain addresses and `startBlock` values once you know which network you are wiring.
 2. [SDK Utilities](/reference/sdk) for account reconstruction, proof helpers, and contract helpers.
@@ -42,7 +42,7 @@ This reference section is aligned to three sources of truth:
 | [Relayer API](/reference/relayer-api) | Quote, relay request, fee commitment, and failure handling |
 | [Errors and Constraints](/reference/errors) | Revert reasons, validation rules, and common failure modes |
 
-## How to use this section
+## How this section fits with the guides
 
 - Guide pages explain the sequence of actions and user-facing behavior.
 - Reference pages own exact field names, defaults, schemas, and validation rules.

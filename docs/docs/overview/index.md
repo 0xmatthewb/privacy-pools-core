@@ -11,9 +11,11 @@ keywords:
   - public deposits
 ---
 
-Privacy Pools lets users deposit into shared pools, wait for ASP review, then withdraw privately through a relayer. If they do not want to wait for approval, they can always [ragequit](/protocol/ragequit) publicly back to the original deposit address.
+New to Privacy Pools? Start here for the product-level picture, then follow the lifecycle and core concepts pages. If you are integrating the protocol into an app, move from here into [Build](/build).
 
-## Recommended read order
+Privacy Pools lets users deposit into shared pools, wait for ASP review, then withdraw privately through a relayer. That is the intended path for most users. If private withdrawal is unavailable, the original depositor can still [ragequit](/protocol/ragequit) publicly back to the deposit address.
+
+## Read in this order
 
 1. [What is Privacy Pools?](/overview/what-is-privacy-pools) for the product-level picture.
 2. [Using Privacy Pools](/protocol) for the deposit -> approval -> withdrawal / ragequit lifecycle.
@@ -29,9 +31,9 @@ Privacy Pools lets users deposit into shared pools, wait for ASP review, then wi
 | Set up Claude, Codex, or other coding agents | [Agent Setup](/build/agents) |
 | Look up addresses, APIs, SDK behavior, or schemas | [Technical Reference](/reference/sdk) and [Deployments](/deployments) |
 
-## Keep these ideas in mind
+## Four ideas worth keeping in mind
 
 - Deposits are public. Privacy starts at withdrawal time, not deposit time.
 - ASP approval unlocks the private withdrawal path, but it does not block deposits.
-- Ragequit is always the public fallback.
+- Ragequit preserves self-custody with a public exit back to the deposit address.
 - The recovery phrase and the deposit wallet control different exit paths, and both matter.

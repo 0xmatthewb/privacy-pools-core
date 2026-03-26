@@ -5,9 +5,9 @@ description: Lifecycle overview of Privacy Pools operations from deposit through
 keywords: [privacy pools, deposit, withdrawal, ragequit, ASP, lifecycle]
 ---
 
-Use this page to understand the lifecycle your product should reflect. If you are integrating Privacy Pools for the first time, start with [Start Here](/build/start), then come back here when you want the user journey in one place.
+This page shows the full Privacy Pools lifecycle in one place. If you are integrating the protocol for the first time, read [Start Here](/build/start) first, then use this page to shape the user journey and state model.
 
-Users deposit assets into a pool. Once approved by the ASP, they can withdraw privately through a relayer. At any time, the original depositor can ragequit to publicly reclaim funds.
+Users deposit assets into a pool. Once approved by the ASP, they can withdraw privately through a relayer. That deposit, approval, and private withdrawal path is the intended flow. At any time, the original depositor can ragequit to publicly reclaim funds back to the deposit address.
 
 ```mermaid
 flowchart LR
@@ -26,9 +26,9 @@ A user commits assets into a Privacy Pool. The contract records a commitment in 
 
 After deposit, the ASP evaluates the deposit and decides whether to add its label to the approved set.
 
-## Waiting for Approval
+## Waiting for ASP approval
 
-The ASP reviews deposits asynchronously. Approval times vary, and if a deposit is not approved promptly, ragequit is always available as a fallback. Show deposits as "pending" until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain.
+The ASP reviews deposits asynchronously. Show deposits as "pending" until the deposit's label appears in the ASP's approved set and the ASP tree root has converged on-chain. Private withdrawal should stay unavailable until approval lands on-chain. Ragequit exists to preserve self-custody if private withdrawal is unavailable, not as the default response to ordinary approval wait time.
 
 For the technical convergence check and API endpoints, see the [Withdrawal page](/protocol/withdrawal#state-root-vs-asp-root) and the [ASP API Reference](/reference/asp-api).
 
@@ -40,7 +40,7 @@ Partial withdrawals are supported. Each withdrawal creates a change commitment w
 
 ## [Ragequit](/protocol/ragequit)
 
-A public exit that returns the full balance to the original depositor address. Ragequit does not require ASP approval and can be called at any time, but it creates an on-chain link between the deposit and the exit. Only the original depositor can ragequit.
+A public exit that returns the full balance to the original depositor address. Ragequit keeps the system self-custodial even when a deposit cannot be privately withdrawn. It does not require ASP approval and can be called at any time, but it creates an on-chain link between the deposit and the exit. Only the original depositor can ragequit.
 
 ## Choosing Between Withdrawal and Ragequit
 
@@ -53,7 +53,7 @@ A public exit that returns the full balance to the original depositor address. R
 
 **The recovery phrase and the deposit wallet control different things.** Neither is a universal fallback: losing the recovery phrase blocks private withdrawal, and losing access to the deposit wallet blocks ragequit.
 
-## Next Steps
+## Next steps
 
 - Open [Start Here](/build/start) for the fastest path to a working integration
 - Use [Frontend Integration](/build/integration) when you are ready to implement the flow

@@ -11,16 +11,16 @@ keywords:
   - ASP
 ---
 
-## Start from the user journey
+Privacy Pools uses zero-knowledge proofs to let a user spend an approved deposit without revealing which deposit they own. The core pieces are commitments, nullifiers, and two Merkle trees: one for pool state and one for ASP-approved labels.
 
-Privacy Pools is easiest to understand from the outside in:
+## Zero-knowledge proofs in Privacy Pools
 
-1. A user deposits publicly into a shared pool.
-2. The ASP reviews the deposit label after the deposit lands.
-3. Once approved, the user can withdraw privately through a relayer.
-4. If they do not want to wait for approval, they can ragequit publicly back to the original deposit address.
+The protocol uses two proof types:
 
-The rest of this page explains the objects that make those steps work.
+- **[Commitment proofs](/layers/zk/commitment)** prove ownership of a commitment. They are used for [ragequit](/protocol/ragequit).
+- **[Withdrawal proofs](/layers/zk/withdrawal)** prove ownership of a valid, ASP-approved commitment and the correctness of the withdrawal state transition.
+
+Merkle inclusion proofs are embedded inside those circuits. They show that a commitment is in the pool's state tree and that its label is in the ASP tree, without revealing the leaf position.
 
 ## Commitments and nullifiers
 
@@ -57,13 +57,6 @@ Each pool has a **scope**, a unique `uint256` derived from the pool address, cha
 
 The scope appears in API headers (`X-Pool-Scope`) and proof inputs. Read it on-chain via `pool.SCOPE()`.
 
-## Zero-knowledge proofs in Privacy Pools
-
-The protocol employs two proof types:
-
-- **[Commitment Proofs](/layers/zk/commitment)**: Verify ownership of a commitment (used in ragequit)
-- **[Withdrawal Proofs](/layers/zk/withdrawal)**: Prove ownership of a valid, ASP-approved commitment and correct value transitions. The proof embeds [Merkle inclusion proofs](/layers/zk/lean-imt) for both trees without revealing the leaf position.
-
 ## State tree and ASP tree
 
 The protocol maintains two separate Merkle trees per pool:
@@ -77,7 +70,7 @@ Withdrawal proofs must demonstrate inclusion in **both** trees: the state tree (
 
 An Association Set Provider (ASP) is an off-chain service that reviews deposits after they enter the pool and maintains a Merkle tree of approved deposit labels. It does not custody funds or block deposits, and anyone can deposit at any time.
 
-ASP approval unlocks the private withdrawal path; ragequit (the public exit) is always available without it. The ASP never learns withdrawal destinations or nullifier secrets.
+ASP approval unlocks the private withdrawal path. Without it, the original depositor still has ragequit as the public self-custodial exit back to the deposit address. The ASP never learns withdrawal destinations or nullifier secrets.
 
 ### What is a relayer?
 
@@ -119,8 +112,6 @@ For the full deposit-to-withdrawal lifecycle, see [Using Privacy Pools](/protoco
 
 ## Next steps
 
-| Goal | Page |
-|------|------|
-| Understand the deposit → withdrawal lifecycle | [Using Privacy Pools](/protocol) |
-| Start integrating | [Start Here](/build/start) |
-| Dive into contract and circuit architecture | [Protocol Components](/layers) |
+- [Using Privacy Pools](/protocol) for the end-to-end lifecycle
+- [Start Here](/build/start) for the builder path
+- [Protocol Components](/layers) for the contract and circuit architecture

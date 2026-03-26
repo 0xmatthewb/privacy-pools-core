@@ -12,7 +12,7 @@ keywords:
   - integration
 ---
 
-Use this page when a transaction, proof, or event scan fails, or when you need the exact contract and SDK constraints behind a guide page.
+When a transaction, proof, or event scan fails, this is the page to open. It ties the guide-level symptoms back to the exact contract and SDK rules.
 
 For the contract interface definitions where these errors originate, see [Contracts Interfaces](/reference/contracts).
 

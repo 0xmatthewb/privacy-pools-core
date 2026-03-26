@@ -67,6 +67,7 @@ For the full withdrawal protocol mechanics, see [Withdrawal](/protocol/withdrawa
 
 - Keep ragequit on its own action path with a clear warning that it is a public exit.
 - Ragequit returns the full balance to the original depositor address. It does not send funds to a separate recipient.
+- Do not present ragequit as the default answer to ordinary ASP review time. Keep pending deposits in a pending state unless the user explicitly chooses a public exit or private withdrawal is unavailable.
 
 For the full ragequit protocol mechanics, see [Ragequit](/protocol/ragequit).
 

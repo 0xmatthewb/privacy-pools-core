@@ -6,7 +6,7 @@ description: Quickstart and implementation path for a Privacy Pools integration.
 keywords: [privacy pools, getting started, integration, frontend, agent]
 ---
 
-Privacy Pools lets users deposit assets publicly, wait for ASP approval, then withdraw them privately through a relayer. If approval is delayed or privacy is not needed, the original depositor can ragequit and exit publicly. This page is the fastest path from zero to a first working integration.
+Privacy Pools gives builders three user-facing flows to support: public deposits, private withdrawals after ASP approval, and a public ragequit path that preserves self-custody. The intended user journey is deposit, wait for approval, then withdraw privately. This page is the shortest path from zero to a first working integration.
 
 :::info
 These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).
@@ -16,7 +16,7 @@ These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).
 
 - A public deposit flow from the user's wallet
 - A private relayed withdrawal flow after ASP approval
-- A public ragequit fallback for the original depositor
+- A public ragequit path for the original depositor
 
 ## Public vs Private
 
@@ -26,7 +26,7 @@ These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).
 | Relayed withdrawal | The relayer transaction and recipient payout | Which deposit funded the withdrawal |
 | Ragequit | The depositor and exit are linked on-chain | No private spend path is preserved |
 
-## Minimum Prerequisites
+## Before you start
 
 Make sure you have these five inputs first:
 
@@ -36,7 +36,7 @@ Make sure you have these five inputs first:
 4. A plan for both private withdrawal and public [ragequit](/protocol/ragequit).
 5. A user-facing recovery flow before the first deposit.
 
-## Quickstart Path
+## Read in this order
 
 1. Read [Using Privacy Pools](/protocol) to understand the lifecycle your product needs to reflect.
 2. Follow [Frontend Integration](/build/integration) for the first working deposit, approval, withdrawal, and ragequit pass.
@@ -45,16 +45,16 @@ Make sure you have these five inputs first:
 
 Use [Deployments](/deployments) when you need chain addresses, chain metadata, or `startBlock` for the specific network you are wiring.
 
-## First Implementation Pass
+## First working pass
 
 1. Serve the circuit artifacts and initialize `PrivacyPoolSDK` plus `DataService`.
 2. Create or restore a mnemonic-backed account with `AccountService`.
 3. Implement deposit and persist the confirmed `label` plus post-fee `committedValue`.
 4. Show the deposit as pending until ASP approval converges on-chain.
 5. Implement relayed withdrawal from approved, non-zero pool accounts.
-6. Keep ragequit visible as the public fallback path for the original depositor.
+6. Keep ragequit available as the self-custodial public exit for the original depositor.
 
-## Core Concepts
+## Four terms worth keeping straight
 
 | Term | Meaning |
 |------|---------|
@@ -63,7 +63,7 @@ Use [Deployments](/deployments) when you need chain addresses, chain metadata, o
 | **Recovery phrase** | BIP-39 mnemonic that derives all deposit secrets. If lost, funds cannot be withdrawn privately. |
 | **Deposit wallet** | The wallet that made the original deposit. It is required for ragequit, even if the recovery phrase is still available. |
 
-## What To Open Next
+## Where to go next
 
 - [Using Privacy Pools](/protocol) if you are shaping the user journey and need the lifecycle in one place
 - [Frontend Integration](/build/integration) if you are ready to wire the real integration

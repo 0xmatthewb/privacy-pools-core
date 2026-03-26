@@ -11,9 +11,9 @@ keywords:
   - agents
 ---
 
-Guides for adding Privacy Pools to wallets and dapps. If you are integrating Privacy Pools for the first time, start with [Start Here](/build/start). Use the path below, then open reference pages only when you need exact values, schemas, or contract behavior.
+This section is for teams adding Privacy Pools to wallets, dapps, and other products. If you are integrating Privacy Pools for the first time, start with [Start Here](/build/start), then use the builder path below and open reference pages only when you need exact details.
 
-## Recommended read order
+## Read in this order
 
 1. [Start Here](/build/start) for prerequisites, shared terminology, and the build sequence.
 2. [Using Privacy Pools](/protocol) for the product lifecycle your UI should reflect.
@@ -23,7 +23,7 @@ Guides for adding Privacy Pools to wallets and dapps. If you are integrating Pri
 
 [Deployments](/deployments) is the lookup page for chain addresses, chain metadata, and `startBlock`. Use it when you are wiring a specific target chain, not as an onboarding step by itself.
 
-## Common Entry Points
+## Common entry points
 
 - Start with [Start Here](/build/start) if you want the fastest path to a working integration.
 - Open [Deployments](/deployments) when you need addresses, chain metadata, or `startBlock`.
@@ -43,4 +43,4 @@ Guides for adding Privacy Pools to wallets and dapps. If you are integrating Pri
 - Pull the target chain's `Entrypoint`, `PrivacyPool`, and `startBlock` from [Deployments](/deployments) when wiring the integration.
 - Quote late in the withdrawal flow and discard quotes when inputs change or expire.
 - Verify ASP root parity before generating a withdrawal proof.
-- Keep ragequit available as the public fallback path.
+- Keep ragequit available as the public self-custodial exit path.

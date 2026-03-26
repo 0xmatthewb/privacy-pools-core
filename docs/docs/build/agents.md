@@ -7,7 +7,9 @@ description: Entry points, skill files, and setup for developers using AI coding
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
-Use this page to set up an AI coding agent for Privacy Pools work. If the task is first-time integration, read [Start Here](/build/start) once before you move into the agent-specific surfaces. The recommended order is:
+This page collects the repo entry points for Claude Code, Codex, and other coding agents working on Privacy Pools. If the task is a first-time integration, read [Start Here](/build/start) once first so the agent follows the same builder path as a human.
+
+Read in this order:
 
 1. Read [Start Here](/build/start) for the builder path.
 2. Read `AGENTS.md` or `CLAUDE.md` at the repo root.
@@ -15,7 +17,7 @@ Use this page to set up an AI coding agent for Privacy Pools work. If the task i
 4. Use [Frontend Integration](/build/integration) for the canonical implementation path.
 5. Use [Deployments](/deployments) and `/reference/*` pages for exact values and schemas.
 
-## Reference Table
+## Key entry points
 
 | Resource | URL | Purpose |
 |---|---|---|

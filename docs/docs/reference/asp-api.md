@@ -142,7 +142,7 @@ const { aspLeaves } = await res.json();
 const isApproved = aspLeaves.includes(label.toString());
 ```
 
-Most deposits are approved within 1 hour, though some may take up to 7 days. While unapproved, [ragequit](/protocol/ragequit) is the only exit path.
+Until a deposit is approved, private withdrawal is unavailable. [Ragequit](/protocol/ragequit) remains available as the public self-custodial exit back to the original deposit address.
 
 ### `GET /{chainId}/health/liveness`
 
