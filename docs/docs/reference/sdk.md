@@ -152,8 +152,8 @@ interface ContractInteractionsService {
   getAssetConfig(assetAddress: Address): Promise<AssetConfig>;
   getScopeData(
     scope: bigint,
-  ): Promise<{ poolAddress: Address; assetAddress: Address }>;
-  // Throws if the scope is not registered on the Entrypoint
+  ): Promise<{ poolAddress: Address | null; assetAddress: Address | null }>;
+  // Returns null fields if the scope is not registered on the Entrypoint
 
   approveERC20(
     spenderAddress: Address,
@@ -220,7 +220,7 @@ class DataService {
 - Always initialize with the deployment `startBlock` from the [Deployments](/deployments) page rather than `0n`. Scanning from genesis works but is unnecessarily slow and may hit RPC provider limits.
 - Use the optional second constructor argument when you need per-chain fetch overrides (chunk size, concurrency, delay, retries).
 
-`getDeposits` starts from `pool.deploymentBlock` if present, falling back to the chain's configured `startBlock`. `getWithdrawals` and `getRagequits` accept an optional `fromBlock` parameter for incremental fetching, defaulting to `pool.deploymentBlock`.
+`getDeposits` scans from `pool.deploymentBlock` (required in `PoolInfo`). `getWithdrawals` and `getRagequits` accept an optional `fromBlock` parameter for incremental fetching, defaulting to `pool.deploymentBlock`.
 
 ## Crypto Utilities
 

@@ -45,9 +45,9 @@ The Association Set Provider is the compliance layer that controls which deposit
 - Withdrawals require the proof's ASP root to match the latest root exactly (`Entrypoint.latestRoot()`)
 - The withdrawal proof must demonstrate label inclusion in the ASP tree
 
-### Wind Down Process
+### Label Exclusion
 
-- Labels can be removed from the ASP set
-- Once a label is removed, private withdrawal is no longer possible for that commitment
-- The original depositor can still [ragequit](/protocol/ragequit)
+The on-chain contracts have no mechanism for removing individual labels. The Entrypoint's root history is append-only. However, the ASP can publish a new root computed from a set that excludes certain labels. Once the new root lands on-chain, any commitment whose label was excluded can no longer produce a valid withdrawal proof. The original depositor can still [ragequit](/protocol/ragequit).
+
+Pool wind-down (`windDown()`) is a separate operation: it sets a `dead` flag on the pool to block new deposits but does not affect labels or withdrawals.
 

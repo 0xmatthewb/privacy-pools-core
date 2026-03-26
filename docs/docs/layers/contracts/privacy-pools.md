@@ -81,11 +81,12 @@ function withdraw(
 
 Handles withdrawals by:
 
-1. Validating withdrawal proof
-2. Verifying state root and ASP root
-3. Spending nullifier hash
-4. Inserting new commitment
-5. Transferring funds to `processooor`
+1. Checking `msg.sender == processooor`, context integrity, and tree depth bounds (modifier)
+2. Verifying state root is known and ASP root matches `Entrypoint.latestRoot()` (modifier)
+3. Verifying the Groth16 withdrawal proof
+4. Spending nullifier hash
+5. Inserting new commitment
+6. Transferring funds to `processooor`
 
 For direct withdrawals, `processooor` must equal `msg.sender`, so the pool pays the signer directly. For relayed withdrawals, `processooor` is the Entrypoint, which receives the pool payout and then routes funds to the final recipient.
 
