@@ -5,7 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Privacy Pools Documentation",
   tagline: "Public deposits, private withdrawals, and integration guidance",
-  favicon: "favicon/favicon.ico",
+  favicon: "favicon/favicon.svg",
 
   url: "https://docs.privacypools.com",
   baseUrl: "/",
@@ -26,6 +26,14 @@ const config: Config = {
     "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
   ],
   headTags: [
+    {
+      tagName: "link",
+      attributes: {
+        rel: "icon",
+        href: "/favicon/favicon.ico",
+        sizes: "48x48",
+      },
+    },
     {
       tagName: "link",
       attributes: {
