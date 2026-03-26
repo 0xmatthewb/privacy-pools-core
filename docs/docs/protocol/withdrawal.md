@@ -10,7 +10,7 @@ keywords:
   - fees
 ---
 
-A withdrawal moves funds out of the pool to any recipient address. A zero-knowledge proof demonstrates ownership of a valid, ASP-approved commitment without revealing which one. Frontend integrations should use relayed withdrawal: a relayer submits `Entrypoint.relay()` for the user, which preserves recipient privacy and matches the production app flow.
+A withdrawal moves funds out of the pool to any recipient address. A zero-knowledge proof demonstrates ownership of a valid, ASP-approved commitment without revealing which one. Frontend integrations should use relayed withdrawal: a relayer submits `Entrypoint.relay()` for the user, preserving recipient privacy.
 
 **Happy path at a glance:**
 
@@ -98,7 +98,7 @@ The three-o spelling of `processooor` is intentional and matches the field name 
 
 1. **User Steps**
    - Construct withdrawal with Entrypoint as processooor
-   - Resolve the final recipient and request the relayer quote late in the flow so proof generation and relay submission fit inside the quote TTL
+   - Resolve the final recipient before requesting the quote. Request the quote late in the flow so that proof generation and relay submission fit within the TTL.
    - Set `withdrawal.data` to the quote's `feeCommitment.withdrawalData` (the proof's `context` depends on the finalized `withdrawal`, so this must happen before proof generation)
    - Validate the relayer minimum and warn if the remaining balance after a partial withdrawal would fall below it
    - Generate ZK proof

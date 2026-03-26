@@ -26,7 +26,7 @@ The rest of this page explains the objects that make those steps work.
 
 Commitments are the core data structure that makes privacy possible. They record a deposit in a way that lets the depositor prove ownership later without revealing which deposit they own.
 
-Each deposit into a Privacy Pool creates a commitment, a cryptographic record composed of:
+Each deposit creates a commitment: a cryptographic record composed of:
 
 - **`value`**: The amount being committed
 - **`label`**: A unique identifier derived from the pool's scope and an incrementing nonce. The ASP's approved set contains labels, and having your label approved is what unlocks the private withdrawal path
@@ -58,7 +58,7 @@ Each pool has a **scope**, a unique `uint256` identifier derived from the pool a
 The protocol employs two proof types:
 
 - **[Commitment Proofs](/layers/zk/commitment)**: Verify ownership of a commitment (used in ragequit)
-- **[Withdrawal Proofs](/layers/zk/withdrawal)**: Verify ownership, inclusion in both state and ASP trees, and valid value transitions. Withdrawal proofs embed [Merkle inclusion proofs](/layers/zk/lean-imt) to demonstrate membership in each tree without revealing the leaf position
+- **[Withdrawal Proofs](/layers/zk/withdrawal)**: Prove ownership of a valid, ASP-approved commitment and correct value transitions. The proof embeds [Merkle inclusion proofs](/layers/zk/lean-imt) for both trees without revealing the leaf position.
 
 ## State tree and ASP tree
 

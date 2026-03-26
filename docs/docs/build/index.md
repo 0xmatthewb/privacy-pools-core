@@ -11,7 +11,7 @@ keywords:
   - agents
 ---
 
-This section is for teams adding Privacy Pools to wallets and dapps, including guidance for developers using AI coding agents.
+Guides for adding Privacy Pools to wallets and dapps. If you use AI coding agents, there is a dedicated setup path below.
 
 ## Recommended read order
 

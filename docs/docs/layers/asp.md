@@ -1,6 +1,6 @@
 ---
 title: ASP Layer
-description: "ASP layer responsibilities for approved-label set management, inclusion data publication, and compliance-aware withdrawal gating."
+description: "ASP layer responsibilities for approved-label set management, inclusion data publication, and gating withdrawals for compliance."
 keywords:
   - privacy pools
   - ASP
@@ -14,7 +14,7 @@ keywords:
 
 ## Role in the Protocol
 
-The Association Set Provider is the compliance layer that controls which deposits can be privately withdrawn from Privacy Pools. It maintains a set of approved labels and provides the data necessary for cryptographic proofs of label inclusion, bridging privacy with regulatory requirements.
+The Association Set Provider is the compliance layer that controls which deposits can be privately withdrawn from Privacy Pools. It maintains a set of approved labels and provides the data necessary for cryptographic proofs of label inclusion.
 
 ## Core Responsibilities
 

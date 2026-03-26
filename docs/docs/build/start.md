@@ -24,13 +24,13 @@ Make sure you have all five of these inputs first:
 
 ## Recommended Build Path
 
-1. Read [Using Privacy Pools](/protocol) so the product behavior is clear before the implementation details.
+1. Read [Using Privacy Pools](/protocol) to understand the product behavior before writing code.
 2. Copy addresses and `startBlock` values from [Deployments](/deployments).
 3. Implement the happy path from [Frontend Integration](/build/integration).
 4. Add approval, recovery, quote-refresh, and status handling from [UX Patterns](/build/ux-patterns).
 5. Use [Technical Reference](/reference/sdk), [ASP API](/reference/asp-api), and [Relayer API](/reference/relayer-api) when you need exact types and schemas.
 
-## Core Concepts You Will Use Everywhere
+## Core Concepts
 
 | Term | Meaning |
 |------|---------|
@@ -42,7 +42,7 @@ Make sure you have all five of these inputs first:
 
 ## Frontend or App Integration
 
-You are building a wallet, dapp, or any user-facing interface that deposits, withdraws, or manages Privacy Pool accounts.
+For teams building wallets, dapps, or other user-facing interfaces.
 
 **Read order:**
 
@@ -56,7 +56,7 @@ You are building a wallet, dapp, or any user-facing interface that deposits, wit
 
 ## Agent Workflows
 
-You are using an AI coding agent or LLM-powered tool to integrate Privacy Pools.
+For developers using AI coding agents or LLM-powered tools.
 
 | # | Page | Covers |
 |---|------|--------|
@@ -67,7 +67,7 @@ You are using an AI coding agent or LLM-powered tool to integrate Privacy Pools.
 
 ## Contributing
 
-You want to work on the Privacy Pools core codebase: contracts, circuits, SDK, relayer, or documentation.
+For contributors working on the core codebase.
 
 | # | Page | Covers |
 |---|------|--------|

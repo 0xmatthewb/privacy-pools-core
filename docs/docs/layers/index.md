@@ -1,7 +1,7 @@
 ---
 title: Protocol Components
 slug: /layers
-description: Architecture overview of the contract, zero-knowledge, and ASP layers that make Privacy Pools work end to end.
+description: Architecture overview of the contract, zero-knowledge, and ASP layers in Privacy Pools.
 keywords:
   - privacy pools
   - architecture

@@ -10,7 +10,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This guide walks through a full Privacy Pools frontend integration using the TypeScript SDK.
+A complete Privacy Pools frontend integration using the TypeScript SDK.
 
 ## Key References
 
@@ -46,7 +46,7 @@ done
    - You need: `Entrypoint`, `PrivacyPool`, and `Verifier` addresses for the target chain and asset scope
 
 2. **Initialize SDK and contract helpers**
-   - Create a `DataService` with a `ChainConfig[]` array (each entry carries `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block
+   - Create a `DataService` with a `ChainConfig[]` array (containing `chainId`, `privacyPoolAddress`, `startBlock`, and `rpcUrl`) so event scans start from the deployment block
    - In browser dapps, use a viem `WalletClient` plus the relevant contract ABI for writes
    - Reserve `sdk.createContractInstance(rpcUrl, chain, entrypointAddress, privateKey)` for server-side signers
 

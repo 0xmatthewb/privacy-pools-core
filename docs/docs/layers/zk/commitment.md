@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-The commitment circuit (`commitment.circom`) handles the creation and verification of commitments:
+The commitment circuit (`commitment.circom`) derives commitment and nullifier hashes from deposit parameters:
 
 ```cpp
 template CommitmentHasher() {

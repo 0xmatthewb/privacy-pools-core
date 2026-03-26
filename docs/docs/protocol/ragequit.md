@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-Ragequit allows the original depositor to publicly reclaim their funds at any time, regardless of [ASP](/layers/asp) approval status. The contract enforces no ASP-related checks, only that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. It is the protocol's public exit path. Use the privacy-preserving [withdrawal](/protocol/withdrawal) path when recipient privacy matters.
+Ragequit lets the original depositor publicly reclaim their funds at any time, with no ASP approval needed. The contract only checks that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. Use the privacy-preserving [withdrawal](/protocol/withdrawal) path when recipient privacy matters.
 
 ## Protocol Flow
 
@@ -90,7 +90,7 @@ sequenceDiagram
 
 Ragequit does not require ASP approval. It is the always-available public exit path when:
 
-- A deposit has not yet been approved by the ASP (most deposits are approved within 1 hour, but some may take up to 7 days)
+- A deposit has not yet been approved by the ASP. Most deposits are approved within an hour, but some may take up to 7 days.
 - A label has been retroactively removed from the ASP approved set
 - The user explicitly wants a public return to the original depositor address
 - The ASP service is unavailable

@@ -81,10 +81,10 @@ flowchart TD
    - Maintains the current set of approved deposit labels
    - Updates state through authorized accounts
 
-## Key features and capabilities
+## Key features
 
 - **Deposits are never blocked**: Anyone can deposit at any time. The ASP evaluates deposits after entry, not before.
 - **Privacy via relayed withdrawals**: A relayer submits the withdrawal transaction, so the recipient address has no on-chain link to the depositor.
 - **Partial Withdrawals**: Users can withdraw portions of their deposits while maintaining privacy.
 - **[Ragequit](/protocol/ragequit) is always available**: Original depositors can publicly reclaim their funds at any time, even if the ASP has not approved the deposit.
-- **Compliance without custody**: The ASP-based approval system enables regulatory compliance while users retain full control of their funds.
+- **Compliance without custody**: The ASP handles compliance, but users keep full control of their funds.

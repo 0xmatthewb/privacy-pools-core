@@ -7,7 +7,7 @@ description: Entry points, skill files, and setup for developers using AI coding
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
-Use this page when an AI coding agent needs the shortest reliable path into the repo. The recommended order is:
+Use this page to set up an AI coding agent for Privacy Pools work. The recommended order is:
 
 1. Read `AGENTS.md` or `CLAUDE.md` at the repo root.
 2. Load the relevant [Skill Library](/build/skills) entry for the task.
@@ -77,7 +77,7 @@ done
 
 ### Other LLM Tools
 
-For agents that ingest a single document, two corpus files are available:
+For agents that work from a single document, two corpus files are available:
 
 - [`llms.txt`](https://docs.privacypools.com/llms.txt): lightweight site index with page titles and URLs. Good for quick orientation or retrieval-augmented pipelines that fetch pages on demand.
 - [`llms-full.txt`](https://docs.privacypools.com/llms-full.txt): complete corpus with all docs pages (~20-25k tokens).

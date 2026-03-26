@@ -13,7 +13,7 @@ keywords:
   - fastrelay
 ---
 
-The relayer is a separate service from the [ASP API](/reference/asp-api). It submits `Entrypoint.relay()` transactions on behalf of users, enabling privacy-preserving withdrawals where the on-chain transaction sender is the relayer rather than the user.
+The relayer is a separate service from the [ASP API](/reference/asp-api). It submits `Entrypoint.relay()` transactions on behalf of users, so that the on-chain sender is the relayer, not the withdrawer.
 
 The public production relayer is operated by Fat Solutions. The relayer code is open-source (`packages/relayer` in the monorepo) and anyone can host their own instance.
 

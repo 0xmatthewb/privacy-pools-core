@@ -135,7 +135,7 @@ if (amount < minimumDepositAmount) {
 
 ### What to Persist After Deposit
 
-After a successful deposit, parse the `Deposited` event and persist the following into pool-account state:
+After a successful deposit, parse the `Deposited` event and save these values to the pool account:
 
 | Value | Source | Purpose |
 |-------|--------|---------|
@@ -156,4 +156,4 @@ Frontends should use mnemonic-backed pool accounts. See the [Integration Guide](
 
 Each precommitment hash can only be used once across all pools. The Entrypoint tracks used precommitments and reverts with `PrecommitmentAlreadyUsed` on duplicates.
 
-If a deposit transaction reverts or is never mined, the precommitment is not consumed. Retry with the same index. Only increment the index after a confirmed successful deposit.
+If a deposit transaction reverts or is never mined, the precommitment is not consumed and you can retry with the same index. Only increment after a confirmed deposit.

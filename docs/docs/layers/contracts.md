@@ -41,7 +41,7 @@ The Privacy Pools protocol is built on three core contracts:
   - State tree updates
   - Nullifier tracking
   - Ragequit operations
-- The ASP layer interacts through:
+- The ASP layer connects to contracts through:
   - Root updates via authorized postman
   - Label verification during withdrawals
 

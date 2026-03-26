@@ -76,8 +76,8 @@ Privacy Pools uses Groth16 proofs with the following structure:
    - Contract receives proof and public signals
    - Verifier performs pairing checks
    - Validates against verification key
-   - Returns boolean indicating validity
+   - Returns a boolean indicating validity
 3. **Proof Integration**
-   - Proofs linked to protocol operations
+   - Proofs are linked to protocol operations
    - Results determine state transitions
    - Failed verifications revert transactions

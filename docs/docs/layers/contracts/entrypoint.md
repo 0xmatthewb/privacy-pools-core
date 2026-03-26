@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-The Entrypoint contract acts as the central coordinator for the Privacy Pools protocol, managing:
+The Entrypoint contract is the central coordinator for the Privacy Pools protocol, managing:
 
 1. Asset-specific privacy pools
 2. Deposits and withdrawal relays
