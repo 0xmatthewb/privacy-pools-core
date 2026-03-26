@@ -50,13 +50,13 @@ interface IPrivacyPool {
 |---|---|---|
 | `deposit` | `depositor` | Address credited as the original depositor (controls ragequit eligibility) |
 | | `value` | Deposit amount after vetting fee deduction (the Entrypoint deducts the fee before calling the pool) |
-| | `precommitment` | `Poseidon(nullifier, secret)` — must be unique across all deposits. Reverts with `PrecommitmentAlreadyUsed` if reused. |
+| | `precommitment` | `Poseidon(nullifier, secret)`, which must be unique across all deposits. Reverts with `PrecommitmentAlreadyUsed` if reused. |
 | | Returns `commitment` | The commitment hash: `Poseidon(value, label, precommitmentHash)`. The label is a separate value emitted in the `Deposited` event. |
 | `withdraw` | `w` | `Withdrawal` struct: `processooor` must equal `msg.sender` for direct calls |
 | | `p` | ZK proof with 8 public signals (see [ProofLib](#prooflib)) |
 | `ragequit` | `p` | Commitment proof with 4 public signals. Only callable by the original depositor of the label. |
-| `SCOPE()` | — | Unique pool identifier: `keccak256(poolAddress, chainId, asset) % SNARK_SCALAR_FIELD` |
-| `currentRoot()` | — | Current state Merkle tree root (used in withdrawal proofs) |
+| `SCOPE()` | - | Unique pool identifier: `keccak256(poolAddress, chainId, asset) % SNARK_SCALAR_FIELD` |
+| `currentRoot()` | - | Current state Merkle tree root (used in withdrawal proofs) |
 
 ## IEntrypoint
 
@@ -135,7 +135,7 @@ interface IEntrypoint {
 | `relay` | `withdrawal` | `Withdrawal` struct with `processooor` set to the Entrypoint address and `data` set to ABI-encoded `RelayData`. |
 | | `proof` | ZK proof from `proveWithdrawal()`. |
 | | `scope` | Pool scope (identifies which pool to withdraw from). |
-| `latestRoot()` | — | Latest ASP-approved root. Withdrawal proofs must use this exact value. |
+| `latestRoot()` | - | Latest ASP-approved root. Withdrawal proofs must use this exact value. |
 | `usedPrecommitments()` | `precommitment` | Returns `true` if the precommitment has been used in a prior deposit. |
 
 :::info State root vs ASP root
@@ -185,7 +185,7 @@ struct WithdrawProof {
 | 2 | `withdrawnValue` | Amount being withdrawn |
 | 3 | `stateRoot` | Pool state Merkle root at proof generation time |
 | 4 | `stateTreeDepth` | Depth of the state tree (max `32`) |
-| 5 | `ASPRoot` | ASP-approved Merkle root — must equal `Entrypoint.latestRoot()` |
+| 5 | `ASPRoot` | ASP-approved Merkle root, which must equal `Entrypoint.latestRoot()` |
 | 6 | `ASPTreeDepth` | Depth of the ASP tree (max `32`) |
 | 7 | `context` | Binds the proof to specific withdrawal parameters: `keccak256(withdrawal, scope) % SNARK_SCALAR_FIELD` |
 
@@ -205,7 +205,7 @@ struct RagequitProof {
 | 0 | `commitmentHash` | Hash of the commitment being ragequit |
 | 1 | `nullifierHash` | `Poseidon(nullifier)` of the commitment |
 | 2 | `value` | Full remaining value of the commitment |
-| 3 | `label` | Deposit label — contract checks `depositors[label] == msg.sender` |
+| 3 | `label` | Deposit label (contract checks `depositors[label] == msg.sender`) |
 
 :::warning B-coordinate swapping
 When converting a snarkjs Groth16 proof to the Solidity struct format, the inner arrays of `pB` must have their elements reversed: `pB[i] = [proof.pi_b[i][1], proof.pi_b[i][0]]`. This is required because snarkjs and the Solidity verifier use different coordinate orderings.

@@ -22,13 +22,13 @@ This guide walks through integrating Privacy Pools deposits, withdrawals, and ra
 ## Minimal Frontend Recipe
 
 :::info Prerequisites
-Node 18+ (monorepo development requires 20+ — see [Contributing](/build/contributing)), viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain — see [Deployments](/deployments) for chain addresses and `startBlock` values.
+Node 18+ (monorepo development requires 20+; see [Contributing](/build/contributing)), viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain. See [Deployments](/deployments) for chain addresses and `startBlock` values.
 - SDK version: 1.2.0 (`@0xbow/privacy-pools-core-sdk`)
 :::
 
 **Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
 
-**Serve circuit artifacts:** the SDK's `Circuits` class fetches `.wasm`, `.zkey`, and `.vkey` files at runtime from a URL you provide via `baseUrl`. You need six files in your public directory: `commitment.wasm`, `commitment.zkey`, `commitment.vkey`, `withdraw.wasm`, `withdraw.zkey`, `withdraw.vkey`. These are built from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits) — copy them from a monorepo build or from the [production app's artifacts](https://app.privacypools.com/artifacts/).
+**Serve circuit artifacts:** the SDK's `Circuits` class fetches `.wasm`, `.zkey`, and `.vkey` files at runtime from a URL you provide via `baseUrl`. You need six files in your public directory: `commitment.wasm`, `commitment.zkey`, `commitment.vkey`, `withdraw.wasm`, `withdraw.zkey`, `withdraw.vkey`. These are built from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits). Copy them from a monorepo build or from the [production app's artifacts](https://app.privacypools.com/artifacts/).
 
 ```bash
 # Example: download from the production app
@@ -63,7 +63,7 @@ done
    - Wait for ASP approval before attempting withdrawal
 
 5. **Perform the relayed withdrawal**
-   1. **Fetch ASP roots and verify convergence:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`). If `onchainMtRoot` is `null` or `mtRoot !== onchainMtRoot`, stop — the ASP tree has not converged on-chain yet. Once they match, confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
+   1. **Fetch ASP roots and verify convergence:** call `GET /{chainId}/public/mt-roots` (with decimal `X-Pool-Scope`). If `onchainMtRoot` is `null` or `mtRoot !== onchainMtRoot`, stop because the ASP tree has not converged on-chain yet. Once they match, confirm `onchainMtRoot` equals `Entrypoint.latestRoot()` exactly
    2. **Request a relayer quote:** `POST /relayer/quote` to obtain a signed `feeCommitment`. The quote's `feeCommitment.withdrawalData` determines `withdrawal.data` and the proof `context`
    3. **Build Merkle proofs:** generate `stateMerkleProof` from pool state leaves (keyed by commitment hash) and `aspMerkleProof` from ASP leaves (keyed by label)
    4. **Generate the withdrawal proof:** call `proveWithdrawal` with the Merkle proofs, verified roots, withdrawal amount, relayer-provided context, change secrets from `accountService.createWithdrawalSecrets(commitment)`, and tree depth `32n` for both state and ASP trees
@@ -140,7 +140,7 @@ const scope = await publicClient.readContract({
   functionName: "SCOPE",
 });
 // Index = number of existing deposits for this scope (0n for first, 1n for second, etc.)
-// Increment after each confirmed deposit — the index drives deterministic secret derivation
+// Increment after each confirmed deposit. The index drives deterministic secret derivation.
 const { precommitment } = accountService.createDepositSecrets(scope as Hash, 0n);
 
 // 6. Simulate then deposit ETH via the Entrypoint
@@ -173,14 +173,14 @@ const deposits = await dataService.getDeposits({
 
 // 8. Wait for ASP approval, then fetch roots
 const poolAddress = POOL_ADDRESS;
-const aspHost = "https://dw.0xbow.io"; // Sepolia — see /reference/asp-api for host selection
+const aspHost = "https://dw.0xbow.io"; // Sepolia. See /reference/asp-api for host selection.
 const aspRoots = await fetch(
   `${aspHost}/11155111/public/mt-roots`,
   { headers: { "X-Pool-Scope": scope.toString() } } // must be decimal
 ).then((r) => r.json());
 // Stop if ASP tree has not converged on-chain
 if (!aspRoots.onchainMtRoot || aspRoots.mtRoot !== aspRoots.onchainMtRoot) {
-  throw new Error("ASP tree has not converged — try again later");
+  throw new Error("ASP tree has not converged, try again later");
 }
 
 // 9. Request a relayer quote
@@ -228,7 +228,7 @@ const leavesResponse = await fetch(
 const poolAccounts = accountService.account.poolAccounts;
 const poolAccountsArray = [...poolAccounts.values()].flat();
 if (poolAccountsArray.length === 0) {
-  throw new Error("No pool accounts found — deposit first");
+  throw new Error("No pool accounts found, deposit first");
 }
 const poolAccount = poolAccountsArray[0];
 // The spendable commitment is the latest: last child, or the deposit if no children
@@ -282,18 +282,18 @@ const relayResult = await fetch(`${relayerUrl}/relayer/request`, {
     feeCommitment: quote.feeCommitment,
   }, (_, v) => (typeof v === "bigint" ? v.toString() : v)),
 }).then((r) => r.json());
-// Check relayResult.success — the relayer returns HTTP 200 even for failures
+// Check relayResult.success because the relayer returns HTTP 200 even for failures
 ```
 
 ### Ragequit (Public Exit)
 
-Ragequit lets the original depositor reclaim funds publicly without ASP approval. It calls the pool contract directly (not via relayer). Only the address that submitted the original deposit can ragequit — other addresses will revert with `OnlyOriginalDepositor`.
+Ragequit lets the original depositor reclaim funds publicly without ASP approval. It calls the pool contract directly (not via relayer). Only the address that submitted the original deposit can ragequit. Other addresses will revert with `OnlyOriginalDepositor`.
 
 ```typescript
 // Generate a commitment proof for ragequit
 // Use an AccountCommitment from the pool account (has nullifier + secret)
 const ragequitCommitment = commitment; // AccountCommitment from pool account
-// Fields are already bigints — no conversion needed
+// Fields are already bigints, so no conversion is needed
 const commitmentProof = await sdk.proveCommitment(
   ragequitCommitment.value,
   ragequitCommitment.label,
@@ -352,10 +352,10 @@ Each entry also supports `concurrency`, `chunkDelayMs`, `retryOnFailure`, `maxRe
 
 ## Key integration rules
 
-1. **Relayed withdrawals only** — use `fastrelay.xyz` on production chains and `testnet-relayer.privacypools.com` on published testnets. Never expose direct `PrivacyPool.withdraw()` in frontend UX.
-2. **Recovery phrase first** — require users to save their recovery phrase before their first deposit. Never expose raw note material in clipboard or copy/paste flows.
-3. **Quote on review, re-quote on change** — request relayer quotes on the review step. If amount, recipient, or relayer changes, or the quote expires, discard and re-quote.
-4. **ASP root parity** — always verify the ASP tree has converged on-chain (`mtRoot === onchainMtRoot`) before generating a withdrawal proof.
+1. **Relayed withdrawals only.** Use `fastrelay.xyz` on production chains and `testnet-relayer.privacypools.com` on published testnets. Never expose direct `PrivacyPool.withdraw()` in frontend UX.
+2. **Recovery phrase first.** Require users to save their recovery phrase before their first deposit. Never expose raw note material in clipboard or copy/paste flows.
+3. **Quote on review, re-quote on change.** Request relayer quotes on the review step. If amount, recipient, or relayer changes, or the quote expires, discard and re-quote.
+4. **ASP root parity.** Always verify the ASP tree has converged on-chain (`mtRoot === onchainMtRoot`) before generating a withdrawal proof.
 
 For the complete set of frontend patterns covering account management, deposit flows, withdrawal UX, and ragequit handling, see [UX Patterns](/build/ux-patterns).
 

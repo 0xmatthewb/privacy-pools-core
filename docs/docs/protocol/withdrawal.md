@@ -94,7 +94,7 @@ struct RelayData {
 ```
 
 :::note
-The three-o spelling of `processooor` is intentional — it matches the field name in the deployed smart contracts.
+The three-o spelling of `processooor` is intentional and matches the field name in the deployed smart contracts.
 :::
 
 ## Withdrawal Steps
@@ -104,13 +104,13 @@ The three-o spelling of `processooor` is intentional — it matches the field na
 1. **User Steps**
    - Construct withdrawal with Entrypoint as processooor
    - Resolve the final recipient and request the relayer quote late in the flow so proof generation and relay submission fit inside the quote TTL
-   - Set `withdrawal.data` to the quote's `feeCommitment.withdrawalData` — the proof's `context` depends on the finalized `withdrawal`, so this must happen before proof generation
+   - Set `withdrawal.data` to the quote's `feeCommitment.withdrawalData` (the proof's `context` depends on the finalized `withdrawal`, so this must happen before proof generation)
    - Validate the relayer minimum and warn if the remaining balance after a partial withdrawal would fall below it
    - Generate ZK proof
    - Submit to relayer before the quote expires
 
 :::warning Relayer returns HTTP 200 for failed withdrawals
-The relayer returns HTTP 200 for both success and application-level failures. Always check `result.success` before treating the withdrawal as complete. See [Relayer API — Handling Failures](/reference/relayer-api#handling-failures) for the full failure matrix.
+The relayer returns HTTP 200 for both success and application-level failures. Always check `result.success` before treating the withdrawal as complete. See [Relayer API: Handling Failures](/reference/relayer-api#handling-failures) for the full failure matrix.
 :::
 2. **Relayer Steps**
    - Verify proof locally
@@ -150,7 +150,7 @@ Withdrawal proofs must demonstrate inclusion in two separate Merkle trees, each 
 :::warning ASP root convergence required
 Always verify ASP root parity before submitting: `BigInt(onchainMtRoot) === Entrypoint.latestRoot()`.
 
-The ASP API returns two root values. `mtRoot` is the ASP's latest computed root; `onchainMtRoot` is the root currently committed on-chain. The `mt-leaves` endpoint returns leaves for `mtRoot`, but proofs must use `onchainMtRoot`. If `mtRoot !== onchainMtRoot`, the ASP has computed a new tree that has not been pushed on-chain yet — wait and re-fetch until they converge before building a proof.
+The ASP API returns two root values. `mtRoot` is the ASP's latest computed root; `onchainMtRoot` is the root currently committed on-chain. The `mt-leaves` endpoint returns leaves for `mtRoot`, but proofs must use `onchainMtRoot`. If `mtRoot !== onchainMtRoot`, the ASP has computed a new tree that has not been pushed on-chain yet. Wait and re-fetch until they converge before building a proof.
 :::
 
 ### Change Commitment Refresh

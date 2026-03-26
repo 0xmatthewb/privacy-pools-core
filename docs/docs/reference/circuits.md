@@ -30,7 +30,7 @@ Creates commitment proofs using Poseidon hash. Used by both withdrawal and rageq
 | Signal | Type | Description |
 |---|---|---|
 | `commitment` | field | `Poseidon(value, label, Poseidon(nullifier, secret))` |
-| `nullifierHash` | field | `Poseidon(nullifier)` — revealed on-chain to prevent double-spending |
+| `nullifierHash` | field | `Poseidon(nullifier)`, revealed on-chain to prevent double-spending |
 
 ## Withdraw
 
@@ -67,25 +67,25 @@ Validates withdrawal proofs: proves ownership of a commitment, inclusion in both
 | Signal | Type | Description |
 |---|---|---|
 | `newCommitmentHash` | field | Hash of the change commitment for remaining funds |
-| `existingNullifierHash` | field | `Poseidon(existingNullifier)` — recorded on-chain to prevent re-spending |
+| `existingNullifierHash` | field | `Poseidon(existingNullifier)`, recorded on-chain to prevent re-spending |
 
 ## Withdraw Circuit Constraints
 
 The Withdraw circuit enforces the following constraints (sourced from `withdraw.circom`):
 
-1. **Existing commitment reconstruction** — recomputes `Poseidon(existingValue, label, Poseidon(existingNullifier, existingSecret))` and verifies the result matches a leaf in the state tree.
+1. **Existing commitment reconstruction.** Recomputes `Poseidon(existingValue, label, Poseidon(existingNullifier, existingSecret))` and verifies the result matches a leaf in the state tree.
 
-2. **State tree inclusion** — LeanIMT inclusion proof verifying the existing commitment hash is a leaf at `stateIndex` with the given `stateSiblings`, producing `stateRoot`.
+2. **State tree inclusion.** LeanIMT inclusion proof verifying the existing commitment hash is a leaf at `stateIndex` with the given `stateSiblings`, producing `stateRoot`.
 
-3. **ASP tree inclusion** — LeanIMT inclusion proof using the **label** as the leaf (not the commitment hash). This proves the deposit has been approved by the ASP.
+3. **ASP tree inclusion.** LeanIMT inclusion proof using the **label** as the leaf (not the commitment hash). This proves the deposit has been approved by the ASP.
 
-4. **Value range checks** — both `remainingValue` (`existingValue - withdrawnValue`) and `withdrawnValue` must fit in 128 bits (`Num2Bits(128)`). This prevents underflow and constrains values to a valid range.
+4. **Value range checks.** Both `remainingValue` (`existingValue - withdrawnValue`) and `withdrawnValue` must fit in 128 bits (`Num2Bits(128)`). This prevents underflow and constrains values to a valid range.
 
-5. **Nullifier uniqueness** — `existingNullifier !== newNullifier` (`IsEqual` constraint output must be 0). Ensures the change commitment uses a fresh nullifier.
+5. **Nullifier uniqueness.** `existingNullifier !== newNullifier` (`IsEqual` constraint output must be 0). Ensures the change commitment uses a fresh nullifier.
 
-6. **New commitment construction** — computes `Poseidon(remainingValue, label, Poseidon(newNullifier, newSecret))` as the change commitment hash.
+6. **New commitment construction.** Computes `Poseidon(remainingValue, label, Poseidon(newNullifier, newSecret))` as the change commitment hash.
 
-7. **Context integrity** — `context * context` is computed as a signal to prevent the optimizer from removing `context` as an unused input, binding the proof to specific withdrawal parameters.
+7. **Context integrity.** `context * context` is computed as a signal to prevent the optimizer from removing `context` as an unused input, binding the proof to specific withdrawal parameters.
 
 ## Label Derivation
 
@@ -101,7 +101,7 @@ Where `SCOPE` is itself derived from:
 SCOPE = uint256(keccak256(abi.encodePacked(address(pool), block.chainid, asset))) % SNARK_SCALAR_FIELD;
 ```
 
-The SDK does not recompute labels — it reads them from on-chain `Deposited` events via `DataService`.
+The SDK does not recompute labels. Instead, it reads them from on-chain `Deposited` events via `DataService`.
 
 `SNARK_SCALAR_FIELD` = `21888242871839275222246405745257275088548364400416034343698204186575808495617`
 

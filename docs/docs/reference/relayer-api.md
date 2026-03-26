@@ -177,7 +177,7 @@ Submits a relayed withdrawal to the relayer for on-chain execution.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `chainId` | `number` | Yes | Target chain ID. |
-| `scope` | `string \| number` | Yes | Pool scope as a **decimal** bigint string (not hex). Always use string — most scopes exceed JavaScript's safe integer limit (`2^53 - 1`). |
+| `scope` | `string \| number` | Yes | Pool scope as a **decimal** bigint string (not hex). Always use string since most scopes exceed JavaScript's safe integer limit (`2^53 - 1`). |
 | `withdrawal` | `object` | Yes | The `Withdrawal` struct. `processooor` must be the Entrypoint address. `data` is ABI-encoded `RelayData`. |
 | `proof` | `object` | Yes | ZK proof. `pi_a` / `pi_c`: 3-element string arrays. `pi_b`: 3x2-element string array. Extra fields like `protocol` and `curve` are accepted and ignored. |
 | `publicSignals` | `string[]` | Yes | Exactly 8 elements. |
@@ -246,7 +246,7 @@ The relayer API does not support cancellation. If a `feeCommitment` has expired,
 For proof, quote, or context failures where no transaction was broadcast, discard the current quote and start from `POST /relayer/quote`.
 
 :::info
-If the response includes a `txHash` (the withdrawal landed but the optional gas-token swap failed), the withdrawal itself succeeded — do not retry the withdrawal.
+If the response includes a `txHash` (the withdrawal landed but the optional gas-token swap failed), the withdrawal itself succeeded. Do not retry the withdrawal.
 :::
 
 ### `GET /relayer/details`

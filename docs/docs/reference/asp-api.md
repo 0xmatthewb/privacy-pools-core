@@ -95,7 +95,7 @@ const onChainLatest = await client.readContract({
   functionName: "latestRoot",
 });
 if (aspRoot !== onChainLatest) {
-  throw new Error("ASP root mismatch — re-fetch and retry");
+  throw new Error("ASP root mismatch, re-fetch and retry");
 }
 ```
 

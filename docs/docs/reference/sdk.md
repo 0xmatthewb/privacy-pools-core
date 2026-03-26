@@ -135,7 +135,7 @@ interface ContractInteractionsService {
 ```
 
 :::warning Pass the Entrypoint address, not the pool address
-`getStateRoot()` reads `latestRoot()` using the Entrypoint ABI on whatever address is passed. Despite accepting `privacyPoolAddress`, you must pass the **Entrypoint address** — passing a pool address will fail.
+`getStateRoot()` reads `latestRoot()` using the Entrypoint ABI on whatever address is passed. Despite accepting `privacyPoolAddress`, you must pass the **Entrypoint address** because passing a pool address will fail.
 :::
 
 The return value is the ASP root, not the pool state root. For withdrawal proofs, read the pool state root directly via `IPrivacyPool.currentRoot()` and use `onchainMtRoot` from the [ASP API](/reference/asp-api) for the ASP root.
@@ -229,7 +229,7 @@ function hashPrecommitment(
 function calculateContext(
   withdrawal: Withdrawal,
   scope: Hash,
-): string;  // returns hex string — cast to bigint for proveWithdrawal
+): string;  // returns hex string (cast to bigint for proveWithdrawal)
 
 // Generate Merkle proof for leaf
 function generateMerkleProof(
@@ -265,7 +265,7 @@ interface TransactionResponse {
 
 interface Commitment {
   hash: Hash;              // Commitment hash
-  nullifierHash: Hash;     // Precommitment hash: Poseidon(nullifier, secret). Note: the circuit's nullifierHash is Poseidon(nullifier) — different value.
+  nullifierHash: Hash;     // Precommitment hash: Poseidon(nullifier, secret). Note: the circuit's nullifierHash is Poseidon(nullifier), which is a different value.
   preimage: {
     value: bigint;         // Committed value
     label: bigint;         // Commitment label
@@ -398,23 +398,23 @@ const { account, legacyAccount, errors } = await AccountService.initializeWithEv
   { mnemonic },
   pools // array of PoolInfo
 );
-// account       — current AccountService instance
-// legacyAccount — optional legacy AccountService used when restoring migrated histories
-// errors        — PoolEventsError[] for any pools whose event fetch failed
+// account       = current AccountService instance
+// legacyAccount = optional legacy AccountService used when restoring migrated histories
+// errors        = PoolEventsError[] for any pools whose event fetch failed
 
 const retry = await AccountService.initializeWithEvents(
   dataService,
   { service: account },
   failedPools
 );
-// retry.account — updated AccountService after retrying only the missing scopes
+// retry.account = updated AccountService after retrying only the missing scopes
 
 const migratedRetry = await AccountService.initializeWithEvents(
   dataService,
   { mnemonic },
   failedPools
 );
-// migratedRetry.account / migratedRetry.legacyAccount — rerun failed migrated scopes
+// migratedRetry.account / migratedRetry.legacyAccount = rerun failed migrated scopes
 ```
 
 The reconstruction process computes expected precommitment hashes for sequential deposit indices and matches them against on-chain `Deposited` events. It tolerates up to 10 consecutive misses (to handle failed or dropped transactions) before stopping the search. On mnemonic-based initialization, it also scans the legacy derivation path before continuing with current-key deposits and withdrawals.

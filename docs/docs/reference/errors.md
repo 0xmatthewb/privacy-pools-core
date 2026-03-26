@@ -17,7 +17,7 @@ Revert reason names are taken directly from the Solidity interface definitions i
 For the contract interface definitions where these errors originate, see [Contracts Interfaces](/reference/contracts).
 
 :::tip Most common during integration
-Focus on `ContextMismatch`, `UnknownStateRoot`, and `IncorrectASPRoot` — these are the most common proof-submission failures. See [Common Integration Mistakes](#common-integration-mistakes) at the bottom of this page for debugging guidance.
+Focus on `ContextMismatch`, `UnknownStateRoot`, and `IncorrectASPRoot`, which are the most common proof-submission failures. See [Common Integration Mistakes](#common-integration-mistakes) at the bottom of this page for debugging guidance.
 :::
 
 ## Contract Revert Reasons
@@ -75,7 +75,7 @@ These errors are defined in `IState.sol` and triggered by internal state operati
 | Error | Triggered By | Description |
 |-------|-------------|-------------|
 | `NullifierAlreadySpent` | `withdraw`, `ragequit` | The commitment's nullifier has already been spent. This commitment was already exited via withdrawal or ragequit. Withdrawal and ragequit are mutually exclusive on the same commitment. |
-| `NotYetRagequitteable` | — | Defined in the interface for a potential future waiting period, but the current contract implementation does not enforce any timing constraint on ragequit. |
+| `NotYetRagequitteable` | - | Defined in the interface for a potential future waiting period, but the current contract implementation does not enforce any timing constraint on ragequit. |
 | `OnlyEntrypoint` | internal | A function restricted to the Entrypoint was called by another address. |
 | `MaxTreeDepthReached` | `deposit` | The state Merkle tree has reached its maximum capacity. |
 
@@ -118,11 +118,11 @@ These are two separate Merkle trees with different sources and validation rules:
 The `X-Pool-Scope` header must be a decimal string. Hex-encoded scope values will not match any pool (the API treats the header as a literal string lookup), and the API returns 404 rather than a validation error.
 
 ```ts
-// Wrong — hex string, API returns 404
+// Wrong: hex string, API returns 404
 const scope = '0x1a2b3c';
 headers['X-Pool-Scope'] = scope;
 
-// Right — decimal string
+// Right: decimal string
 const scope = 1715004n; // or whatever the pool scope is
 headers['X-Pool-Scope'] = scope.toString(); // "1715004"
 ```
@@ -133,7 +133,7 @@ When using `DataService` for event reconstruction, always initialize with the de
 
 ### Submitting Duplicate Precommitments
 
-Each precommitment hash can only be used once on-chain. If a deposit transaction reverts or is never mined, the precommitment is not consumed — you can retry with the same index. Only increment the index after a confirmed successful deposit. The contract reverts with `PrecommitmentAlreadyUsed` if a precommitment was already used in a successful deposit.
+Each precommitment hash can only be used once on-chain. If a deposit transaction reverts or is never mined, the precommitment is not consumed, so you can retry with the same index. Only increment the index after a confirmed successful deposit. The contract reverts with `PrecommitmentAlreadyUsed` if a precommitment was already used in a successful deposit.
 
 ### Forgetting to Refresh After a Withdrawal
 

@@ -13,12 +13,12 @@ keywords:
 
 ## Commitments and nullifiers
 
-Commitments are the core data structure that makes privacy possible — they record a deposit in a way that lets the depositor prove ownership later without revealing which deposit they own.
+Commitments are the core data structure that makes privacy possible. They record a deposit in a way that lets the depositor prove ownership later without revealing which deposit they own.
 
-Each deposit into a Privacy Pool creates a commitment — a cryptographic record composed of:
+Each deposit into a Privacy Pool creates a commitment, a cryptographic record composed of:
 
 - **`value`**: The amount being committed
-- **`label`**: A unique identifier derived from the pool's scope and an incrementing nonce. The ASP's approved set contains labels — having your label approved is what unlocks the private withdrawal path
+- **`label`**: A unique identifier derived from the pool's scope and an incrementing nonce. The ASP's approved set contains labels, and having your label approved is what unlocks the private withdrawal path
 - **`nullifier`**: A secret that prevents double-spending
 - **`secret`**: A value that helps hide the nullifier
 
@@ -34,13 +34,13 @@ graph TD
 
 The protocol uses three hash constructions:
 
-- **Commitment Hash**: `Poseidon(value, label, precommitmentHash)` — the on-chain leaf in the state Merkle tree.
-- **Precommitment Hash**: `Poseidon(nullifier, secret)` — submitted at deposit time. Because it hides the nullifier, the contract cannot link this precommitment to the nullifier hash that will later appear during withdrawal.
-- **Nullifier Hash**: `Poseidon(nullifier)` — revealed on-chain during withdrawal or ragequit.
+- **Commitment Hash**: `Poseidon(value, label, precommitmentHash)`, the on-chain leaf in the state Merkle tree.
+- **Precommitment Hash**: `Poseidon(nullifier, secret)`, submitted at deposit time. Because it hides the nullifier, the contract cannot link this precommitment to the nullifier hash that will later appear during withdrawal.
+- **Nullifier Hash**: `Poseidon(nullifier)`, revealed on-chain during withdrawal or ragequit.
   - The contract records it and rejects any future attempt to spend the same commitment (`NullifierAlreadySpent`).
   - The nullifier itself stays private; only its hash is public, so observers cannot reconstruct the precommitment or link the withdrawal back to the original deposit.
 
-Each pool has a **scope** — a unique `uint256` identifier derived from the pool address, chain ID, and asset: `keccak256(abi.encodePacked(poolAddress, chainId, asset)) % SNARK_SCALAR_FIELD` (where `SNARK_SCALAR_FIELD` is the prime field order of the BN254 curve, ensuring the value fits inside a ZK circuit signal). Scope is used in API headers (`X-Pool-Scope`) and proof inputs to identify which pool an operation targets. You read it on-chain via `pool.SCOPE()`.
+Each pool has a **scope**, a unique `uint256` identifier derived from the pool address, chain ID, and asset: `keccak256(abi.encodePacked(poolAddress, chainId, asset)) % SNARK_SCALAR_FIELD` (where `SNARK_SCALAR_FIELD` is the prime field order of the BN254 curve, ensuring the value fits inside a ZK circuit signal). Scope is used in API headers (`X-Pool-Scope`) and proof inputs to identify which pool an operation targets. You read it on-chain via `pool.SCOPE()`.
 
 ## Zero-knowledge proofs in Privacy Pools
 
@@ -53,20 +53,20 @@ Privacy Pools uses [zero-knowledge proofs](/layers/zk) to demonstrate valid stat
 
 The protocol maintains two separate Merkle trees per pool:
 
-- **State tree**: Contains commitment hashes — one leaf per deposit and one per change commitment created during withdrawal. Managed on-chain by the pool contract. Root read via `pool.currentRoot()`.
+- **State tree**: Contains commitment hashes (one leaf per deposit and one per change commitment created during withdrawal). Managed on-chain by the pool contract. Root read via `pool.currentRoot()`.
 - **ASP tree**: Contains approved labels. Managed off-chain by the ASP and periodically committed on-chain. Root read via `Entrypoint.latestRoot()` or the ASP API's `onchainMtRoot`.
 
 Withdrawal proofs must demonstrate inclusion in **both** trees: the state tree (proving the commitment exists) and the ASP tree (proving the deposit was approved).
 
 ### What is an ASP?
 
-An Association Set Provider (ASP) is an off-chain service that reviews deposits after they enter the pool and maintains a Merkle tree of approved deposit labels. It does not custody funds or block deposits — anyone can deposit at any time.
+An Association Set Provider (ASP) is an off-chain service that reviews deposits after they enter the pool and maintains a Merkle tree of approved deposit labels. It does not custody funds or block deposits, and anyone can deposit at any time.
 
 ASP approval unlocks the private withdrawal path; ragequit (the public exit) is always available without it. The ASP never learns withdrawal destinations or nullifier secrets.
 
 ### What is a relayer?
 
-A relayer is an independent service that submits withdrawal transactions on behalf of users. Because the relayer — not the user — sends the on-chain transaction, the recipient address never appears as the transaction sender, preserving privacy.
+A relayer is an independent service that submits withdrawal transactions on behalf of users. Because the relayer (not the user) sends the on-chain transaction, the recipient address never appears as the transaction sender, preserving privacy.
 
 ## Basic operations
 
