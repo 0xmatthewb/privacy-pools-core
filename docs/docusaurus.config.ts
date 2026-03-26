@@ -30,22 +30,6 @@ const config: Config = {
       tagName: "link",
       attributes: {
         rel: "icon",
-        href: "/favicon/favicon.ico",
-        sizes: "48x48",
-      },
-    },
-    {
-      tagName: "link",
-      attributes: {
-        rel: "icon",
-        href: "/favicon/favicon.svg",
-        type: "image/svg+xml",
-      },
-    },
-    {
-      tagName: "link",
-      attributes: {
-        rel: "icon",
         href: "/favicon/favicon-96x96.png",
         type: "image/png",
         sizes: "96x96",
