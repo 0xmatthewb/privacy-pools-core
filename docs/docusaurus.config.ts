@@ -4,7 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
   title: "Privacy Pools Documentation",
-  tagline: "Technical documentation for Privacy Pools protocol",
+  tagline: "Public deposits, private withdrawals, and integration guidance",
   favicon: "img/favicon.svg",
 
   url: "https://docs.privacypools.com",
@@ -132,7 +132,7 @@ const config: Config = {
         rootContent:
           "Sitemap: https://docs.privacypools.com/sitemap.xml\nFull docs for LLMs: https://docs.privacypools.com/llms-full.txt\nAgent integration: https://docs.privacypools.com/build/agents\nSkill library: https://docs.privacypools.com/build/skills",
         fullRootContent:
-          "Start here: https://docs.privacypools.com/build/start (build quickstart).\nSkill library: https://docs.privacypools.com/build/skills (agent skill reference).\nSitemap: https://docs.privacypools.com/sitemap.xml\nSDK package: @0xbow/privacy-pools-core-sdk (npm)",
+          "Start here: https://docs.privacypools.com/build (builder onboarding).\nOverview: https://docs.privacypools.com/overview (product and protocol introduction).\nSkill library: https://docs.privacypools.com/build/skills (agent skill reference).\nSitemap: https://docs.privacypools.com/sitemap.xml\nSDK package: @0xbow/privacy-pools-core-sdk (npm)",
         pathTransformation: {
           ignorePaths: ["docs"],
         },
@@ -217,18 +217,18 @@ const config: Config = {
       items: [
         {
           type: "doc",
-          docId: "overview/what-is-privacy-pools",
+          docId: "overview/index",
           label: "Docs",
           position: "left",
         },
         {
-          to: "/build/start",
+          to: "/build",
           label: "Build",
           position: "left",
         },
         {
-          to: "/build/skills",
-          label: "Skills",
+          to: "/build/agents",
+          label: "Agents",
           position: "left",
         },
         {

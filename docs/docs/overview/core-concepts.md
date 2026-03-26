@@ -11,6 +11,17 @@ keywords:
   - ASP
 ---
 
+## Start from the user journey
+
+Privacy Pools is easiest to understand from the outside in:
+
+1. A user deposits publicly into a shared pool.
+2. The ASP reviews the deposit label after the deposit lands.
+3. Once approved, the user can withdraw privately through a relayer.
+4. If they do not want to wait for approval, they can ragequit publicly back to the original deposit address.
+
+The rest of this page explains the objects that make those steps work.
+
 ## Commitments and nullifiers
 
 Commitments are the core data structure that makes privacy possible. They record a deposit in a way that lets the depositor prove ownership later without revealing which deposit they own.

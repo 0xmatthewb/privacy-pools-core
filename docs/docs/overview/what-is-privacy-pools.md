@@ -1,7 +1,7 @@
 ---
 title: What is Privacy Pools?
 slug: /overview/what-is-privacy-pools
-description: "High-level overview of Privacy Pools, explaining compliant private withdrawals on Ethereum using zero-knowledge proofs and Association Set Providers (ASPs)."
+description: "High-level overview of Privacy Pools, explaining public deposits, private withdrawals, and ASP-based approval on Ethereum."
 keywords:
   - privacy pools
   - 0xbow
@@ -12,7 +12,7 @@ keywords:
   - compliance
 ---
 
-**Privacy Pools is a protocol for compliant private transactions on Ethereum. Users deposit assets publicly, then withdraw privately using zero-knowledge proofs, proving their funds are not associated with illicit activity.**
+**Privacy Pools is a protocol for public deposits and private withdrawals on Ethereum. Users deposit assets publicly, then later withdraw privately with zero-knowledge proofs after their deposit label has been approved by an Association Set Provider (ASP).**
 
 Privacy Pools enables private withdrawals through a combination of zero-knowledge proofs and commitment schemes. Users deposit assets and later withdraw through a relayer, which submits the transaction on their behalf so there is no on-chain link between deposit and withdrawal addresses.
 
@@ -25,8 +25,8 @@ If a deposit is not approved (or the user prefers not to wait), the original dep
 | Goal | Page |
 |---|---|
 | Understand the protocol lifecycle | [Using Privacy Pools](/protocol) |
-| Build a frontend integration | [Start Here](/build/start) |
-| Integrate with agents | [Start Here](/build/start) |
+| Build a frontend integration | [Build](/build) |
+| Integrate with agents | [Agent Setup](/build/agents) |
 | Look up chain addresses and `startBlock` | [Deployments](/deployments) |
 
 ## System architecture overview

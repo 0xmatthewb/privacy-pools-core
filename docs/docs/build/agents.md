@@ -7,6 +7,13 @@ description: Entry points, skill files, and setup for AI coding agents integrati
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
+Use this page when an AI coding agent needs the shortest reliable path into the repo. The recommended order is:
+
+1. Read `AGENTS.md` or `CLAUDE.md` at the repo root.
+2. Load the relevant [Skill Library](/build/skills) entry for the task.
+3. Use [Frontend Integration](/build/integration) for the canonical implementation path.
+4. Use [Deployments](/deployments) and `/reference/*` pages for exact values and schemas.
+
 ## Reference Table
 
 | Resource | URL | Purpose |

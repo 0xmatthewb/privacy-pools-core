@@ -2,17 +2,35 @@
 sidebar_label: Start Here
 sidebar_position: 1
 title: Start Here
-description: Choose the right integration path for your Privacy Pools project.
+description: Onboarding checklist and recommended implementation path for a Privacy Pools integration.
 keywords: [privacy pools, getting started, integration, frontend, agent]
 ---
 
-Privacy Pools is a smart-contract protocol for compliant private transactions on Ethereum. Users deposit into a shared pool and withdraw privately, using zero-knowledge proofs and Association Set Providers (ASPs) to prove their funds are not linked to illicit activity. The SDK is TypeScript-based and uses viem.
+Privacy Pools is a smart-contract protocol for **public deposits**, **private withdrawals**, and a **public ragequit fallback**. The SDK is TypeScript-based, built around `viem`, and intended for apps that want to guide users through deposit, approval, withdrawal, and recovery safely.
 
 :::info
 These docs cover SDK v1.2.0 (`@0xbow/privacy-pools-core-sdk`).
 :::
 
-## Key Concepts
+## Before You Write Code
+
+Make sure you have all five of these inputs first:
+
+1. The target chain and asset from [Deployments](/deployments).
+2. The correct `Entrypoint`, `PrivacyPool`, and `startBlock` values.
+3. Hosted circuit artifacts for the SDK's `Circuits` loader.
+4. A plan for both private withdrawal and public [ragequit](/protocol/ragequit).
+5. A user-facing recovery flow before the first deposit.
+
+## Recommended Build Path
+
+1. Read [Using Privacy Pools](/protocol) so the product behavior is clear before the implementation details.
+2. Copy addresses and `startBlock` values from [Deployments](/deployments).
+3. Implement the happy path from [Frontend Integration](/build/integration).
+4. Add approval, recovery, quote-refresh, and status handling from [UX Patterns](/build/ux-patterns).
+5. Use [Technical Reference](/reference/sdk), [ASP API](/reference/asp-api), and [Relayer API](/reference/relayer-api) when you need exact types and schemas.
+
+## Core Concepts You Will Use Everywhere
 
 | Term | Meaning |
 |------|---------|

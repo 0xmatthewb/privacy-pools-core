@@ -7,19 +7,13 @@ const sidebars: SidebarsConfig = {
       label: "Overview",
       collapsible: false,
       link: {
-        type: "generated-index",
-        slug: "/overview",
-        title: "Overview",
-        description:
-          "Introductory docs for Privacy Pools, its architecture, and core concepts.",
-        keywords: [
-          "privacy pools",
-          "overview",
-          "architecture",
-          "core concepts",
-        ],
+        type: "doc",
+        id: "overview/index",
       },
-      items: ["overview/what-is-privacy-pools", "overview/core-concepts"],
+      items: [
+        "overview/what-is-privacy-pools",
+        "overview/core-concepts",
+      ],
     },
     {
       type: "category",
@@ -40,19 +34,8 @@ const sidebars: SidebarsConfig = {
       label: "Build",
       collapsible: false,
       link: {
-        type: "generated-index",
-        slug: "/build",
-        title: "Build",
-        description:
-          "Guides for integrating Privacy Pools into frontends and agent workflows.",
-        keywords: [
-          "privacy pools",
-          "build",
-          "integration",
-          "agents",
-          "skills",
-          "contributing",
-        ],
+        type: "doc",
+        id: "build/index",
       },
       items: [
         "build/start",
@@ -68,19 +51,8 @@ const sidebars: SidebarsConfig = {
       label: "Protocol Components",
       collapsible: false,
       link: {
-        type: "generated-index",
-        slug: "/layers",
-        title: "Protocol Components",
-        description:
-          "Reference pages for the contract, zero-knowledge, and ASP layers.",
-        keywords: [
-          "privacy pools",
-          "contracts",
-          "zero knowledge",
-          "zk proofs",
-          "asp",
-          "protocol layers",
-        ],
+        type: "doc",
+        id: "layers/index",
       },
       items: [
         {
@@ -144,13 +116,13 @@ const sidebars: SidebarsConfig = {
         ],
       },
       items: [
+        "deployments",
         "reference/sdk",
         "reference/contracts",
         "reference/circuits",
         "reference/asp-api",
         "reference/relayer-api",
         "reference/errors",
-        "deployments",
       ],
     },
     "toc",
