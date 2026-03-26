@@ -11,7 +11,7 @@ keywords:
   - agents
 ---
 
-This section is for teams adding Privacy Pools to wallets, dapps, and other products. If you are integrating Privacy Pools for the first time, start with [Start Here](/build/start), then use the builder path below and open reference pages only when you need exact details.
+Everything you need to add Privacy Pools to a wallet, dapp, or other product. Start with the read order below and open reference pages when you need exact details.
 
 ## Read in this order
 

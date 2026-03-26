@@ -11,9 +11,7 @@ keywords:
   - public deposits
 ---
 
-New to Privacy Pools? Start here for the product-level picture, then follow the lifecycle and core concepts pages. If you are integrating the protocol into an app, move from here into [Build](/build).
-
-Privacy Pools lets users deposit into shared pools, wait for ASP review, then withdraw privately through a relayer. If private withdrawal is unavailable, the original depositor can still [ragequit](/protocol/ragequit) publicly back to the deposit address.
+Privacy Pools lets users deposit into shared pools, wait for ASP approval, then withdraw privately through a relayer. If a deposit isn't approved, the original depositor can always [ragequit](/protocol/ragequit) back to the deposit address.
 
 ## Read in this order
 

@@ -10,27 +10,11 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This guide is for the full Privacy Pools frontend or wallet integration. If you are still getting oriented, read [Start Here](/build/start) first. Come back here when you are ready to wire the real deposit, approval, withdrawal, and ragequit flows.
-
-## What this guide covers
-
-- wiring the standard browser or wallet integration path
-- implementing public deposit, private relayed withdrawal, and public ragequit
-- knowing when to jump to [Deployments](/deployments), [SDK Utilities](/reference/sdk), or the API references for exact values
-
-## What you need before starting
+This page covers the full integration: deposit, withdrawal, and ragequit. If you haven't read [Using Privacy Pools](/protocol) yet, do that first so the lifecycle is clear.
 
 :::info Prerequisites
-Node 18+, viem 2.x, and a browser or Node.js environment. For testing, you will need testnet ETH on a supported chain. Use [Deployments](/deployments) for target-chain addresses and `startBlock`.
+Node 18+, viem 2.x, a browser or Node.js environment, and the target chain's addresses and `startBlock` from [Deployments](/deployments).
 :::
-
-Before you start, make sure you have:
-
-- a target chain and asset
-- the target chain's `Entrypoint`, `PrivacyPool`, and `startBlock` from [Deployments](/deployments)
-- hosted circuit artifacts for the SDK
-- a recovery flow before first deposit
-- a plan for both relayed withdrawal and public ragequit
 
 ## Circuit artifacts and SDK setup
 

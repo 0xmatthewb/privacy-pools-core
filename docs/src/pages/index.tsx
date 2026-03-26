@@ -137,11 +137,11 @@ const ARCH_LAYERS = [
     label: "ASP Layer",
     icon: IconCheckShield,
     link: "/layers/asp",
-    description: "Off-chain compliance attestations that gate private withdrawals.",
+    description: "Maintains approved-label Merkle trees and publishes roots on-chain to gate private withdrawals.",
     items: [
-      { name: "Label management", desc: "Approved labels and revocation", link: "/layers/asp" },
-      { name: "Root updates", desc: "On-chain ASP root publication", link: "/layers/asp" },
-      { name: "Compliance", desc: "Private attestation of deposit origin", link: "/layers/asp" },
+      { name: "Label approval", desc: "Off-chain review, on-chain root", link: "/layers/asp" },
+      { name: "Root publication", desc: "Append-only history via ASP_POSTMAN", link: "/layers/asp" },
+      { name: "API surface", desc: "Leaves, roots, and health endpoints", link: "/reference/asp-api" },
     ],
   },
 ];
