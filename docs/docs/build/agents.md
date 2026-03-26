@@ -7,17 +7,19 @@ description: Entry points, skill files, and setup for developers using AI coding
 keywords: [privacy pools, agent, LLM, skills, automation, CLAUDE.md]
 ---
 
-Use this page to set up an AI coding agent for Privacy Pools work. The recommended order is:
+Use this page to set up an AI coding agent for Privacy Pools work. If the task is first-time integration, read [Start Here](/build/start) once before you move into the agent-specific surfaces. The recommended order is:
 
-1. Read `AGENTS.md` or `CLAUDE.md` at the repo root.
-2. Load the relevant [Skill Library](/build/skills) entry for the task.
-3. Use [Frontend Integration](/build/integration) for the canonical implementation path.
-4. Use [Deployments](/deployments) and `/reference/*` pages for exact values and schemas.
+1. Read [Start Here](/build/start) for the builder path.
+2. Read `AGENTS.md` or `CLAUDE.md` at the repo root.
+3. Load the relevant [Skill Library](/build/skills) entry for the task.
+4. Use [Frontend Integration](/build/integration) for the canonical implementation path.
+5. Use [Deployments](/deployments) and `/reference/*` pages for exact values and schemas.
 
 ## Reference Table
 
 | Resource | URL | Purpose |
 |---|---|---|
+| [Start Here](/build/start) | `/build/start` | The fastest path to a first working integration |
 | [Skill Library](/build/skills) | `/build/skills` | Task-specific skill files for integration, deposit, withdrawal, and ragequit |
 | [Frontend Integration](/build/integration) | `/build/integration` | Production integration guide and safety checks |
 | [Deployments](/deployments) | `/deployments` | Chain-specific contract addresses and `startBlock` values |
@@ -56,7 +58,7 @@ Claude Code auto-discovers `CLAUDE.md` at the repository root. It routes the age
 1. The [Skill Library](/build/skills) for task-specific workflows.
 2. [Frontend Integration](/build/integration) for SDK patterns and implementation details.
 3. [Deployments](/deployments) for chain addresses and `startBlock` values.
-4. Reference pages under `/reference/` for SDK details, API schemas, or edge cases.
+4. Reference pages under `/reference/` for SDK details, API schemas, or exact constraints.
 
 ### Codex
 

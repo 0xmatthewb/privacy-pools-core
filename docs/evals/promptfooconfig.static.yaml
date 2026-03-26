@@ -13,6 +13,7 @@ prompts:
   - "{{filePath}}"
 
 tests:
+  - tests/static/builder-path.yaml
   - tests/static/integration-skill.yaml
   - tests/static/deposit-skill.yaml
   - tests/static/withdraw-skill.yaml

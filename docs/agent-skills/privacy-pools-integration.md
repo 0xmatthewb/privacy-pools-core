@@ -15,9 +15,9 @@ Plan and implement an end-to-end Privacy Pools integration, covering deposit, wi
 
 This skill covers high-level integration planning. For step-by-step implementation details, defer to the flow-specific skills:
 
-- **Deposit flow** -- see `privacy-pools-deposit`
-- **Withdrawal flow** -- see `privacy-pools-withdraw`
-- **Ragequit flow** -- see `privacy-pools-ragequit`
+- **Deposit flow**: see `privacy-pools-deposit`
+- **Withdrawal flow**: see `privacy-pools-withdraw`
+- **Ragequit flow**: see `privacy-pools-ragequit`
 
 ## Safety Defaults
 

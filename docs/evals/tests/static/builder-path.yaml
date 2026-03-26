@@ -1,0 +1,82 @@
+# Static checks for the builder journey pages.
+
+- description: "Start Here covers the builder path and key concepts"
+  vars:
+    filePath: "docs/docs/build/start.md"
+  assert:
+    - type: javascript
+      value: |
+        const text = String(output);
+        const lower = text.toLowerCase();
+        const required = [
+          '/protocol',
+          '/build/integration',
+          '/build/ux-patterns',
+          '/reference',
+          '/deployments',
+          'public',
+          'private',
+          'recovery phrase',
+          'deposit wallet',
+        ];
+        const missing = required.filter((value) => !lower.includes(value));
+        return {
+          pass: missing.length === 0,
+          score: missing.length === 0 ? 1 : 0,
+          reason: missing.length === 0
+            ? 'Start Here covers the builder quickstart path'
+            : `Missing: ${missing.join(', ')}`,
+        };
+
+- description: "Build landing keeps Deployments as a lookup after the main path"
+  vars:
+    filePath: "docs/docs/build/index.md"
+  assert:
+    - type: javascript
+      value: |
+        const text = String(output);
+        const integrationIndex = text.indexOf('/build/integration');
+        const referenceIndex = text.indexOf('/reference');
+        const deploymentsIndex = text.indexOf('/deployments');
+        const pass =
+          integrationIndex !== -1 &&
+          referenceIndex !== -1 &&
+          deploymentsIndex !== -1 &&
+          integrationIndex < deploymentsIndex &&
+          referenceIndex < deploymentsIndex;
+        return {
+          pass,
+          score: pass ? 1 : 0,
+          reason: pass
+            ? 'Build landing keeps Deployments in a lookup role'
+            : 'Build landing still routes to Deployments too early',
+        };
+
+- description: "Using Privacy Pools distinguishes recovery phrase from deposit wallet"
+  vars:
+    filePath: "docs/docs/protocol/overview.md"
+  assert:
+    - type: contains
+      value: "recovery phrase"
+    - type: contains
+      value: "deposit wallet"
+
+- description: "Frontend Integration points first-time builders back to Start Here"
+  vars:
+    filePath: "docs/docs/build/integration.md"
+  assert:
+    - type: contains
+      value: "/build/start"
+    - type: contains
+      value: "What you need before starting"
+    - type: contains
+      value: "Exact references"
+
+- description: "Errors page includes compact trust framing"
+  vars:
+    filePath: "docs/docs/reference/errors.md"
+  assert:
+    - type: contains
+      value: "Use this page for"
+    - type: contains
+      value: "Verified against"

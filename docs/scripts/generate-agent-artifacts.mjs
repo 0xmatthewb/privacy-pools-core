@@ -9,7 +9,7 @@
  *   - AGENTS.md                                 (repo root)
  *   - CLAUDE.md                                 (repo root)
  *
- * Uses only Node.js built-ins. Idempotent -- safe to run multiple times.
+ * Uses only Node.js built-ins. Idempotent and safe to run multiple times.
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
@@ -83,11 +83,11 @@ function renderAgentsMd(skills) {
   const skillList = skills
     .map(
       (s) =>
-        `- **${s.name}** -- ${s.description}  \n  Skill file: \`.agents/skills/${s.name}/SKILL.md\``
+        `- **${s.name}**: ${s.description}  \n  Skill file: \`.agents/skills/${s.name}/SKILL.md\``
     )
     .join("\n");
 
-  return `# Privacy Pools -- Agent Entry Point
+  return `# Privacy Pools Agent Entry Point
 
 Privacy Pools is a smart-contract protocol for compliant private transactions on Ethereum. It uses zero-knowledge proofs and Association Set Providers (ASPs) to let users withdraw funds privately while proving their deposits are not associated with illicit activity.
 
@@ -124,8 +124,8 @@ Each skill is a self-contained markdown file with a read order, guardrails, and 
 4. Implement following the steps and guardrails in the file.
 
 Skills live in two mirrored locations:
-- \`.agents/skills/<name>/SKILL.md\` -- for IDE agents (Cursor, Copilot, etc.)
-- \`docs/static/agent-skills/<name>/SKILL.md\` -- served on the docs site
+- \`.agents/skills/<name>/SKILL.md\` for IDE agents such as Cursor and Copilot
+- \`docs/static/agent-skills/<name>/SKILL.md\` for the hosted docs site
 
 ## Available Skills
 
@@ -161,7 +161,7 @@ function renderClaudeMd(skills) {
   const skillList = skills
     .map(
       (s) =>
-        `- **${s.name}** -- ${s.description}  \n  Skill file: \`.agents/skills/${s.name}/SKILL.md\``
+        `- **${s.name}**: ${s.description}  \n  Skill file: \`.agents/skills/${s.name}/SKILL.md\``
     )
     .join("\n");
 

@@ -31,10 +31,10 @@ Implement the deposit flow for Privacy Pools, covering ETH and ERC20 assets.
 
 ## What to Persist
 
-- `label` -- uniquely identifies the commitment on-chain and in the ASP tree.
-- `committedValue` -- the actual balance available for withdrawal (after vetting fee deduction).
-- `nullifier` and `secret` -- required to generate withdrawal or ragequit proofs.
-- `depositIndex` -- tracks the next available index for the mnemonic derivation path.
+- `label`: uniquely identifies the commitment on-chain and in the ASP tree.
+- `committedValue`: the actual balance available for withdrawal after vetting fee deduction.
+- `nullifier` and `secret`: required to generate withdrawal or ragequit proofs.
+- `depositIndex`: tracks the next available index for the mnemonic derivation path.
 
 ## Important Details
 
