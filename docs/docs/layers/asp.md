@@ -27,7 +27,7 @@ struct AssociationSetData {
 }
 ```
 
-Only the `ASP_POSTMAN` role can call `updateRoot()`. The Entrypoint owner manages this role assignment.
+Only the `ASP_POSTMAN` role can call `updateRoot()`. The Entrypoint owner manages this role assignment. The function also validates inputs: `root` cannot be zero (`EmptyRoot`) and the IPFS CID must be 32-64 bytes (`InvalidIPFSCIDLength`).
 
 ## How withdrawals use the ASP tree
 
@@ -37,7 +37,9 @@ The withdrawal circuit takes two Merkle inclusion proofs: one for the state tree
 ASPRootChecker.leaf <== label
 ```
 
-On-chain, the `validWithdrawal` modifier enforces that the proof's claimed ASP root matches `Entrypoint.latestRoot()` exactly. Unlike the state tree (which accepts any of the last 64 roots), the ASP root must be the most recent one. If the ASP publishes a new root between when the client fetches leaves and when the proof lands on-chain, the proof will revert with `IncorrectASPRoot`.
+On-chain, the `validWithdrawal` modifier enforces that the proof's claimed ASP root matches `Entrypoint.latestRoot()` exactly. Unlike the state tree (which accepts any of the last 64 roots), the ASP root must be the most recent one. If the ASP publishes a new root between when the client fetches leaves and when the proof lands on-chain, the proof will revert with `IncorrectASPRoot`. The modifier also checks that the proof's `ASPTreeDepth` does not exceed `MAX_TREE_DEPTH`, reverting with `InvalidTreeDepth` if it does.
+
+Note: `latestRoot()` reverts with `NoRootsAvailable` if the ASP has never published a root. No withdrawals are possible until the first `updateRoot` call succeeds.
 
 ## Root history
 
