@@ -22,7 +22,7 @@ Node 18+, viem 2.x, a browser or Node.js environment, and the target chain's add
 
 **Serve circuit artifacts:** the SDK's `Circuits` class fetches six files at runtime from a URL you set via `baseUrl`: `commitment.wasm`, `commitment.zkey`, `commitment.vkey`, `withdraw.wasm`, `withdraw.zkey`, `withdraw.vkey`. Place them in your app's public directory under `/artifacts/`.
 
-These files come from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits). Build them from the monorepo (`yarn workspace @privacy-pool-core/circuits build`) and copy the output to your public directory. The SDK verifies each file's SHA-256 hash at load time and rejects mismatches.
+These files come from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits). To build them yourself, clone the monorepo and run `yarn workspace @privacy-pool-core/circuits compile`. The output lands in `packages/circuits/build/{commitment,withdraw}/`. Copy the `.wasm`, `.zkey`, and `.vkey` files from each subdirectory into your public artifacts folder. The SDK verifies each file's SHA-256 hash at load time and rejects mismatches.
 
 Fill the chain-specific values from [Deployments](/deployments) for the network you are integrating.
 

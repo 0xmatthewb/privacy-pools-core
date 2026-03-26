@@ -1,6 +1,6 @@
 # Privacy Pools Agent Entry Point
 
-Privacy Pools is a smart-contract protocol for compliant private transactions on Ethereum. It uses zero-knowledge proofs and Association Set Providers (ASPs) to let users withdraw funds privately while proving their deposits are not associated with illicit activity.
+Privacy Pools is a smart-contract protocol for compliant private transactions on EVM chains. It uses zero-knowledge proofs and Association Set Providers (ASPs) to let users withdraw funds privately while proving their deposits are not associated with illicit activity.
 
 > This file helps AI agents discover the Privacy Pools documentation and skill library.
 > Works with any agent: Cursor, Copilot, Codex, Claude Code, or custom tooling.
