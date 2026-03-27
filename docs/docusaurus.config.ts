@@ -222,30 +222,37 @@ const config: Config = {
       },
       items: [
         {
-          type: "doc",
-          docId: "overview/index",
+          to: "/overview",
           label: "Docs",
           position: "left",
+          // Active on homepage, overview/*, protocol/*, using-privacy-pools/*
+          activeBaseRegex: "^/$|^/(overview|protocol|using-privacy-pools)(/|$)",
         },
         {
           to: "/build",
           label: "Build",
           position: "left",
+          // Active on /build/* but NOT /build/agents or /build/skills
+          activeBaseRegex: "^/build(?!/(agents|skills))",
         },
         {
           to: "/build/agents",
           label: "Agents",
           position: "left",
+          // Only active on /build/agents and /build/skills
+          activeBaseRegex: "^/build/(agents|skills)",
         },
         {
           to: "/reference/sdk",
           label: "SDK",
           position: "left",
+          activeBaseRegex: "^/reference/",
         },
         {
           to: "/deployments",
           label: "Deployments",
           position: "left",
+          activeBaseRegex: "^/deployments",
         },
         {
           href: "https://github.com/0xbow-io/privacy-pools-core",
