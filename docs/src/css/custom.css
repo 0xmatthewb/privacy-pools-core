@@ -56,7 +56,7 @@
   --ifm-global-radius: 1px;
   --pp-radius-sm: 1px;
   --pp-radius-md: 3px;
-  --pp-radius-lg: 4px;
+  --pp-radius-lg: 3px;
 
   /* ── Sidebar width ── */
   --ifm-navbar-sidebar-width: min(83vw, 320px);
@@ -64,6 +64,10 @@
   /* ── Spacing ── */
   --pp-section-gap: 3rem;
   --pp-card-padding: 1.25rem 1.5rem;
+
+  /* ── Interactive surface fills ── */
+  --pp-hover-bg: rgba(0, 0, 0, 0.04);
+  --pp-active-bg: rgba(0, 0, 0, 0.06);
 
   /* ── Transitions ── */
   --pp-transition: 180ms ease;
@@ -127,6 +131,9 @@ html[data-theme="dark"] {
 
   --pp-surface-raised: #1A1A1A;
   --pp-surface-overlay: #222222;
+
+  --pp-hover-bg: rgba(255, 255, 255, 0.06);
+  --pp-active-bg: rgba(255, 255, 255, 0.08);
 }
 
 /* Search dark mode overrides */
@@ -256,11 +263,7 @@ html {
 }
 
 .markdown tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-html[data-theme="dark"] .markdown tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: var(--pp-hover-bg);
 }
 
 /* ── Mermaid diagrams ── */
@@ -321,24 +324,16 @@ html[data-theme="dark"] .theme-doc-sidebar-container {
 }
 
 .menu__link:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--pp-hover-bg);
   color: var(--ifm-font-color-base);
-}
-
-html[data-theme="dark"] .menu__link:hover {
-  background-color: rgba(255, 255, 255, 0.06);
 }
 
 /* ── Active item: left-accent pill ── */
 .menu__link--active:not([class*="categoryLink"]) {
-  background-color: rgba(0, 0, 0, 0.06) !important;
+  background-color: var(--pp-active-bg) !important;
   border-left-color: var(--ifm-font-color-base);
   font-weight: 500;
   color: var(--ifm-font-color-base);
-}
-
-html[data-theme="dark"] .menu__link--active:not([class*="categoryLink"]) {
-  background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* ── Top-level section headers: mono accent ── */
@@ -354,11 +349,7 @@ html[data-theme="dark"] .menu__link--active:not([class*="categoryLink"]) {
 }
 
 .menu > .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-html[data-theme="dark"] .menu > .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--pp-hover-bg);
 }
 
 .menu > .menu__list > .menu__list-item > .menu__list-item-collapsible > .menu__link.menu__link--active {
@@ -419,7 +410,11 @@ html[data-theme="dark"] .menu > .menu__list > .menu__list-item > .menu__list-ite
   display: none;
 }
 
-/* Suppress collapsible hover background */
+/* Suppress collapsible hover background + normalize radius */
+.menu__list-item-collapsible {
+  border-radius: var(--pp-radius-sm) !important;
+}
+
 .menu__list-item-collapsible:hover {
   background-color: transparent !important;
 }
@@ -509,6 +504,7 @@ html[data-theme="dark"] .card:hover {
   padding: 1rem 1.25rem !important;
   margin-bottom: 1.5rem !important;
   border-left-width: 3px !important;
+  --ifm-alert-shadow: none;
 }
 
 /* Note/info/tip: subtle monochrome since they're informational */
@@ -599,7 +595,19 @@ html[data-theme="dark"] .header-github-link::before {
 }
 
 .navbar__items .header-github-link:hover {
-  background: var(--ifm-color-emphasis-200) !important;
+  background: var(--pp-hover-bg) !important;
+}
+
+/* Theme toggle — match GitHub icon circle treatment */
+button[class*="toggleButton"] {
+  border-radius: 50% !important;
+  width: 32px;
+  height: 32px;
+  transition: background-color var(--pp-transition) !important;
+}
+
+button[class*="toggleButton"]:hover {
+  background-color: var(--pp-hover-bg) !important;
 }
 
 /* Consistent spacing for right-side navbar items */
@@ -706,23 +714,25 @@ html[data-theme="dark"] .navbar-sidebar__backdrop {
 }
 
 .navbar-sidebar .menu__link:hover {
-  background-color: rgba(0, 0, 0, 0.04) !important;
+  background-color: var(--pp-hover-bg) !important;
 }
 
-html[data-theme="dark"] .navbar-sidebar .menu__link:hover {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-}
-
-/* Active item — full-width highlight */
-.navbar-sidebar .menu__link--active:not(.menu__link--sublist) {
+/* Active item — left accent + fill, matching desktop sidebar */
+.navbar-sidebar .theme-doc-sidebar-item-link > .menu__link--active {
   color: var(--ifm-font-color-base) !important;
-  font-weight: 600 !important;
-  background-color: rgba(0, 0, 0, 0.04) !important;
-  border-left: none !important;
+  font-weight: 500 !important;
+  background-color: var(--pp-active-bg) !important;
+  border-left: 2px solid var(--ifm-font-color-base) !important;
+  padding-left: calc(1rem - 2px) !important;
 }
 
-html[data-theme="dark"] .navbar-sidebar .menu__link--active:not(.menu__link--sublist) {
-  background-color: rgba(255, 255, 255, 0.06) !important;
+/* Nested active items: adjust padding to maintain indent + accent */
+.navbar-sidebar .menu__list .menu__list .theme-doc-sidebar-item-link > .menu__link--active {
+  padding-left: calc(1.75rem - 2px) !important;
+}
+
+.navbar-sidebar .menu__list .menu__list .menu__list .theme-doc-sidebar-item-link > .menu__link--active {
+  padding-left: calc(2.5rem - 2px) !important;
 }
 
 /* Nested menu indentation — indent text via padding, not list, so backgrounds stay flush */
@@ -754,11 +764,7 @@ html[data-theme="dark"] .navbar-sidebar .menu__link--active:not(.menu__link--sub
 }
 
 .navbar-sidebar .menu > .menu__list > .theme-doc-sidebar-item-category > .menu__list-item-collapsible > .menu__link:hover {
-  background-color: rgba(0, 0, 0, 0.04) !important;
-}
-
-html[data-theme="dark"] .navbar-sidebar .menu > .menu__list > .theme-doc-sidebar-item-category > .menu__list-item-collapsible > .menu__link:hover {
-  background-color: rgba(255, 255, 255, 0.06) !important;
+  background-color: var(--pp-hover-bg) !important;
 }
 
 /* Sub-category headers — muted uppercase labels (e.g. SMART CONTRACTS LAYER) */
@@ -838,18 +844,15 @@ html[data-theme="dark"] .navbar-sidebar .menu > .menu__list > .theme-doc-sidebar
   border-bottom: 1px solid var(--pp-border);
   color: var(--pp-muted) !important;
   border-radius: 0 !important;
+  background-color: transparent !important;
 }
 
 .navbar-sidebar .navbar-sidebar__back:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--pp-hover-bg) !important;
 }
 
 html[data-theme="dark"] .navbar-sidebar .navbar-sidebar__back {
   border-bottom-color: rgba(255, 255, 255, 0.08);
-}
-
-html[data-theme="dark"] .navbar-sidebar .navbar-sidebar__back:hover {
-  background-color: rgba(255, 255, 255, 0.04);
 }
 
 /* Hide Docusaurus default collapsible toggle arrows in sidebar categories */
@@ -875,17 +878,13 @@ html[data-theme="dark"] .navbar-sidebar .navbar-sidebar__back:hover {
   font-weight: 500;
   color: var(--pp-muted);
   padding: 0.375rem 0.75rem;
-  border-radius: var(--pp-radius-sm);
+  border-radius: var(--pp-radius-md);
   transition: color var(--pp-transition), background-color var(--pp-transition);
 }
 
 .navbar__items .navbar__link:hover {
   color: var(--ifm-font-color-base);
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-html[data-theme="dark"] .navbar__items .navbar__link:hover {
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: var(--pp-hover-bg);
 }
 
 .navbar__items .navbar__link--active {
@@ -901,7 +900,7 @@ html[data-theme="dark"] .navbar__items .navbar__link:hover {
   font-family: var(--pp-font-heading);
   font-size: 0.8125rem;
   color: var(--pp-muted);
-  transition: color var(--pp-transition);
+  transition: color var(--pp-transition), opacity var(--pp-transition);
   padding: 0.25rem 0;
   display: block;
 }
@@ -915,6 +914,16 @@ html[data-theme="dark"] .navbar__items .navbar__link:hover {
   color: var(--ifm-font-color-base);
 }
 
+/* Subtle dim on non-active TOC items when any item is active —
+   draws the eye to the current section without animation jank */
+.table-of-contents:has(.table-of-contents__link--active) .table-of-contents__link:not(.table-of-contents__link--active) {
+  opacity: 0.72;
+}
+
+.table-of-contents:has(.table-of-contents__link--active) .table-of-contents__link:not(.table-of-contents__link--active):hover {
+  opacity: 1;
+}
+
 /* ══════════════════════════════════════════════════════════════════════
    Breadcrumbs
    ══════════════════════════════════════════════════════════════════════ */
@@ -923,16 +932,19 @@ html[data-theme="dark"] .navbar__items .navbar__link:hover {
   font-family: var(--pp-font-heading);
   font-size: 0.8125rem;
   color: var(--pp-muted);
-  transition: color var(--pp-transition);
+  border-radius: var(--pp-radius-md) !important;
+  transition: color var(--pp-transition), background-color var(--pp-transition);
 }
 
 .breadcrumbs__link:hover {
   color: var(--ifm-font-color-base);
+  background-color: var(--pp-hover-bg);
 }
 
 .breadcrumbs__item--active .breadcrumbs__link {
   color: var(--ifm-font-color-base);
   font-weight: 500;
+  background-color: var(--pp-active-bg) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -948,7 +960,7 @@ html[data-theme="dark"] .navbar__items .navbar__link:hover {
   border-radius: var(--pp-radius-md);
   padding: 1rem 1.25rem;
   background-color: var(--ifm-background-surface-color);
-  transition: border-color var(--pp-transition), box-shadow var(--pp-transition);
+  transition: border-color var(--pp-transition), box-shadow var(--pp-transition), transform var(--pp-transition);
 }
 
 html[data-theme="dark"] .pagination-nav__link {
@@ -956,12 +968,14 @@ html[data-theme="dark"] .pagination-nav__link {
 }
 
 .pagination-nav__link:hover {
-  border-color: var(--ifm-color-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-color: var(--pp-muted);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
 html[data-theme="dark"] .pagination-nav__link:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .pagination-nav__sublabel {
@@ -991,6 +1005,23 @@ html[data-theme="dark"] .pagination-nav__link:hover {
 
 .theme-edit-this-page:hover {
   color: var(--ifm-font-color-base);
+}
+
+/* ── Copy page button (docusaurus-plugin-llms) ── */
+button[class*="trigger_"] {
+  transition: background-color var(--pp-transition), border-color var(--pp-transition), box-shadow var(--pp-transition);
+}
+
+button[class*="trigger_"]:hover,
+button[class*="trigger_"][aria-expanded="true"] {
+  border-color: var(--pp-muted) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+}
+
+html[data-theme="dark"] button[class*="trigger_"]:hover,
+html[data-theme="dark"] button[class*="trigger_"][aria-expanded="true"] {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Generated-index pages: match doc H1 */
@@ -1030,7 +1061,7 @@ html[data-theme="dark"] .pagination-nav__link:hover {
   white-space: nowrap;
   background: var(--pp-footer-divider);
   padding: 0.25rem 0.625rem;
-  border-radius: 3px;
+  border-radius: var(--pp-radius-md);
 }
 
 .footer__links {
@@ -1091,6 +1122,7 @@ div[class*="codeBlockContainer"] {
   overflow: hidden;
   margin-bottom: 1.5rem;
   background-color: #EFEEEB;
+  box-shadow: none;
 }
 
 html[data-theme="dark"] div[class*="codeBlockContainer"] {
@@ -1171,7 +1203,8 @@ button.aa-DetachedSearchButton {
 }
 
 button.aa-DetachedSearchButton:hover {
-  border-color: var(--ifm-color-primary);
+  border-color: var(--pp-muted);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 html[data-theme="dark"] button.aa-DetachedSearchButton {
@@ -1180,7 +1213,8 @@ html[data-theme="dark"] button.aa-DetachedSearchButton {
 }
 
 html[data-theme="dark"] button.aa-DetachedSearchButton:hover {
-  border-color: var(--ifm-color-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Search icon + placeholder */
@@ -1206,7 +1240,7 @@ button.aa-DetachedSearchButton::after {
   padding: 3px 7px;
   margin-left: auto;
   border: 1px solid var(--pp-border);
-  border-radius: 4px;
+  border-radius: var(--pp-radius-md);
   font-weight: 500;
   color: var(--pp-muted);
 }
@@ -1215,21 +1249,97 @@ html[data-theme="dark"] button.aa-DetachedSearchButton::after {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* ─────────────────────────────────────────────────────────
+ * SEARCH MODAL — ANIMATION STORYBOARD
+ *
+ * Trigger: click search button / Cmd+K
+ *
+ *  Enter
+ *    0ms   overlay fades in, opacity 0 → 1        (150ms ease)
+ *    0ms   modal fades in + lifts into place       (180ms ease)
+ *            opacity 0 → 1, scale 0.98 → 1.0, y -4px → 0
+ *
+ *  Exit (click Cancel / Esc / overlay)
+ *    0ms   modal fades out + drops away             (120ms ease)
+ *            opacity 1 → 0, scale 1.0 → 0.98, y 0 → 4px
+ *    0ms   overlay fades out, opacity 1 → 0         (120ms ease)
+ *  120ms   DOM elements removed
+ *
+ * Reduced motion: all durations collapse to 0.01ms
+ * ───────────────────────────────────────────────────────── */
+
+@keyframes searchModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes searchModalOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98) translateY(4px);
+  }
+}
+
+@keyframes searchOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes searchOverlayOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Exit animation classes — applied by JS before removal */
+.aa-DetachedContainer.aa-closing {
+  animation: searchModalOut 120ms ease both !important;
+}
+
+.aa-DetachedOverlay.aa-closing {
+  animation: searchOverlayOut 120ms ease both !important;
+}
+
 /* Search modal container */
-.aa-DetachedContainer--modal {
+.aa-DetachedContainer {
   border-radius: var(--pp-radius-md) !important;
   overflow: hidden;
+  background-color: var(--ifm-background-surface-color) !important;
+  border: 1px solid var(--pp-border) !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 16px 32px rgba(0, 0, 0, 0.04) !important;
+  animation: searchModalIn 180ms ease both;
+}
+
+html[data-theme="dark"] .aa-DetachedContainer {
+  border-color: var(--pp-border) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.24),
+    0 16px 32px rgba(0, 0, 0, 0.16) !important;
 }
 
 /* Search overlay backdrop */
 .aa-DetachedOverlay {
   backdrop-filter: blur(6px) !important;
   -webkit-backdrop-filter: blur(6px) !important;
-  background-color: rgba(252, 252, 250, 0.35) !important;
+  background-color: rgba(252, 252, 250, 0.4) !important;
+  animation: searchOverlayIn 150ms ease both;
 }
 
 html[data-theme="dark"] .aa-DetachedOverlay {
-  background-color: rgba(18, 18, 18, 0.35) !important;
+  background-color: rgba(18, 18, 18, 0.5) !important;
 }
 
 /* Search modal form — kill purple submit icon */
@@ -1239,22 +1349,26 @@ html[data-theme="dark"] .aa-DetachedOverlay {
 
 .aa-DetachedFormContainer .aa-Form,
 .aa-DetachedFormContainer .aa-Form:focus-within {
-  border-color: var(--pp-border);
-  box-shadow: none;
-  border-radius: var(--pp-radius-md);
+  border-color: var(--pp-border) !important;
+  box-shadow: none !important;
+  border-radius: var(--pp-radius-sm);
+  background-color: var(--ifm-background-surface-color) !important;
 }
 
 html[data-theme="dark"] .aa-DetachedFormContainer .aa-Form:focus-within {
-  box-shadow: rgba(255, 255, 255, 0.1) 0 0 0 2px;
+  box-shadow: rgba(255, 255, 255, 0.06) 0 0 0 2px !important;
 }
 
 .aa-DetachedFormContainer {
-  border-bottom-color: var(--pp-border);
+  border-bottom: 1px solid var(--pp-border) !important;
+  padding: 0.625rem !important;
 }
 
 /* Search modal — cancel / clear buttons */
 .aa-DetachedCancelButton {
   color: var(--pp-muted) !important;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8125rem;
 }
 
 .aa-ClearButton svg,
@@ -1265,16 +1379,26 @@ html[data-theme="dark"] .aa-DetachedFormContainer .aa-Form:focus-within {
 /* Search modal input */
 .aa-DetachedFormContainer .aa-Input {
   color: var(--ifm-font-color-base) !important;
+  font-family: var(--ifm-font-family-base);
 }
 
 .aa-DetachedFormContainer .aa-Input::placeholder {
   color: var(--pp-muted) !important;
 }
 
-/* Search result items */
+/* Search results panel */
+.aa-Panel {
+  background-color: var(--ifm-background-surface-color) !important;
+}
+
+/* Search result items — override library purple selection highlight */
 .aa-Panel .aa-Item[aria-selected="true"] {
-  background-color: rgba(var(--aa-selected-color-rgb), var(--aa-selected-color-alpha));
+  background-color: rgba(0, 0, 0, 0.06) !important;
   border-radius: var(--pp-radius-sm);
+}
+
+html[data-theme="dark"] .aa-Panel .aa-Item[aria-selected="true"] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .aa-Panel .aa-Item {
@@ -1310,6 +1434,7 @@ html[data-theme="dark"] .aa-DetachedFormContainer .aa-Form:focus-within {
 /* Footer */
 .aa-DetachedContainer .aa-PanelFooter {
   border-top-color: var(--pp-border) !important;
+  background-color: var(--ifm-background-surface-color) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -1331,6 +1456,19 @@ html[data-theme="dark"] .markdown a:not(.hash-link) {
 
 .markdown a:not(.hash-link):hover {
   text-decoration-color: var(--ifm-font-color-base);
+}
+
+/* ── Heading anchor links ── */
+.markdown .hash-link {
+  transition: opacity var(--pp-transition), transform var(--pp-transition);
+  transform: translateX(-3px);
+}
+
+.markdown h1:hover .hash-link,
+.markdown h2:hover .hash-link,
+.markdown h3:hover .hash-link,
+.markdown h4:hover .hash-link {
+  transform: translateX(0);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -1365,11 +1503,28 @@ div[class*="tableOfContents"] {
   font-size: 0.8125rem;
   font-weight: 500;
   border: 1px solid var(--pp-border);
-  border-radius: var(--pp-radius-md);
-  background-color: var(--ifm-background-surface-color);
+  border-radius: var(--pp-radius-md) !important;
+  background-color: var(--ifm-background-surface-color) !important;
   margin: 0.75rem 0;
   padding: 0;
   overflow: hidden;
+  transition: border-color var(--pp-transition), box-shadow var(--pp-transition);
+}
+
+/* Override Docusaurus default bg on the inner collapsible wrapper */
+.theme-doc-toc-mobile [class*="tocCollapsible"] {
+  background-color: transparent !important;
+  border-radius: var(--pp-radius-md) !important;
+}
+
+.theme-doc-toc-mobile:hover {
+  border-color: var(--pp-muted);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="dark"] .theme-doc-toc-mobile:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 html[data-theme="dark"] .theme-doc-toc-mobile {
@@ -1482,6 +1637,68 @@ html[data-theme="dark"] .theme-doc-toc-mobile ul[class*="tableOfContents"] {
 
   div[class*="colorModeToggle"] {
     display: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   404 page
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Center the 404 content vertically and horizontally.
+   Use padding-bottom to shift content to optical center (~40% from top). */
+main.container:has(.hero__title) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 3.5rem); /* viewport minus navbar */
+  margin: 0 auto !important;
+  padding: 2rem 1.5rem 12vh !important;
+  text-align: center;
+}
+
+/* Remove the column offset — let flexbox handle centering */
+main.container:has(.hero__title) .row {
+  justify-content: center;
+  width: 100%;
+  margin: 0 !important;
+}
+
+main.container:has(.hero__title) .col {
+  text-align: center;
+  margin-left: 0 !important;
+  max-width: 480px;
+  flex: 0 1 auto !important;
+}
+
+/* H1: match doc H1 scale, not the oversized Docusaurus hero default */
+main.container .hero__title {
+  font-family: var(--pp-font-heading);
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ifm-font-color-base);
+  margin-bottom: 0.75rem;
+}
+
+/* First paragraph: primary message */
+main.container:has(.hero__title) p:first-of-type {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ifm-font-color-base);
+  margin-bottom: 0.5rem;
+}
+
+/* Second paragraph: de-emphasize boilerplate */
+main.container:has(.hero__title) p:last-of-type {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--pp-muted);
+  margin-bottom: 0;
+}
+
+@media (max-width: 996px) {
+  main.container .hero__title {
+    font-size: 1.625rem;
   }
 }
 
