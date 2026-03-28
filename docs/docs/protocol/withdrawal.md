@@ -99,7 +99,7 @@ The three-o spelling of `processooor` is intentional and matches the field name 
 1. **User Steps**
    - Construct withdrawal with Entrypoint as processooor
    - Resolve the final recipient before requesting the quote. Request the quote late in the flow so that proof generation and relay submission fit within the TTL.
-   - ABI-encode `withdrawal.data` client-side as `(recipient, feeRecipient, relayFeeBPS)` using `feeReceiverAddress` from `GET /relayer/details` and `feeBPS` from the quote (the proof's `context` depends on the finalized `withdrawal`, so this must happen before proof generation)
+   - ABI-encode `withdrawal.data` client-side (see [Relayer API: withdrawal.data construction](/reference/relayer-api#post-relayerquote) for the canonical encoding rule). This must happen before proof generation because the proof's `context` depends on the finalized `withdrawal`.
    - Validate the relayer minimum and warn if the remaining balance after a partial withdrawal would fall below it
    - Generate ZK proof
    - Submit to relayer before the quote expires
