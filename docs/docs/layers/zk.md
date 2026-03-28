@@ -46,6 +46,9 @@ Each deposit produces a commitment from four inputs:
    commitmentHash = PoseidonHash(value, label, precommitmentHash);
    ```
 
-The circuits split inputs into public signals (visible on-chain: withdrawal amount, roots, context) and private signals (nullifiers, secrets, Merkle siblings).
+Each circuit splits inputs into public and private signals:
+
+- **Commitment circuit** — 4 public signals: 2 outputs (precommitment hash, commitment hash) and 2 public inputs (value, label). Private signals: nullifier, secret.
+- **Withdrawal circuit** — 8 public signals: 2 outputs (nullifier hash, new commitment hash) and 6 public inputs (withdrawal amount, existing commitment root, ASP root, context, new commitment value, new commitment label). Private signals: nullifier, secret, new secret, Merkle siblings.
 
 The SDK generates a Groth16 proof (`pi_a`, `pi_b`, `pi_c`) from the circuit inputs. On-chain, `WithdrawalVerifier` or `CommitmentVerifier` runs a pairing check and reverts with `InvalidProof` if it fails.

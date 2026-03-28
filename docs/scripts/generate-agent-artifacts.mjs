@@ -88,7 +88,8 @@ function renderAgentsMd(skills) {
     )
     .join("\n");
 
-  return `# Privacy Pools Agent Entry Point
+  return `<!-- GENERATED FILE — Do not edit directly. Edit the source in docs/scripts/generate-agent-artifacts.mjs and regenerate. -->
+# Privacy Pools Agent Entry Point
 
 Privacy Pools is a smart-contract protocol for compliant private transactions on EVM chains. It uses zero-knowledge proofs and Association Set Providers (ASPs) to let users withdraw funds privately while proving their deposits are not associated with illicit activity.
 
@@ -166,7 +167,8 @@ function renderClaudeMd(skills) {
     )
     .join("\n");
 
-  return `# Privacy Pools Claude Code Guide
+  return `<!-- GENERATED FILE — Do not edit directly. Edit the source in docs/scripts/generate-agent-artifacts.mjs and regenerate. -->
+# Privacy Pools Claude Code Guide
 
 Privacy Pools is a smart-contract protocol for compliant private transactions on EVM chains. It uses zero-knowledge proofs and Association Set Providers (ASPs) to let users withdraw funds privately while proving their deposits are not associated with illicit activity.
 

@@ -36,7 +36,7 @@ const sdk = new PrivacyPoolSDK(circuits);
 
 ### `Circuits`
 
-The `Circuits` class implements `CircuitsInterface` and generates or verifies the Groth16 proofs used for commitments and withdrawals.
+The `Circuits` class implements `CircuitsInterface` and manages circuit artifacts (loading wasm/zkey/vkey files and verifying their SHA-256 hashes). Proof generation and verification are performed by `PrivacyPoolSDK` methods that use a `Circuits` instance.
 
 - **Browser:** pass `{ baseUrl: window.location.origin }` so artifacts load from your app's origin.
 - **Node.js:** pass `{ browser: false }` so artifacts load from disk rather than `fetch`.

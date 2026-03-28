@@ -36,7 +36,7 @@ Implement the relayed withdrawal flow for Privacy Pools. This is the privacy-pre
 6. **Build withdrawal struct.** Set `processooor = entrypointAddress`. Build `withdrawal.data` by ABI-encoding `(recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS))` using viem's `encodeAbiParameters`. Do not use any pre-encoded blob from the quote response. The proof `context` is derived from this finalized struct.
 7. **Generate withdrawal proof.** Pad Merkle proof siblings to length 32 (circuit expects fixed depth). Pass the padded proofs, roots, context, withdrawal amount, and new secrets from `createWithdrawalSecrets(commitment)` to `sdk.proveWithdrawal()`.
 8. **Verify proof locally.** Call `sdk.verifyWithdrawal(proof)` before submitting. This catches bad proofs before they hit the relayer.
-9. **Submit via relayer.** Call `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on published testnets.
+9. **Submit via relayer.** Call `POST /relayer/request` before the quote expires. Use the relayer host for your target chain (e.g., `fastrelay.xyz` for production, `testnet-relayer.privacypools.com` for testnets). Some chains may expose multiple relayer options.
 10. **Update state.** Insert the change commitment back into the pool account tree. Re-fetch leaves before generating the next proof.
 
 ## Quote Lifecycle
