@@ -28,7 +28,7 @@ These errors are defined in `IPrivacyPool.sol` and triggered during deposit, wit
 |-------|-------------|-------------|
 | `InvalidProcessooor` | `withdraw` | `msg.sender != withdrawal.processooor`. For direct withdrawal, the signer must match. For relayed withdrawal, the Entrypoint contract is the caller. |
 | `ContextMismatch` | `withdraw` | The proof's `context` signal does not match `keccak256(abi.encode(withdrawal, SCOPE)) % SNARK_SCALAR_FIELD`. Usually caused by constructing the `Withdrawal` object with the wrong `processooor` or `data`, or using the wrong pool scope. |
-| `InvalidTreeDepth` | `withdraw` | State tree depth or ASP tree depth in the proof exceeds `MAX_TREE_DEPTH`. The SDK uses `32n` for both, which is the circuit maximum. |
+| `InvalidTreeDepth` | `withdraw` | State tree depth or ASP tree depth in the proof exceeds `MAX_TREE_DEPTH` (32). Integrations typically pass `32n` with padded siblings. |
 | `UnknownStateRoot` | `withdraw` | The proof's state root is not in the pool's recent root history. The contract keeps the last 64 roots in a circular buffer. Re-fetch the current state root and regenerate the proof. |
 | `IncorrectASPRoot` | `withdraw` | The proof's ASP root does not exactly match `Entrypoint.latestRoot()`. Unlike state roots, the ASP root must be the **latest** value, not just a recent one. Re-fetch from the [ASP API](/reference/asp-api) and verify parity before submitting. |
 | `InvalidProof` | `withdraw`, `ragequit` | The Groth16 verifier rejected the proof. Check that all proof inputs (commitment values, Merkle proofs, roots) are correct and consistent. |

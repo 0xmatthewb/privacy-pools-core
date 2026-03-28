@@ -46,10 +46,10 @@ The scope appears in API headers (`X-Pool-Scope`) and proof inputs. Read it on-c
 
 ## State tree and ASP tree
 
-Each pool has two Merkle trees:
+Withdrawal proofs require inclusion in two Merkle trees:
 
-- **State tree**: Contains commitment hashes (one leaf per deposit and one per change commitment created during withdrawal). Managed on-chain by the pool contract. Root read via `pool.currentRoot()`.
-- **ASP tree**: Contains approved labels. Managed off-chain by the ASP and periodically committed on-chain. Root read via `Entrypoint.latestRoot()` or the ASP API's `onchainMtRoot`.
+- **State tree** (per pool): Contains commitment hashes (one leaf per deposit and one per change commitment created during withdrawal). Managed on-chain by each pool contract. Root read via `pool.currentRoot()`.
+- **ASP tree** (global): Contains approved labels across all pools. Managed off-chain by the ASP and periodically committed to the Entrypoint. Root read via `Entrypoint.latestRoot()` or the ASP API's `onchainMtRoot`.
 
 Withdrawal proofs must show membership in **both** trees: the state tree (the commitment exists) and the ASP tree (the deposit was approved).
 
