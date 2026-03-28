@@ -189,7 +189,11 @@ curl -s -X POST https://testnet-relayer.privacypools.com/relayer/quote \
 | `detail.extraGasTxCost.eth` | `string` | Cost of the extra-gas transfer in wei. Only present when `extraGas: true`. |
 | `feeCommitment` | `object` | Signed fee commitment (only present when `recipient` is provided). |
 
-ABI-encode `withdrawal.data` client-side as `(address recipient, address feeRecipient, uint256 relayFeeBPS)` using `feeReceiverAddress` from `GET /relayer/details` and `feeBPS` from the quote. The `feeCommitment.withdrawalData` field is for the relayer's internal use — do not substitute it for your client-encoded value, as the proof's `context` is bound to the exact encoding you produce. See [Frontend Integration](/build/integration) for the complete code.
+import WithdrawalDataEncoding from '@site/docs/_partials/_withdrawal-data-encoding.mdx';
+
+<WithdrawalDataEncoding />
+
+See [Frontend Integration](/build/integration) for the complete code.
 
 ### Quote Lifecycle
 

@@ -1,0 +1,75 @@
+# Static checks for known drift hotspots.
+# These assertions protect against regressions in the highest-risk repeated rules.
+
+# -- withdrawal.data must NOT be documented as quote-provided canonical input --
+
+- description: "Integration guide does not treat quote withdrawalData as canonical"
+  vars:
+    filePath: "docs/docs/build/integration.md"
+  assert:
+    - type: not-icontains
+      value: "feeCommitment.withdrawalData as the canonical"
+
+- description: "Relayer API does not treat quote withdrawalData as canonical input"
+  vars:
+    filePath: "docs/docs/reference/relayer-api.md"
+  assert:
+    - type: not-icontains
+      value: "withdrawalData as the canonical"
+
+- description: "Withdrawal protocol does not use quote withdrawalData as input"
+  vars:
+    filePath: "docs/docs/protocol/withdrawal.md"
+  assert:
+    - type: not-icontains
+      value: "feeCommitment.withdrawalData"
+
+- description: "Withdraw skill does not use quote withdrawalData as input"
+  vars:
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
+  assert:
+    - type: not-icontains
+      value: "feeCommitment.withdrawalData"
+
+# -- Standard ASP flow must NOT sort/dedupe raw leaves --
+
+- description: "Integration guide does not sort ASP leaves in standard flow"
+  vars:
+    filePath: "docs/docs/build/integration.md"
+  assert:
+    - type: not-contains
+      value: ".sort("
+
+# -- InvalidPoolState must reference Entrypoint balance guard --
+
+- description: "InvalidPoolState describes Entrypoint balance snapshot"
+  vars:
+    filePath: "docs/docs/reference/errors.md"
+  assert:
+    - type: icontains
+      value: "Entrypoint snapshots"
+
+# -- Generated agent artifacts must be stable --
+
+- description: "Withdraw skill has generated-file banner"
+  vars:
+    filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
+  assert:
+    - type: contains
+      value: "<!-- GENERATED FILE"
+
+- description: "Deposit skill has generated-file banner"
+  vars:
+    filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
+  assert:
+    - type: contains
+      value: "<!-- GENERATED FILE"
+
+# -- SDK docs must declare pinned version --
+
+- description: "SDK reference declares verified npm version"
+  vars:
+    filePath: "docs/docs/reference/sdk.md"
+  assert:
+    - type: contains
+      value: "@0xbow/privacy-pools-core-sdk@1.2.0"
