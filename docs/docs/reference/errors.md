@@ -63,7 +63,7 @@ These errors are defined in `IEntrypoint.sol` and triggered during relay, deposi
 | `PrecommitmentAlreadyUsed` | `deposit` | The precommitment hash has already been used in a previous deposit. Increment your deposit index and recompute the precommitment. |
 | `NativeAssetTransferFailed` | `relay` | ETH transfer to the recipient or fee recipient failed. |
 | `NoRootsAvailable` | `latestRoot` | No ASP root has been published yet. Called `latestRoot()` before the first `updateRoot` transaction. Wait for the ASP to push an initial root. |
-| `InvalidPoolState` | `relay` | Post-relay balance integrity check failed. The pool's asset balance is less than expected after processing the withdrawal. |
+| `InvalidPoolState` | `relay` | Post-relay balance integrity check failed. The Entrypoint snapshots its own asset balance before relay and asserts it has not decreased afterward. |
 | `NativeAssetNotAccepted` | `receive` | ETH was sent to the Entrypoint by an address other than the registered native-asset pool. Only the pool contract can send ETH to the Entrypoint (during withdrawal processing). |
 | `AssetMismatch` | `registerPool` | Pool asset does not match the registered asset. |
 | `PoolIsDead` | `registerPool` | The pool being registered is already dead (wind-down was called). |

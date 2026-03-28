@@ -32,8 +32,10 @@ To resolve a chain + asset into pool metadata at runtime, call `Entrypoint.asset
 |----------|---------|-----------------|
 | WithdrawalVerifier | `0x022891f938ae7fdc8ab9ead0fbf50aba8c897d6d` | `22153709` |
 | CommitmentVerifier | `0xa45aca8604a73d80c551faad6355a5c3a5565ec6` | `22153710` |
-| Entrypoint (Implementation) | `0x15e355024de1cdc74addea7ebdf98418ba5b1a2c` | `22153711` |
+| Entrypoint (Implementation) | `0x15e355024de1cdc74addea7ebdf98418ba5b1a2c` | `22540651` |
 | Entrypoint (Proxy) | `0x6818809eefce719e480a7526d76bd3e561526b46` | `22153713` |
+
+Integrations should use the **Entrypoint (Proxy)** address for all deposit and relay calls. The implementation address is listed for reference and can change via UUPS upgrade.
 
 ### Pool Contracts
 

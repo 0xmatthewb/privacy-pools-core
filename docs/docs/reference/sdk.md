@@ -12,6 +12,10 @@ keywords:
   - integration
 ---
 
+:::info Verified against `@0xbow/privacy-pools-core-sdk@1.2.0`
+All signatures and types on this page are verified against the published npm package at version **1.2.0**.
+:::
+
 ## `PrivacyPoolSDK`
 
 Main SDK class providing high-level protocol interaction.

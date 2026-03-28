@@ -50,7 +50,7 @@ interface IPrivacyPool {
 |---|---|---|
 | `deposit` | `depositor` | Address credited as the original depositor (controls ragequit eligibility) |
 | | `value` | Deposit amount after vetting fee deduction (the Entrypoint deducts the fee before calling the pool) |
-| | `precommitment` | `Poseidon(nullifier, secret)`, which must be unique across all deposits. Reverts with `PrecommitmentAlreadyUsed` if reused. |
+| | `precommitment` | `Poseidon(nullifier, secret)`. Uniqueness is enforced by the Entrypoint (`PrecommitmentAlreadyUsed`), not by the pool. |
 | | Returns `commitment` | The commitment hash: `Poseidon(value, label, precommitmentHash)`. The label is a separate value emitted in the `Deposited` event. |
 | `withdraw` | `w` | `Withdrawal` struct: `processooor` must equal `msg.sender` for direct calls |
 | | `p` | ZK proof with 8 public signals (see [ProofLib](#prooflib)) |
