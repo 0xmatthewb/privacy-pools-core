@@ -49,12 +49,12 @@
     - type: contains
       value: "PrecommitmentAlreadyUsed"
 
-- description: "Deposit skill mentions migration-aware recovery"
+- description: "Deposit skill mentions account persistence after deposit"
   vars:
     filePath: "docs/static/agent-skills/privacy-pools-deposit/SKILL.md"
   assert:
     - type: icontains-any
       value:
-        - "legacyAccount"
-        - "migration"
-        - "legacy"
+        - "addPoolAccount"
+        - "persist"
+        - "Deposited event"

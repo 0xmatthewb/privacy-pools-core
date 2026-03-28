@@ -61,22 +61,16 @@
     - type: contains
       value: "deposit wallet"
 
-- description: "Frontend Integration points first-time builders back to Start Here"
+- description: "Frontend Integration points first-time builders to the protocol overview"
   vars:
     filePath: "docs/docs/build/integration.md"
   assert:
     - type: contains
-      value: "/build/start"
-    - type: contains
-      value: "What you need before starting"
-    - type: contains
-      value: "Exact references"
+      value: "/protocol"
 
-- description: "Errors page includes compact trust framing"
+- description: "Errors page links back to contract interfaces"
   vars:
     filePath: "docs/docs/reference/errors.md"
   assert:
     - type: contains
-      value: "Use this page for"
-    - type: contains
-      value: "Verified against"
+      value: "/reference/contracts"

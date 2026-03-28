@@ -43,12 +43,12 @@
     - type: icontains
       value: "change commitment"
 
-- description: "Withdraw skill mentions withdrawalData"
+- description: "Withdraw skill mentions withdrawal.data client-side encoding"
   vars:
     filePath: "docs/static/agent-skills/privacy-pools-withdraw/SKILL.md"
   assert:
     - type: icontains
-      value: "withdrawalData"
+      value: "withdrawal.data"
 
 - description: "Withdraw skill mentions feeCommitment"
   vars:
