@@ -71,7 +71,9 @@ Create `DataService` with `startBlock` so event scans begin at the deployment bl
 
 ## Account bootstrapping
 
-New accounts should start from a mnemonic-backed `AccountService`. Returning users should restore from on-chain events.
+The `AccountService` requires a BIP-39 mnemonic. For browser wallets, prefer deriving the mnemonic from a wallet signature (sign the same EIP-712 payload twice; if both signatures match, derive the mnemonic via HKDF). Fall back to manual mnemonic entry if the wallet produces non-deterministic signatures. See [UX Patterns: Account and Recovery](/build/ux-patterns#account-and-recovery) for the full flow.
+
+Returning users should restore from on-chain events.
 
 :::warning
 Never log, hardcode, or store mnemonics, nullifiers, or secrets in plaintext. Source the mnemonic from secure user input and keep derived secrets in memory only. Do not include any of these values in error messages, analytics, or browser storage.
