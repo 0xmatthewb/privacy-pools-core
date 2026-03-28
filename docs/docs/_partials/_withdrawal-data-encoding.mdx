@@ -1,1 +1,3 @@
+{/* SOURCE OF TRUTH — canonical pages inline this text. drift-hotspots.yaml verifies key phrases stay in sync. */}
+
 ABI-encode `withdrawal.data` client-side as `(address recipient, address feeRecipient, uint256 relayFeeBPS)` using `feeReceiverAddress` from `GET /relayer/details` and `feeBPS` from the quote response. The `feeCommitment.withdrawalData` field is for the relayer's internal use and must not be substituted for your client-encoded value, because the proof's `context` is bound to the exact encoding you produce.

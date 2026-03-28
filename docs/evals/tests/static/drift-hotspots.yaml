@@ -80,3 +80,36 @@
   assert:
     - type: contains
       value: "@0xbow/privacy-pools-core-sdk@1.2.0"
+
+# -- Partial-canonical page consistency --
+# These check that canonical pages contain the key phrases from partials,
+# catching semantic drift even when exact text differs by context.
+
+- description: "Relayer API contains the client-encode withdrawal.data rule"
+  vars:
+    filePath: "docs/docs/reference/relayer-api.md"
+  assert:
+    - type: icontains
+      value: "ABI-encode"
+    - type: icontains
+      value: "feeRecipient"
+    - type: icontains
+      value: "relayer's internal use"
+
+- description: "Start page mentions wallet-signature derivation as default"
+  vars:
+    filePath: "docs/docs/build/start.md"
+  assert:
+    - type: icontains
+      value: "wallet signature"
+    - type: icontains
+      value: "EIP-712"
+
+- description: "UX patterns mentions wallet-signature seed derivation"
+  vars:
+    filePath: "docs/docs/build/ux-patterns.md"
+  assert:
+    - type: icontains
+      value: "wallet-signature seed derivation"
+    - type: icontains
+      value: "EIP-712"
