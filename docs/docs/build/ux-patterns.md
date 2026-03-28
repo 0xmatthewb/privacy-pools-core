@@ -11,7 +11,7 @@ These patterns assume your SDK is wired up per [Frontend Integration](/build/int
 
 ## Account and Recovery
 
-- Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload. See [Deposit: Account and Recovery](/protocol/deposit#account-and-recovery) for the full onboarding rules.
+- Prefer wallet-signature seed derivation only when the wallet can reproduce the same EIP-712 signature for the same payload.
 - Compare two signatures of the same payload before deriving. If they differ, use manual mnemonic onboarding. Require the recovery phrase to be saved before continuing.
 - If `initializeWithEvents` returns `legacyAccount`, keep it during restores for migrated users because it is needed for ragequit of legacy deposits.
 - If some scopes fail during account restoration, retry those scopes with `AccountService.initializeWithEvents(dataService, { mnemonic }, failedPools)` to re-run discovery.

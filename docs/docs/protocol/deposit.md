@@ -151,7 +151,7 @@ Do not expose raw deposit secrets (nullifier, secret) in copy/paste or clipboard
 
 ### Account and Recovery
 
-Frontends should use mnemonic-backed pool accounts. See the [Integration Guide](/build/integration) for account setup details.
+Frontends should use mnemonic-backed pool accounts. The recommended browser onboarding flow derives the mnemonic from a wallet signature (EIP-712), with manual mnemonic entry as a fallback for wallets that cannot reproduce a deterministic signature. See [UX Patterns: Account and Recovery](/build/ux-patterns#account-and-recovery) for the full onboarding guidance and the [Integration Guide](/build/integration) for account setup details.
 
 ### Precommitment Uniqueness
 
