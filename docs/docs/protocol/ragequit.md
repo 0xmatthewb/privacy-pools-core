@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-Ragequit is a public exit: the original depositor reclaims their full balance back to the deposit address, at any time, with no ASP approval. The contract checks that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. When recipient privacy matters, use the [private withdrawal](/protocol/withdrawal) path instead.
+Ragequit allows the original depositor to publicly reclaim the commitment's value without ASP approval. The contract checks that the caller is the original depositor, the commitment exists, and the nullifier has not been spent. When recipient privacy matters, use the [private withdrawal](/protocol/withdrawal) path instead.
 
 ## Protocol Flow
 
@@ -33,7 +33,7 @@ sequenceDiagram
     SDK->>SDK: Compute precommitment hash
     SDK->>SDK: Compute nullifier hash
 
-    Note over SDK: Package proof with:<br/>- Commitment hash<br/>- Value<br/>- Label
+    Note over SDK: Package proof with:<br/>- Commitment hash<br/>- Nullifier hash<br/>- Value<br/>- Label
     SDK-->>User: Return ragequit proof
     deactivate SDK
 
@@ -81,23 +81,21 @@ sequenceDiagram
 2. Generate commitment proof via [`sdk.proveCommitment(value, label, nullifier, secret)`](/reference/sdk)
 3. Call [`contracts.ragequit(commitmentProof, privacyPoolAddress)`](/reference/sdk)
 4. Finalized ragequit
-   - User receives the full commitment value
+   - User receives the commitment's value (for a change commitment from a partial withdrawal, this is the remaining balance, not the original deposit amount)
    - Nullifier is marked as spent
 
 ## Key Properties
 
-### Unconditional Availability
+### No ASP Approval Required
 
-Ragequit does not require ASP approval. It is the always-available public exit path when:
+Ragequit does not require ASP approval. It is available to the original depositor as long as the commitment has not already been spent:
 
 - A deposit is rejected by the ASP
 - A label has been retroactively removed from the ASP approved set
 - The user explicitly wants a public return to the original depositor address
 - The ASP service is unavailable
 
-While ASP review is in progress, keep the deposit in a pending state. Present ragequit as an explicit public exit choice, not as the default action during normal review time.
-
-Keep this option available at all times, but do not encourage it unless the user explicitly wants a public exit or private withdrawal is unavailable.
+Keep ragequit available at all times, but present it as an explicit public exit choice — not the default action during normal ASP review time.
 
 ### Original Depositor Restriction
 

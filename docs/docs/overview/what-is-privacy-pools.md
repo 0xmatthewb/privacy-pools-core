@@ -14,15 +14,13 @@ keywords:
 
 ## The challenge of private transactions
 
-On public blockchains, every transaction is visible. That transparency is useful, but it also means balances, counterparties, and transaction history can be pieced together by anyone watching the chain.
+On public blockchains like Ethereum, every transaction is visible to everyone. While this transparency is a core feature, it creates significant privacy challenges for users: every transaction reveals the full balances and transaction history of both parties.
 
-Privacy Pools makes withdrawals private without sacrificing deposit transparency or protocol-level compliance. Deposits still happen in public. What changes is the exit path: users can withdraw to a fresh address without creating an on-chain link back to the deposit address.
+## How Privacy Pools works
 
-## How it works
+Privacy Pools enables private withdrawals through a combination of zero-knowledge proofs and commitment schemes. Users can deposit assets into Privacy Pools and later withdraw them, either partially or fully, without creating an on-chain link between their deposit and withdrawal addresses.
 
-Privacy Pools lets users deposit assets into a shared pool, then later withdraw them privately with a zero-knowledge proof. That proof shows the user controls a valid deposit and is allowed to spend it, without revealing which deposit is being spent.
-
-An [Association Set Provider (ASP)](/layers/asp) reviews deposits after they enter the pool and maintains the set of approved labels. ASP approval unlocks the private withdrawal path, but it does not block deposits and it does not custody user funds.
+The protocol uses an [Association Set Provider (ASP)](/layers/asp) to maintain a set of approved deposits, excluding potentially illicit deposits from the private withdrawal path and enabling regulatory compliance.
 
 A relayer submits the withdrawal transaction on the user's behalf, so there is no on-chain link between the deposit address and the withdrawal recipient. If private withdrawal is unavailable, the original depositor can always [ragequit](/protocol/ragequit) to reclaim funds publicly.
 
@@ -79,14 +77,16 @@ flowchart TD
 3. **[Association Set Provider (ASP) Layer](/layers/asp)**
    - Maintains the current set of approved deposit labels
    - Updates state through authorized accounts
-   - Required for private withdrawals, but never takes custody of user funds
+   - Enables regulatory compliance while preserving withdrawal privacy
 
-## Key features
+## Key features and capabilities
 
-- **Deposits are never blocked**: Anyone can deposit at any time. The ASP evaluates deposits after entry, not before.
-- **Privacy via relayed withdrawals**: A relayer submits the withdrawal transaction, so the recipient address has no on-chain link to the depositor.
-- **Partial withdrawals**: Users can withdraw part of a deposit and keep the remaining balance in the pool.
-- **[Ragequit](/protocol/ragequit)**: The original depositor can always exit publicly back to the deposit address, even without ASP approval.
-- **Compliance without custody**: The ASP reviews deposits, but users keep full control of their funds.
+- **Partial withdrawals**: Users can withdraw portions of their deposits while maintaining privacy.
+- **Multi-asset support**: Supports both native cryptocurrency and ERC20 tokens.
+- **Compliance integration**: ASP-based approval system for regulatory compliance.
+- **Non-custodial**: Users maintain control of their funds through cryptographic commitments.
+- **[Ragequit](/protocol/ragequit)**: Allows original depositors to recover funds by publicly exiting the privacy pool, even without ASP approval.
+
+These layers work together to create a secure privacy-preserving system: the contract layer manages assets and state, the zero-knowledge layer ensures privacy, and the ASP layer provides compliance capabilities.
 
 Read [Using Privacy Pools](/protocol) for the full lifecycle, or jump to [Build](/build) to start integrating.

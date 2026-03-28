@@ -11,7 +11,7 @@ keywords:
   - withdrawals
 ---
 
-The ASP (Association Set Provider) decides which deposits are eligible for private withdrawal. It does this by maintaining an off-chain Merkle tree of approved deposit labels and periodically publishing the tree's root on-chain through the Entrypoint.
+The ASP (Association Set Provider) decides which deposits are eligible for private withdrawal. It maintains an off-chain Merkle tree of approved deposit labels and periodically publishes the tree's root on-chain through the Entrypoint. If a deposit is excluded from the approved set, the original depositor can always [ragequit](/protocol/ragequit).
 
 ## How it works
 
@@ -47,7 +47,7 @@ The Entrypoint stores all ASP roots in a growing array (not a circular buffer). 
 
 ## Label exclusion
 
-There is no on-chain mechanism for removing labels. The root history is append-only. But the ASP can publish a new root computed from a set that excludes certain labels. Once that root lands on-chain, any commitment with an excluded label can no longer produce a valid withdrawal proof. The original depositor can still [ragequit](/protocol/ragequit).
+The root history is append-only, but the ASP can publish a new root computed from a set that excludes certain labels. Once that root lands on-chain, any commitment with an excluded label can no longer produce a valid withdrawal proof. The original depositor can still [ragequit](/protocol/ragequit).
 
 Pool wind-down (`windDown()`) is a separate operation that blocks new deposits. It does not affect the ASP tree or existing withdrawal eligibility.
 

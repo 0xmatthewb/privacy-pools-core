@@ -79,14 +79,12 @@ function withdraw(
 ) external validWithdrawal(_withdrawal, _proof)
 ```
 
-Handles withdrawals by:
+The `validWithdrawal` modifier runs first, checking `msg.sender == processooor`, context integrity, tree depth bounds, state root history, and ASP root parity with `Entrypoint.latestRoot()`. Then:
 
-1. Checking `msg.sender == processooor`, context integrity, and tree depth bounds (modifier)
-2. Verifying state root is known and ASP root matches `Entrypoint.latestRoot()` (modifier)
-3. Verifying the Groth16 withdrawal proof
-4. Spending nullifier hash
-5. Inserting new commitment
-6. Transferring funds to `processooor`
+1. Verify the Groth16 withdrawal proof
+2. Spend nullifier hash
+3. Insert new commitment
+4. Transfer funds to `processooor`
 
 For direct withdrawals, `processooor` must equal `msg.sender`, so the pool pays the signer directly. For relayed withdrawals, `processooor` is the Entrypoint, which receives the pool payout and then routes funds to the final recipient.
 
@@ -96,7 +94,7 @@ For direct withdrawals, `processooor` must equal `msg.sender`, so the pool pays 
 function ragequit(ProofLib.RagequitProof memory _proof) external
 ```
 
-Allows original depositors to publicly reclaim funds at any time (no ASP check):
+Allows original depositors to reclaim funds publicly, without an ASP check:
 
 1. Verify caller is original depositor (`OnlyOriginalDepositor`)
 2. Verify Groth16 proof (`InvalidProof`)

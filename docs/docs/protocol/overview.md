@@ -5,9 +5,9 @@ description: Lifecycle overview of Privacy Pools operations from deposit through
 keywords: [privacy pools, deposit, withdrawal, ragequit, ASP, lifecycle]
 ---
 
-This page shows the full Privacy Pools lifecycle in one place. If you are integrating the protocol for the first time, read [Start Here](/build/start) first, then use this page to shape the user journey and state model.
+This page covers the full Privacy Pools lifecycle. If you are integrating the protocol for the first time, read [Start Here](/build/start) first, then use this page to shape the user journey and state model.
 
-Users deposit assets into a pool. Once approved by the ASP, they can withdraw privately through a relayer. That deposit, approval, and private withdrawal path is the intended flow. At any time, the original depositor can ragequit to publicly reclaim funds back to the deposit address.
+Users deposit assets into a pool. Once approved by the ASP, they can withdraw privately through a relayer. That sequence is the intended flow. At any time, the original depositor can ragequit to publicly reclaim funds back to the deposit address.
 
 ```mermaid
 flowchart LR
@@ -40,7 +40,7 @@ Partial withdrawals are supported. Each withdrawal creates a change commitment w
 
 ## [Ragequit](/protocol/ragequit)
 
-A public exit that returns the full balance to the original depositor address. Ragequit keeps the system self-custodial even when a deposit cannot be privately withdrawn. It does not require ASP approval and can be called at any time, but it creates an on-chain link between the deposit and the exit. Only the original depositor can ragequit.
+A public exit that returns the full balance to the original depositor address. Ragequit ensures fund recovery even when a deposit cannot be privately withdrawn. It does not require ASP approval and can be called at any time, but it creates an on-chain link between the deposit and the exit. Only the original depositor can ragequit.
 
 ## Choosing Between Withdrawal and Ragequit
 
@@ -51,7 +51,7 @@ A public exit that returns the full balance to the original depositor address. R
 | **Who can call** | Anyone with the recovery phrase (a BIP-39 mnemonic that derives all deposit secrets) | Only the original depositor address |
 | **Partial amounts** | Yes, creates a change commitment | No, full balance only |
 
-**The recovery phrase and the deposit wallet control different things.** Neither is a universal fallback: losing the recovery phrase blocks private withdrawal, and losing access to the deposit wallet blocks ragequit.
+**The recovery phrase and the deposit wallet control different exit paths.** The recovery phrase derives the secrets needed for private withdrawal — losing it means no private withdrawal. The deposit wallet address controls ragequit eligibility — losing access to it means no ragequit.
 
 ## Next steps
 

@@ -18,9 +18,9 @@ A user deposits into a pool, waits for ASP approval, then withdraws privately wi
 Each deposit creates a commitment: a cryptographic record composed of:
 
 - **`value`**: The amount being committed
-- **`label`**: A unique identifier derived from the pool's scope and an incrementing nonce. The ASP's approved set contains labels, and having your label approved is what unlocks the private withdrawal path
+- **`label`**: A unique identifier derived from the pool's scope and an incrementing nonce
 - **`nullifier`**: A secret that prevents double-spending
-- **`secret`**: A value that helps hide the nullifier
+- **`secret`**: A random value paired with the nullifier to form the precommitment
 
 ```mermaid
 graph TD
@@ -36,9 +36,7 @@ The protocol uses three hash constructions:
 
 - **Commitment Hash**: `Poseidon(value, label, precommitmentHash)`, the on-chain leaf in the state Merkle tree.
 - **Precommitment Hash**: `Poseidon(nullifier, secret)`, submitted at deposit time. Hides the nullifier from the contract.
-- **Nullifier Hash**: `Poseidon(nullifier)`, revealed on-chain during withdrawal or ragequit.
-  - The contract records it and rejects any future attempt to spend the same commitment (`NullifierAlreadySpent`).
-  - The nullifier itself stays private; only its hash is public.
+- **Nullifier Hash**: `Poseidon(nullifier)`, revealed on-chain during withdrawal or ragequit. The contract records it and rejects any future attempt to spend the same commitment (`NullifierAlreadySpent`).
 
 Each pool has a **scope**, a unique `uint256` derived from the pool address, chain ID, and asset:
 
@@ -57,7 +55,7 @@ Withdrawal proofs must show membership in **both** trees: the state tree (the co
 
 ### ASP
 
-An Association Set Provider (ASP) is an off-chain service that reviews deposits and maintains a Merkle tree of approved labels. It does not custody funds or block deposits. ASP approval unlocks the private withdrawal path; without it, the depositor can still [ragequit](/protocol/ragequit). The ASP never learns withdrawal destinations or nullifier secrets. See [ASP Layer](/layers/asp) for how it works on-chain.
+An Association Set Provider (ASP) is an off-chain service that reviews deposits and maintains a Merkle tree of approved labels. ASP approval unlocks the private withdrawal path; without it, the depositor can still [ragequit](/protocol/ragequit). See [ASP Layer](/layers/asp) for how it works on-chain.
 
 ### Relayer
 
@@ -68,7 +66,7 @@ A relayer submits withdrawal transactions on the user's behalf so the recipient 
 The protocol uses two ZK proof types:
 
 - **[Commitment proofs](/layers/zk/commitment)** prove ownership of a commitment. Used for [ragequit](/protocol/ragequit).
-- **[Withdrawal proofs](/layers/zk/withdrawal)** prove ownership of an ASP-approved commitment and the correctness of the state transition. Merkle inclusion proofs for both trees are embedded inside the circuit.
+- **[Withdrawal proofs](/layers/zk/withdrawal)** prove ownership of an ASP-approved commitment and the correctness of the state transition.
 
 ## Basic operations
 
@@ -88,7 +86,7 @@ The protocol uses two ZK proof types:
 
 ## Privacy model
 
-Each participant only sees part of the picture, so nobody can link a deposit to its withdrawal.
+The protocol is designed so that no single participant has enough information to link a deposit to its withdrawal.
 
 | Party | Can see | Cannot see |
 |---|---|---|
@@ -97,10 +95,6 @@ Each participant only sees part of the picture, so nobody can link a deposit to 
 | **Relayer** | Proof validity, recipient address, fee amount | Deposit source, nullifier, which deposit funded it |
 | **ASP** | All deposit labels, which labels are approved | Nullifiers, secrets, withdrawal recipients |
 | **On-chain observer** | Deposit amounts, withdrawal amounts, nullifier hashes | Link between any deposit and any withdrawal |
-
-The ZK proof shows the withdrawer owns a valid, approved commitment without revealing which one. The relayer submits the transaction, so there is no on-chain link between the depositor and the recipient.
-
-The ASP sees deposit labels (which are public from deposit events) but never learns withdrawal destinations.
 
 See [Using Privacy Pools](/protocol) for the deposit-to-withdrawal lifecycle.
 
