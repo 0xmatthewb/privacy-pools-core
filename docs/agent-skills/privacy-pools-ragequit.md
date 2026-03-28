@@ -1,19 +1,3 @@
-> Ragequit (public exit) implementation for Privacy Pools
-
-## Read Order
-
-1. https://docs.privacypools.com/protocol/ragequit (local: `docs/docs/protocol/ragequit.md`)
-1. https://docs.privacypools.com/reference/sdk (local: `docs/docs/reference/sdk.md`)
-1. https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
-
-## Guardrails
-
-- Ragequit is unconditionally available and does not require ASP approval
-- Only the original depositor address can ragequit a commitment
-- A ragequit commitment cannot later be privately withdrawn (and vice versa)
-- Ragequit is a public on-chain exit with no privacy
-- The caller pays gas directly (no relayer involved)
-
 # Privacy Pools Ragequit
 
 ## Purpose

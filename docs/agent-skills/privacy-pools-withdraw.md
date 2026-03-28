@@ -1,24 +1,3 @@
-> Relayed withdrawal implementation for Privacy Pools
-
-## Read Order
-
-1. https://docs.privacypools.com/protocol/withdrawal (local: `docs/docs/protocol/withdrawal.md`)
-1. https://docs.privacypools.com/reference/relayer-api (local: `docs/docs/reference/relayer-api.md`)
-1. https://docs.privacypools.com/reference/asp-api (local: `docs/docs/reference/asp-api.md`)
-1. https://docs.privacypools.com/reference/sdk (local: `docs/docs/reference/sdk.md`)
-1. https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
-
-## Guardrails
-
-- Use Entrypoint.relay() with processooor = entrypointAddress
-- Request relayer quote before proof generation
-- Build withdrawal.data by ABI-encoding `(recipient, feeReceiverAddress, relayFeeBPS)` client-side. Do not use any pre-encoded blob from the quote response.
-- Re-quote if amount, recipient, relayer, or gas-token changes
-- Verify ASP root parity before submission
-- Pad Merkle proof siblings to length 32 before passing to proveWithdrawal
-- Refresh change commitment state after partial withdrawal
-- Verify the proof locally with `sdk.verifyWithdrawal()` before submitting to the relayer
-
 # Privacy Pools Withdrawal
 
 ## Purpose

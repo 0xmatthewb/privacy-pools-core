@@ -1,19 +1,3 @@
-> Deposit flow implementation for Privacy Pools
-
-## Read Order
-
-1. https://docs.privacypools.com/protocol/deposit (local: `docs/docs/protocol/deposit.md`)
-1. https://docs.privacypools.com/reference/sdk (local: `docs/docs/reference/sdk.md`)
-1. https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
-
-## Guardrails
-
-- Check minimum deposit amount before submitting
-- Persist label and committedValue from Deposited event
-- Use post-fee committedValue, not raw deposit amount
-- Use deployment startBlock for event scans
-- Use decimal scope in all API headers (`X-Pool-Scope: scope.toString()`)
-
 # Privacy Pools Deposit
 
 ## Purpose

@@ -61,7 +61,8 @@ function renderSkill(skill, fragmentContent) {
     .map((route) => `1. ${DOCS_BASE_URL}${route} (local: \`${routeToLocalPath(route)}\`)`)
     .join("\n");
 
-  return `> ${skill.description}
+  return `<!-- GENERATED FILE — Do not edit directly. Edit the source fragment in docs/agent-skills/ and regenerate. -->
+> ${skill.description}
 
 ## Read Order
 
@@ -192,7 +193,7 @@ Route all Privacy Pools tasks through the docs below.
 
 1. Read \`docs/docs/build/start.md\` for prerequisites, shared terminology, and the default builder path.
 2. Read \`docs/docs/build/integration.md\` for the canonical SDK integration recipe.
-3. Read the relevant protocol flow: \`docs/docs/protocol/deposit.md\`, \`withdrawal.md\`, or \`ragequit.md\`.
+3. Read the relevant protocol flow: \`docs/docs/protocol/deposit.md\`, \`docs/docs/protocol/withdrawal.md\`, or \`docs/docs/protocol/ragequit.md\`.
 4. Check \`docs/docs/reference/\` when you need exact SDK, API, contract, or error details.
 5. Pull addresses and \`startBlock\` from \`docs/docs/deployments.md\` when wiring a specific chain.
 

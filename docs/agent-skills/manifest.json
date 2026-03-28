@@ -14,7 +14,7 @@
       "fragment": "privacy-pools-deposit.md",
       "docsRoutes": ["/protocol/deposit", "/reference/sdk", "/reference/errors", "/deployments"],
       "readOrder": ["/protocol/deposit", "/reference/sdk", "/deployments"],
-      "guardrails": ["Check minimum deposit amount before submitting", "Persist label and committedValue from Deposited event", "Use post-fee committedValue, not raw deposit amount", "Use deployment startBlock for event scans", "Use decimal scope in all API headers (X-Pool-Scope: scope.toString())"]
+      "guardrails": ["Check minimum deposit amount before submitting", "Persist label and committedValue from Deposited event", "Use post-fee committedValue, not raw deposit amount", "Use deployment startBlock for event scans", "Use decimal scope in all API headers (`X-Pool-Scope: scope.toString()`)"]
     },
     {
       "name": "privacy-pools-withdraw",
@@ -22,7 +22,7 @@
       "fragment": "privacy-pools-withdraw.md",
       "docsRoutes": ["/protocol/withdrawal", "/reference/relayer-api", "/reference/asp-api", "/reference/sdk", "/reference/errors", "/deployments"],
       "readOrder": ["/protocol/withdrawal", "/reference/relayer-api", "/reference/asp-api", "/reference/sdk", "/deployments"],
-      "guardrails": ["Use Entrypoint.relay() with processooor = entrypointAddress", "Request relayer quote before proof generation", "Build withdrawal.data by ABI-encoding (recipient, feeReceiverAddress, relayFeeBPS) client-side. Do not use any pre-encoded blob from the quote response.", "Re-quote if amount, recipient, relayer, or gas-token changes", "Verify ASP root parity before submission", "Pad Merkle proof siblings to length 32 before passing to proveWithdrawal", "Refresh change commitment state after partial withdrawal", "Verify the proof locally with sdk.verifyWithdrawal() before submitting to the relayer"]
+      "guardrails": ["Use Entrypoint.relay() with processooor = entrypointAddress", "Request relayer quote before proof generation", "Build withdrawal.data by ABI-encoding `(recipient, feeReceiverAddress, relayFeeBPS)` client-side. Do not use any pre-encoded blob from the quote response.", "Re-quote if amount, recipient, relayer, or gas-token changes", "Verify ASP root parity before submission", "Pad Merkle proof siblings to length 32 before passing to proveWithdrawal", "Refresh change commitment state after partial withdrawal", "Verify the proof locally with `sdk.verifyWithdrawal()` before submitting to the relayer"]
     },
     {
       "name": "privacy-pools-ragequit",
