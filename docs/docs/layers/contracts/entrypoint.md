@@ -105,7 +105,7 @@ Maintains withdrawal validation data:
 1. **Reentrancy Protection**: Uses OpenZeppelin's ReentrancyGuard on relay operations
 2. **Access Control**: Role-based permissions for sensitive operations (`OWNER_ROLE`, `ASP_POSTMAN`)
 3. **Fee Validation**: Ensures fees are strictly less than 100% (`>= 10000 BPS` reverts with `InvalidFeeBPS`)
-4. **Balance Verification**: Checks pool state consistency after operations
+4. **Balance Verification**: Snapshots the Entrypoint's own asset balance before relay and asserts it has not decreased afterward, guarding against unexpected fund loss during the operation
 5. **Upgradability**: UUPS pattern with owner-controlled upgrades
 
 ### Fee Management

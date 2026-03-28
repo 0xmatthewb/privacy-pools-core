@@ -132,7 +132,7 @@ Use `account.poolAccounts.get(scope)` to work within the active pool only. For w
 Returned by `sdk.createContractInstance(...)` for on-chain reads and writes.
 
 ```tsx
-interface ContractInteractionsService {
+class ContractInteractionsService {
   depositERC20(
     asset: Address,
     amount: bigint,
@@ -172,6 +172,8 @@ interface ContractInteractionsService {
     scope: bigint,
   ): Promise<{ poolAddress: Address; assetAddress: Address }>;
   // Throws ContractError if the scope is not registered on the Entrypoint
+  // Note: the v1.2.0 type declarations still show `Address | null`, but the
+  // runtime implementation throws instead of returning null.
 
   approveERC20(
     spenderAddress: Address,

@@ -19,6 +19,8 @@ The public production relayer is operated by Fat Solutions. The relayer code is 
 
 ## Hosts
 
+Some chains expose multiple relayer options. The table below shows the recommended defaults; integrations may support additional relayers per chain.
+
 | Environment | Host |
 |-------------|------|
 | Mainnet (Ethereum, Arbitrum, OP Mainnet) | `https://fastrelay.xyz` |
