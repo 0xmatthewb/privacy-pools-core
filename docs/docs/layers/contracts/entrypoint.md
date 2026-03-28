@@ -12,7 +12,7 @@ keywords:
 ---
 
 
-The Entrypoint contract is the central coordinator for the Privacy Pools protocol, managing:
+The Entrypoint contract acts as the central coordinator for the Privacy Pools protocol, managing:
 
 1. Asset-specific privacy pools
 2. Deposits and withdrawal relays
@@ -57,10 +57,12 @@ function deposit(IERC20 _asset, uint256 _value, uint256 _precommitment) external
 
 The deposit process:
 
-1. Validates minimum deposit amount
-2. Calculates and deducts protocol fees
-3. Forwards remaining funds to appropriate privacy pools
-4. Returns commitment hash for future withdrawals
+1. Resolves the pool from the asset config
+2. Checks precommitment uniqueness (`PrecommitmentAlreadyUsed`)
+3. Validates minimum deposit amount
+4. Calculates and deducts protocol fees
+5. Forwards remaining funds to the appropriate privacy pool
+6. Returns commitment hash for future withdrawals
 
 ### 2. Withdrawal Relay
 
@@ -100,8 +102,11 @@ Maintains withdrawal validation data:
 
 ### Security Features
 
-1. **Fee Validation**: Ensures fees cannot exceed 100%
-2. **Balance Verification**: Checks pool state consistency after operations
+1. **Reentrancy Protection**: Uses OpenZeppelin's ReentrancyGuard on relay operations
+2. **Access Control**: Role-based permissions for sensitive operations (`OWNER_ROLE`, `ASP_POSTMAN`)
+3. **Fee Validation**: Ensures fees are strictly less than 100% (`>= 10000 BPS` reverts with `InvalidFeeBPS`)
+4. **Balance Verification**: Checks pool state consistency after operations
+5. **Upgradability**: UUPS pattern with owner-controlled upgrades
 
 ### Fee Management
 

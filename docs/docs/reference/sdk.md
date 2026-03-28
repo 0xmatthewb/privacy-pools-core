@@ -85,7 +85,9 @@ class PrivacyPoolSDK {
 class AccountService {
   constructor(
     dataService: DataService,
-    config: { mnemonic: string; poolConcurrency?: number },
+    config:
+      | { mnemonic: string; poolConcurrency?: number }
+      | { account: PrivacyPoolAccount; poolConcurrency?: number },
   );
 
   createDepositSecrets(
@@ -104,6 +106,22 @@ class AccountService {
       | { service: AccountService },
     pools: PoolInfo[],
   ): Promise<{ account: AccountService; legacyAccount?: AccountService; errors: PoolEventsError[] }>;
+
+  // State management — call these after on-chain operations to keep local state in sync
+  addPoolAccount(
+    scope: Hash, value: bigint, nullifier: Secret, secret: Secret,
+    label: Hash, blockNumber: bigint, txHash: Hex,
+  ): PoolAccount;
+
+  addWithdrawalCommitment(
+    parent: AccountCommitment, changeValue: bigint,
+    newNullifier: Secret, newSecret: Secret,
+    blockNumber: bigint, txHash: Hex,
+  ): AccountCommitment;
+
+  addRagequitToAccount(
+    label: Hash, ragequitEvent: RagequitEvent,
+  ): PoolAccount;
 }
 ```
 
@@ -152,8 +170,8 @@ interface ContractInteractionsService {
   getAssetConfig(assetAddress: Address): Promise<AssetConfig>;
   getScopeData(
     scope: bigint,
-  ): Promise<{ poolAddress: Address | null; assetAddress: Address | null }>;
-  // Returns null fields if the scope is not registered on the Entrypoint
+  ): Promise<{ poolAddress: Address; assetAddress: Address }>;
+  // Throws ContractError if the scope is not registered on the Entrypoint
 
   approveERC20(
     spenderAddress: Address,
@@ -164,7 +182,7 @@ interface ContractInteractionsService {
 ```
 
 :::warning Pass the Entrypoint address, not the pool address
-`getStateRoot()` reads `latestRoot()` using the Entrypoint ABI on whatever address is passed. Despite accepting `privacyPoolAddress`, you must pass the **Entrypoint address** because passing a pool address will fail.
+`getStateRoot()` calls `latestRoot()` on the Entrypoint ABI. Pass the Entrypoint address, not the pool address.
 :::
 
 The return value is the ASP root, not the pool state root. For withdrawal proofs, read the pool state root directly via `IPrivacyPool.currentRoot()` and use `onchainMtRoot` from the [ASP API](/reference/asp-api) for the ASP root.
@@ -213,9 +231,7 @@ class DataService {
 }
 ```
 
-`DataService` is fully standalone.
-
-`DataService` fetches logs in chunked, rate-limited ranges:
+`DataService` is fully standalone (no private key needed) and fetches logs in chunked, rate-limited ranges:
 
 - Always initialize with the deployment `startBlock` from the [Deployments](/deployments) page rather than `0n`. Scanning from genesis works but is unnecessarily slow and may hit RPC provider limits.
 - Use the optional second constructor argument when you need per-chain fetch overrides (chunk size, concurrency, delay, retries).
@@ -282,6 +298,13 @@ type Secret = bigint;  // Branded bigint for nullifier/secret values
 interface MasterKeys {
   masterNullifier: Secret;
   masterSecret: Secret;
+}
+
+interface PrivacyPoolAccount {
+  masterKeys: [masterNullifier: Secret, masterSecret: Secret];
+  poolAccounts: Map<Hash, PoolAccount[]>;
+  creationTimestamp?: bigint;
+  lastUpdateTimestamp?: bigint;
 }
 
 interface AssetConfig {

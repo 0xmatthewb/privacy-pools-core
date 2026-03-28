@@ -55,7 +55,7 @@ interface IPrivacyPool {
 | `withdraw` | `w` | `Withdrawal` struct: `processooor` must equal `msg.sender` for direct calls |
 | | `p` | ZK proof with 8 public signals (see [ProofLib](#prooflib)) |
 | `ragequit` | `p` | Commitment proof with 4 public signals. Only callable by the original depositor of the label. |
-| `SCOPE()` | - | Unique pool identifier: `keccak256(poolAddress, chainId, asset) % SNARK_SCALAR_FIELD` |
+| `SCOPE()` | - | Unique pool identifier: `uint256(keccak256(abi.encodePacked(poolAddress, chainId, asset))) % SNARK_SCALAR_FIELD` |
 | `currentRoot()` | - | Current state Merkle tree root (used in withdrawal proofs) |
 
 ## IEntrypoint
@@ -153,12 +153,20 @@ Integrator-relevant events emitted during deposits, withdrawals, and ragequit op
 event Deposited(address indexed _depositor, uint256 _commitment, uint256 _label, uint256 _value, uint256 _precommitmentHash);
 event Withdrawn(address indexed _processooor, uint256 _value, uint256 _spentNullifier, uint256 _newCommitment);
 event Ragequit(address indexed _ragequitter, uint256 _commitment, uint256 _label, uint256 _value);
+event PoolDied();
 
 // IState
 event LeafInserted(uint256 _index, uint256 _leaf, uint256 _root);
 
 // IEntrypoint
+event Deposited(address indexed _depositor, IPrivacyPool indexed _pool, uint256 _commitment, uint256 _amount);
 event WithdrawalRelayed(address indexed _relayer, address indexed _recipient, IERC20 indexed _asset, uint256 _amount, uint256 _feeAmount);
+event RootUpdated(uint256 _root, string _ipfsCID, uint256 _timestamp);
+event PoolRegistered(IPrivacyPool _pool, IERC20 _asset, uint256 _scope);
+event PoolRemoved(IPrivacyPool _pool, IERC20 _asset, uint256 _scope);
+event PoolConfigurationUpdated(IPrivacyPool _pool, IERC20 _asset, uint256 _newMinimumDepositAmount, uint256 _newVettingFeeBPS, uint256 _newMaxRelayFeeBPS);
+event PoolWindDown(IPrivacyPool _pool);
+event FeesWithdrawn(IERC20 _asset, address _recipient, uint256 _amount);
 ```
 
 ## ProofLib
@@ -185,7 +193,7 @@ struct WithdrawProof {
 | 4 | `stateTreeDepth` | Depth of the state tree (max `32`) |
 | 5 | `ASPRoot` | ASP-approved Merkle root, which must equal `Entrypoint.latestRoot()` |
 | 6 | `ASPTreeDepth` | Depth of the ASP tree (max `32`) |
-| 7 | `context` | Binds the proof to specific withdrawal parameters: `keccak256(withdrawal, scope) % SNARK_SCALAR_FIELD` |
+| 7 | `context` | Binds the proof to specific withdrawal parameters: `uint256(keccak256(abi.encode(withdrawal, scope))) % SNARK_SCALAR_FIELD` |
 
 ### RagequitProof
 

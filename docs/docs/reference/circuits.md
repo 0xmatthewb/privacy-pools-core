@@ -25,6 +25,10 @@ Creates commitment proofs using Poseidon hash. Used by both withdrawal and rageq
 | `nullifier` | field | private | Unique nullifier for this commitment |
 | `secret` | field | private | Secret paired with the nullifier |
 
+:::info Visibility is context-dependent
+The visibility above applies to the standalone ragequit proof. When CommitmentHasher is used as a sub-component inside the Withdraw circuit, all inputs are private.
+:::
+
 ### Outputs
 
 | Signal | Type | Description |

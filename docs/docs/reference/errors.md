@@ -35,7 +35,8 @@ These errors are defined in `IPrivacyPool.sol` and triggered during deposit, wit
 | `InvalidCommitment` | `ragequit` | The commitment hash from the proof is not present in the pool's state tree. |
 | `OnlyOriginalDepositor` | `ragequit` | `depositors[label] != msg.sender`. Only the address that made the original deposit can call ragequit for that commitment. |
 | `InvalidDepositValue` | `deposit` | Deposit value is `>= type(uint128).max`. |
-| `PoolIsDead` | `deposit`, pool admin | The pool has been permanently suspended by the Entrypoint. |
+| `ScopeMismatch` | - | Defined in the interface but not currently reverted by any contract code path. Reserved for future use. |
+| `PoolIsDead` | `deposit`, `windDown` | The pool has been permanently suspended by the Entrypoint. Also reverts on `windDown` if the pool is already dead. Defined in `IState.sol`. |
 
 ### Pool Variant Errors
 
@@ -64,7 +65,16 @@ These errors are defined in `IEntrypoint.sol` and triggered during relay, deposi
 | `NoRootsAvailable` | `latestRoot` | No ASP root has been published yet. Called `latestRoot()` before the first `updateRoot` transaction. Wait for the ASP to push an initial root. |
 | `InvalidPoolState` | `relay` | Post-relay balance integrity check failed. The pool's asset balance is less than expected after processing the withdrawal. |
 | `NativeAssetNotAccepted` | `receive` | ETH was sent to the Entrypoint by an address other than the registered native-asset pool. Only the pool contract can send ETH to the Entrypoint (during withdrawal processing). |
-| `AssetMismatch` | admin | Pool asset does not match the registered asset. |
+| `AssetMismatch` | `registerPool` | Pool asset does not match the registered asset. |
+| `PoolIsDead` | `registerPool` | The pool being registered is already dead (wind-down was called). |
+| `InvalidEntrypointForPool` | `registerPool` | Pool's ENTRYPOINT does not match this Entrypoint contract. |
+| `AssetPoolAlreadyRegistered` | `registerPool` | An active pool is already registered for this asset. |
+| `ScopePoolAlreadyRegistered` | `registerPool` | An active pool is already registered for this scope. |
+| `InvalidIPFSCIDLength` | `updateRoot` | IPFS CID length is less than 32 or greater than 64 bytes. |
+| `EmptyRoot` | `updateRoot` | The submitted ASP root is zero. |
+| `InvalidFeeBPS` | `registerPool`, `updatePoolConfiguration` | Fee BPS is `>= 10000` (must be strictly less than 100%). |
+| `InvalidIndex` | `rootByIndex` | Index is out of bounds for the association sets array. |
+| `ZeroAddress` | various | An `address(0)` was passed where a real address is required. |
 
 ### State Errors
 
@@ -74,7 +84,7 @@ These errors are defined in `IState.sol` and triggered by internal state operati
 |-------|-------------|-------------|
 | `NullifierAlreadySpent` | `withdraw`, `ragequit` | The commitment's nullifier has already been spent. This commitment was already exited via withdrawal or ragequit. Withdrawal and ragequit are mutually exclusive on the same commitment. |
 | `NotYetRagequitteable` | - | Reserved. Not enforced in the current implementation. |
-| `OnlyEntrypoint` | internal | A function restricted to the Entrypoint was called by another address. |
+| `OnlyEntrypoint` | `deposit`, `windDown` | A function restricted to the Entrypoint was called by another address. Only the Entrypoint contract may call these pool functions. |
 | `MaxTreeDepthReached` | `deposit` | The state Merkle tree has reached its maximum capacity. |
 
 ## SDK Error Patterns
