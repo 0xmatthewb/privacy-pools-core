@@ -16,7 +16,7 @@ A withdrawal moves funds out of the pool to any recipient address. A zero-knowle
 
 1. Verify ASP roots have converged on-chain (`mtRoot === onchainMtRoot`)
 2. Request a relayer quote (valid ~60 seconds)
-3. Build `Withdrawal` struct using the quote's `feeCommitment.withdrawalData`
+3. Build `Withdrawal` struct by ABI-encoding `RelayData` (recipient, fee recipient, fee BPS) client-side
 4. Generate ZK proof with Merkle proofs from both state and ASP trees
 5. Submit proof to relayer before the quote expires
 
@@ -99,7 +99,7 @@ The three-o spelling of `processooor` is intentional and matches the field name 
 1. **User Steps**
    - Construct withdrawal with Entrypoint as processooor
    - Resolve the final recipient before requesting the quote. Request the quote late in the flow so that proof generation and relay submission fit within the TTL.
-   - Set `withdrawal.data` to the quote's `feeCommitment.withdrawalData` (the proof's `context` depends on the finalized `withdrawal`, so this must happen before proof generation)
+   - ABI-encode `withdrawal.data` client-side as `(recipient, feeRecipient, relayFeeBPS)` using `feeReceiverAddress` from `GET /relayer/details` and `feeBPS` from the quote (the proof's `context` depends on the finalized `withdrawal`, so this must happen before proof generation)
    - Validate the relayer minimum and warn if the remaining balance after a partial withdrawal would fall below it
    - Generate ZK proof
    - Submit to relayer before the quote expires

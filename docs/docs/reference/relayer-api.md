@@ -187,7 +187,7 @@ curl -s -X POST https://testnet-relayer.privacypools.com/relayer/quote \
 | `detail.extraGasTxCost.eth` | `string` | Cost of the extra-gas transfer in wei. Only present when `extraGas: true`. |
 | `feeCommitment` | `object` | Signed fee commitment (only present when `recipient` is provided). |
 
-Use `feeCommitment.withdrawalData` as the canonical `withdrawal.data` payload for relayed withdrawals. `GET /relayer/details` is still useful for UX checks such as `minWithdrawAmount`, but you should not rebuild `withdrawal.data` from it when the quote already supplies the signed value.
+ABI-encode `withdrawal.data` client-side as `(address recipient, address feeRecipient, uint256 relayFeeBPS)` using `feeReceiverAddress` from `GET /relayer/details` and `feeBPS` from the quote. The `feeCommitment.withdrawalData` field is for the relayer's internal use — do not substitute it for your client-encoded value, as the proof's `context` is bound to the exact encoding you produce. See [Frontend Integration](/build/integration) for the complete code.
 
 ### Quote Lifecycle
 
@@ -304,7 +304,7 @@ The relayer API does not support cancellation.
 |----------|----------|--------|
 | Bad proof | HTTP 200, `success: false` | Regenerate proof with fresh roots and re-quote |
 | Expired fee commitment | HTTP 200, `success: false` | Re-quote via `POST /relayer/quote`, then resubmit |
-| Context mismatch | HTTP 200, `success: false` | Verify `withdrawal.data` matches `feeCommitment.withdrawalData` |
+| Context mismatch | HTTP 200, `success: false` | Verify `withdrawal.data` was ABI-encoded with the correct `(recipient, feeRecipient, relayFeeBPS)` values |
 | Stale ASP root | On-chain `IncorrectASPRoot` revert | Re-fetch ASP roots, verify parity, regenerate proof |
 | Schema or validation error | HTTP 4xx | Fix request payload per error message |
 | Relayer overloaded | HTTP 5xx | Retry after backoff |

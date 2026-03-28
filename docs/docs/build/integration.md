@@ -10,7 +10,7 @@ keywords: [privacy pools, frontend, deposit, withdrawal, ragequit, SDK, integrat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This page covers the full integration: deposit, withdrawal, and ragequit. If you haven't read [Using Privacy Pools](/protocol) yet, do that first so the lifecycle is clear.
+This page covers the full integration: deposit, withdrawal, and ragequit. If you haven't read [Using Privacy Pools](/protocol) yet, start there.
 
 :::info Prerequisites
 Node 18+, viem 2.x, a browser or Node.js environment, and the target chain's addresses and `startBlock` from [Deployments](/deployments).
@@ -186,18 +186,35 @@ await publicClient.waitForTransactionReceipt({ hash: txHash });
 </TabItem>
 </Tabs>
 
+After the receipt confirms, decode the `Deposited` event from the pool contract to get the on-chain `label` and post-fee `value`, then register the pool account locally:
+
+```typescript
+const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+// Decode the pool's Deposited event from the receipt
+const depositedLog = receipt.logs.find(
+  (log) => log.address.toLowerCase() === POOL_ADDRESS.toLowerCase()
+);
+// Parse _label and _value from the event (indices vary by ABI decoding approach)
+const _label = BigInt(depositedLog!.topics[2] ?? depositedLog!.data); // adapt to your ABI decoder
+const _value = /* post-fee value from the decoded event */;
+
+// Register the deposit in local account state
+accountService.addPoolAccount(
+  scope, _value, nullifier, secret, _label as Hash,
+  receipt.blockNumber, txHash
+);
+```
+
+:::tip
+Use a full ABI decoder (e.g., viem's `decodeEventLog`) for production code. The snippet above illustrates the flow; the exact log parsing depends on your setup.
+:::
+
 ## Waiting for ASP approval
 
 Do not treat a deposit as ready for private withdrawal until the ASP tree has converged on-chain.
 
 ```typescript
-const deposits = await dataService.getDeposits({
-  chainId: 11155111,
-  address: POOL_ADDRESS,
-  scope,
-  deploymentBlock: START_BLOCK,
-});
-
 const aspHost = "https://dw.0xbow.io"; // Sepolia. See /reference/asp-api for host selection.
 const aspRoots = await fetch(
   `${aspHost}/11155111/public/mt-roots`,
@@ -263,7 +280,7 @@ const relayerDetails = await fetch(
   `${relayerUrl}/relayer/details?chainId=11155111&assetAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
 ).then((r) => r.json());
 
-// ABI-encode RelayData client-side (the proof context is bound to this struct)
+// ABI-encode RelayData client-side — the proof context is bound to this exact encoding.
 const withdrawalData = encodeAbiParameters(
   parseAbiParameters("address recipient, address feeRecipient, uint256 relayFeeBPS"),
   [recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS)]
@@ -303,7 +320,7 @@ const padSiblings = (siblings: bigint[]) =>
   [...siblings, ...Array(32 - siblings.length).fill(0n)];
 
 const stateLeaves = leavesResponse.stateTreeLeaves.map(BigInt);
-const aspLeaves = [...new Set(leavesResponse.aspLeaves)].map(BigInt).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+const aspLeaves = [...new Set(leavesResponse.aspLeaves)].map(BigInt);
 
 const stateMerkleProof = generateMerkleProof(stateLeaves, commitment.hash);
 const aspMerkleProof = generateMerkleProof(aspLeaves, commitment.label);
@@ -358,7 +375,21 @@ const relayResult = await relayResponse.json();
 if (!relayResult.success) {
   throw new Error(`Relayer rejected withdrawal: ${relayResult.error}`);
 }
+
+// After the relay succeeds, wait for the on-chain receipt and update local state
+const relayReceipt = await publicClient.waitForTransactionReceipt({
+  hash: relayResult.txHash,
+});
+const changeValue = commitment.value - withdrawAmount;
+accountService.addWithdrawalCommitment(
+  commitment, changeValue, newNullifier, newSecret,
+  relayReceipt.blockNumber, relayResult.txHash
+);
 ```
+
+:::warning Update local state after every withdrawal
+Without calling `addWithdrawalCommitment`, the local account still points at the now-spent commitment. The next withdrawal attempt would use a nullified commitment and fail.
+:::
 
 ### Account selection and external ASPs
 
