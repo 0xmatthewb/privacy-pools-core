@@ -1,8 +1,24 @@
+> Ragequit (public exit) implementation for Privacy Pools
+
+## Read Order
+
+1. https://docs.privacypools.com/protocol/ragequit (local: `docs/docs/protocol/ragequit.md`)
+1. https://docs.privacypools.com/reference/sdk (local: `docs/docs/reference/sdk.md`)
+1. https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
+
+## Guardrails
+
+- Ragequit is unconditionally available and does not require ASP approval
+- Only the original depositor address can ragequit a commitment
+- A ragequit commitment cannot later be privately withdrawn (and vice versa)
+- Ragequit is a public on-chain exit with no privacy
+- The caller pays gas directly (no relayer involved)
+
 # Privacy Pools Ragequit
 
 ## Purpose
 
-Implement the ragequit (public exit) flow for Privacy Pools. Ragequit allows a depositor to reclaim funds without ASP approval.
+Implement the ragequit (public exit) flow for Privacy Pools. Ragequit allows a depositor to reclaim funds without ASP approval. It returns the full committed value (post-fee) to the original deposit address.
 
 ## When to Use
 
@@ -12,22 +28,24 @@ Implement the ragequit (public exit) flow for Privacy Pools. Ragequit allows a d
 
 ## Key Steps
 
-1. **Generate commitment proof.** Call `sdk.proveCommitment(value, label, nullifier, secret)` with the target pool account's commitment fields.
-2. **Call ragequit.** Submit `contracts.ragequit(commitmentProof, privacyPoolAddress)`.
-3. **Handle the on-chain event.** Confirm the transaction settled and update local state to reflect the spent nullifier.
+1. **Generate commitment proof.** Call `sdk.proveCommitment(value, label, nullifier, secret)` with the commitment's fields. This produces a Groth16 proof and 4 public signals (`commitmentHash`, `nullifierHash`, `value`, `label`). No ASP data or Merkle proofs are needed.
+2. **Submit ragequit on-chain.** Call `PrivacyPool.ragequit(proof)` directly on the pool contract (not the Entrypoint). The connected wallet must be the original depositor. If using the raw contract ABI, swap the `pi_b` coordinates (`[0][1]/[0][0]` and `[1][1]/[1][0]`) before submission. The SDK's `contracts.ragequit(commitmentProof, privacyPoolAddress)` handles this internally.
+3. **Wait for confirmation and update state.** Parse the `Ragequit` event from the receipt. Mark the commitment as spent in local account state via `addRagequitToAccount`.
 
 ## Restrictions
 
-- **Original depositor only.** The contract enforces `depositors[_label] == msg.sender`. Only the address that made the original deposit can ragequit that commitment.
-- **Mutual exclusivity.** A commitment that has been ragequit cannot later be privately withdrawn, and vice versa. The nullifier is spent in both cases (`NullifierAlreadySpent`).
-- **Public exit.** Ragequit is fully on-chain and non-private. Warn the user that this links their deposit and withdrawal addresses publicly.
-- **No ASP prerequisite.** Ragequit does not require ASP approval. It is unconditionally available to the original depositor.
+- **Original depositor only.** The contract enforces `depositors[_label] == msg.sender`. Only the address that made the original deposit can ragequit that commitment. Other addresses revert with `OnlyOriginalDepositor`.
+- **Mutual exclusivity.** A commitment that has been ragequit cannot later be privately withdrawn, and vice versa. Both operations spend the nullifier (`NullifierAlreadySpent`).
+- **Public exit.** Ragequit is fully on-chain. The deposit and exit are linked publicly. Warn the user.
+- **No ASP prerequisite.** Ragequit does not check the ASP tree. It is unconditionally available to the original depositor.
+- **Gas.** The user pays gas directly since there is no relayer. Account for this in UX.
 
 ## UX Guidance
 
 - Clearly label ragequit as a public exit distinct from private withdrawal.
 - Warn the user that privacy is forfeited when using ragequit.
 - Only show ragequit for commitments that belong to the connected wallet address.
+- If the user has a `legacyAccount` from `initializeWithEvents`, use it for ragequit of legacy deposits.
 
 ## Docs
 

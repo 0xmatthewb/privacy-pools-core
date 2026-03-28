@@ -1,3 +1,21 @@
+> End-to-end Privacy Pools integration planning
+
+## Read Order
+
+1. https://docs.privacypools.com/build/start (local: `docs/docs/build/start.md`)
+1. https://docs.privacypools.com/build/integration (local: `docs/docs/build/integration.md`)
+1. https://docs.privacypools.com/protocol/deposit (local: `docs/docs/protocol/deposit.md`)
+1. https://docs.privacypools.com/protocol/withdrawal (local: `docs/docs/protocol/withdrawal.md`)
+1. https://docs.privacypools.com/protocol/ragequit (local: `docs/docs/protocol/ragequit.md`)
+1. https://docs.privacypools.com/deployments (local: `docs/docs/deployments.md`)
+
+## Guardrails
+
+- Use relayed withdrawals as the only user-facing path: fastrelay.xyz on production chains and testnet-relayer.privacypools.com on published testnets
+- Never expose deposit secrets, nullifiers, or raw note material in copy/paste flows
+- Verify ASP root parity before proof submission
+- Use deployment startBlock for event scans, not genesis
+
 # Privacy Pools Integration
 
 ## Purpose

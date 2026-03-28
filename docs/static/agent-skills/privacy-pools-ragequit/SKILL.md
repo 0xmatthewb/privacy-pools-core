@@ -1,3 +1,4 @@
+<!-- GENERATED FILE — Do not edit directly. Edit the source fragment in docs/agent-skills/ and regenerate. -->
 > Ragequit (public exit) implementation for Privacy Pools
 
 ## Read Order

@@ -1,3 +1,4 @@
+<!-- GENERATED FILE — Do not edit directly. Edit the source fragment in docs/agent-skills/ and regenerate. -->
 > Relayed withdrawal implementation for Privacy Pools
 
 ## Read Order
@@ -16,7 +17,6 @@
 - Re-quote if amount, recipient, relayer, or gas-token changes
 - Verify ASP root parity before submission
 - Pad Merkle proof siblings to length 32 before passing to proveWithdrawal
-- Sort ASP leaves ascending by BigInt value before generating Merkle proofs
 - Refresh change commitment state after partial withdrawal
 - Verify the proof locally with `sdk.verifyWithdrawal()` before submitting to the relayer
 
@@ -30,10 +30,10 @@ Implement the relayed withdrawal flow for Privacy Pools. This is the privacy-pre
 
 1. **Select pool account.** Choose a spendable account with `balance > 0` whose `label` is present in the current ASP leaves.
 2. **Resolve recipient.** Validate the withdrawal recipient to a final address. Block unresolved ENS or invalid input.
-3. **Fetch ASP data.** Retrieve ASP roots (`GET /{chainId}/public/mt-roots`) and leaves (`GET /{chainId}/public/mt-leaves`). Sort ASP leaves ascending by BigInt value and deduplicate before use.
+3. **Fetch ASP data.** Retrieve ASP roots (`GET /{chainId}/public/mt-roots`) and leaves (`GET /{chainId}/public/mt-leaves`). Use the leaves as returned by the API for Merkle proof generation.
 4. **Verify ASP root parity.** Confirm `BigInt(onchainMtRoot) === Entrypoint.latestRoot()` before proceeding.
 5. **Request relayer quote.** Call `POST /relayer/quote` on the review step. The quote returns a signed `feeCommitment` valid for approximately 60 seconds. Also fetch the relayer's `feeReceiverAddress` from `GET /relayer/details`.
-6. **Build withdrawal struct.** Set `processooor = entrypointAddress`. Build `withdrawal.data` by ABI-encoding `(recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS))` using viem's `encodeAbiParameters`. The proof `context` is derived from this finalized struct.
+6. **Build withdrawal struct.** Set `processooor = entrypointAddress`. Build `withdrawal.data` by ABI-encoding `(recipient, relayerDetails.feeReceiverAddress, BigInt(quote.feeBPS))` using viem's `encodeAbiParameters`. Do not use any pre-encoded blob from the quote response. The proof `context` is derived from this finalized struct.
 7. **Generate withdrawal proof.** Pad Merkle proof siblings to length 32 (circuit expects fixed depth). Pass the padded proofs, roots, context, withdrawal amount, and new secrets from `createWithdrawalSecrets(commitment)` to `sdk.proveWithdrawal()`.
 8. **Verify proof locally.** Call `sdk.verifyWithdrawal(proof)` before submitting. This catches bad proofs before they hit the relayer.
 9. **Submit via relayer.** Call `POST /relayer/request` before the quote expires. Use `https://fastrelay.xyz` on production chains and `https://testnet-relayer.privacypools.com` on published testnets.

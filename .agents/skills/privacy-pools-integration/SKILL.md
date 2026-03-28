@@ -1,3 +1,4 @@
+<!-- GENERATED FILE — Do not edit directly. Edit the source fragment in docs/agent-skills/ and regenerate. -->
 > End-to-end Privacy Pools integration planning
 
 ## Read Order
