@@ -44,8 +44,8 @@ These errors are defined in `IPrivacyPoolSimple` (native-asset pools) and `IPriv
 
 | Error | Pool Type | Description |
 |-------|-----------|-------------|
-| `InsufficientValue` | Native asset | `msg.value` is less than the required deposit amount. |
-| `FailedToSendNativeAsset` | Native asset | ETH transfer to the depositor or ragequitter failed (e.g. the recipient is a contract that reverts on `receive`). |
+| `InsufficientValue` | Native asset | `msg.value` does not exactly equal the required deposit amount (the contract enforces `msg.value == _amount`). |
+| `FailedToSendNativeAsset` | Native asset | ETH transfer to the recipient failed during a withdrawal, ragequit, or deposit refund (e.g. the recipient is a contract that reverts on `receive`). |
 | `NativeAssetNotAccepted` | ERC-20 | ETH was sent (`msg.value > 0`) to a pool that only accepts ERC-20 tokens. |
 | `NativeAssetNotSupported` | ERC-20 | Attempted to deploy or configure an ERC-20 pool with the native asset address. |
 

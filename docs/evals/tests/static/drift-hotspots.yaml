@@ -40,6 +40,13 @@
     - type: not-contains
       value: ".sort("
 
+- description: "Integration guide does not dedupe ASP leaves with new Set"
+  vars:
+    filePath: "docs/docs/build/integration.md"
+  assert:
+    - type: not-contains
+      value: "new Set("
+
 # -- InvalidPoolState must reference Entrypoint balance guard --
 
 - description: "InvalidPoolState describes Entrypoint balance snapshot"

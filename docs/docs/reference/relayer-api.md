@@ -189,9 +189,7 @@ curl -s -X POST https://testnet-relayer.privacypools.com/relayer/quote \
 | `detail.extraGasTxCost.eth` | `string` | Cost of the extra-gas transfer in wei. Only present when `extraGas: true`. |
 | `feeCommitment` | `object` | Signed fee commitment (only present when `recipient` is provided). |
 
-import WithdrawalDataEncoding from '@site/docs/_partials/_withdrawal-data-encoding.mdx';
-
-<WithdrawalDataEncoding />
+ABI-encode `withdrawal.data` client-side as `(address recipient, address feeRecipient, uint256 relayFeeBPS)` using `feeReceiverAddress` from `GET /relayer/details` and `feeBPS` from the quote response. The `feeCommitment.withdrawalData` field is for the relayer's internal use and must not be substituted for your client-encoded value, because the proof's `context` is bound to the exact encoding you produce.
 
 See [Frontend Integration](/build/integration) for the complete code.
 
@@ -356,7 +354,7 @@ curl -s "https://testnet-relayer.privacypools.com/relayer/details?chainId=111551
 | `chainId` | `number` | Chain ID. |
 | `feeBPS` | `string` | Fixed fee component in basis points. |
 | `minWithdrawAmount` | `string` | Minimum withdrawal amount (in token smallest unit). |
-| `feeReceiverAddress` | `string` | Address that receives the relay fee. For standard withdrawals, use this as `feeRecipient` in `RelayData`. When using `feeCommitment` from the quote, the `withdrawalData` already encodes the correct fee routing. |
+| `feeReceiverAddress` | `string` | Address that receives the relay fee. For standard withdrawals, use this as `feeRecipient` in `RelayData`. The `feeCommitment.withdrawalData` returned by the quote is relayer-internal encoded routing data — do not use it as `withdrawal.data`; see the [encoding note above](#post-relayerquote). |
 | `assetAddress` | `string` | Asset address. |
 | `maxGasPrice` | `string \| null` | Maximum gas price the relayer will accept. `null` when not configured for the chain. |
 

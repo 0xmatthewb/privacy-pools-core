@@ -322,7 +322,7 @@ const padSiblings = (siblings: bigint[]) =>
   [...siblings, ...Array(32 - siblings.length).fill(0n)];
 
 const stateLeaves = leavesResponse.stateTreeLeaves.map(BigInt);
-const aspLeaves = [...new Set(leavesResponse.aspLeaves)].map(BigInt);
+const aspLeaves = leavesResponse.aspLeaves.map(BigInt);
 
 const stateMerkleProof = generateMerkleProof(stateLeaves, commitment.hash);
 const aspMerkleProof = generateMerkleProof(aspLeaves, commitment.label);
