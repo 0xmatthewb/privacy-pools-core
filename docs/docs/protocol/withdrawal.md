@@ -12,16 +12,6 @@ keywords:
 
 A withdrawal moves funds out of the pool to any recipient address. A zero-knowledge proof demonstrates ownership of a valid, ASP-approved commitment without revealing which one. Frontend integrations should use relayed withdrawal: a relayer submits `Entrypoint.relay()` for the user, preserving recipient privacy.
 
-**Happy path at a glance:**
-
-1. Verify ASP roots have converged on-chain (`mtRoot === onchainMtRoot`)
-2. Request a relayer quote (valid ~60 seconds)
-3. Build `Withdrawal` struct by ABI-encoding `RelayData` (recipient, fee recipient, fee BPS) client-side
-4. Generate ZK proof with Merkle proofs from both state and ASP trees
-5. Submit proof to relayer before the quote expires
-
-Withdrawal proofs carry two separate roots. The state-tree root comes from the pool's `currentRoot()`, while the ASP root must match `Entrypoint.latestRoot()` and is sourced from ASP `onchainMtRoot`.
-
 ## Recommended Frontend Flow
 
 ```mermaid
@@ -93,6 +83,14 @@ The three-o spelling of `processooor` is intentional and matches the field name 
 :::
 
 ## Withdrawal Steps
+
+:::tip Quick reference
+1. Verify ASP root convergence (`mtRoot === onchainMtRoot`)
+2. Request relayer quote (~60s TTL)
+3. ABI-encode `withdrawal.data` client-side
+4. Generate ZK proof with state + ASP Merkle proofs
+5. Submit to relayer before quote expires
+:::
 
 ### Relayed Withdrawal
 

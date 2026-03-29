@@ -88,7 +88,7 @@ sequenceDiagram
 
 ### No ASP Approval Required
 
-Ragequit does not require ASP approval. It is available to the original depositor as long as the commitment has not already been spent:
+Available to the original depositor as long as the commitment has not already been spent:
 
 - A deposit is rejected by the ASP
 - A label has been retroactively removed from the ASP approved set
@@ -99,7 +99,7 @@ Keep ragequit available at all times, but present it as an explicit public exit 
 
 ### Original Depositor Restriction
 
-Only the address that made the original deposit can ragequit. The contract reverts with `OnlyOriginalDepositor` otherwise.
+Only the original deposit address can ragequit. Reverts with `OnlyOriginalDepositor` otherwise.
 
 ### Mutual Exclusivity with Private Withdrawal
 

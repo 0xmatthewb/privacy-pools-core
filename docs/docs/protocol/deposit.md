@@ -52,17 +52,7 @@ sequenceDiagram
     Note over User: Persist: nullifier, secret,<br/>label, value into account state
 ```
 
-### Commitment Structure
-
-```mermaid
-graph TD
-    A[Commitment Hash] --> B[Value]
-    A --> C[Label]
-    A --> D[Precommitment Hash]
-    D --> E[Nullifier]
-    D --> F[Secret]
-
-```
+For the commitment hash structure, see [Core Concepts: Commitments](/overview/core-concepts#commitments).
 
 ### Parameters
 
@@ -76,31 +66,11 @@ graph TD
 
 ### Deposit Steps
 
-1. **Input Preparation**
+1. Generate `nullifier` and `secret`, compute `precommitment = Poseidon(nullifier, secret)`.
+2. Submit the deposit transaction: `deposit(precommitment)` for ETH or `deposit(token, amount, precommitment)` for ERC-20 (after approval).
+3. The Entrypoint deducts the vetting fee and forwards the remaining amount to the pool.
+4. The pool generates a `label`, computes the commitment hash, and inserts it into the state Merkle tree.
 
-- User generates random `nullifier` and `secret` values
-- User computes `precommitment = hash(nullifier, secret)`
-
-2. **Deposit Transaction**
-
-- User calls Entrypoint's deposit function with asset, amount, and precommitment
-- For ETH: `deposit(precommitment)` with ETH value
-- For ERC20: `deposit(token, amount, precommitment)` after approval
-
-3. **Fee Processing**
-
-- Entrypoint calculates and retains vetting fee (configurable per pool)
-- Remaining amount is forwarded to pool
-
-4. **Commitment Generation**
-
-- Pool generates unique `label` using scope and incremental nonce
-- Computes commitment hash using value, label, and precommitment
-- Inserts commitment into state Merkle tree
-
-### Fee Structure
-
-- Vetting fee: Configurable percentage (`vettingFeeBPS`) taken by the Entrypoint on every deposit
 :::warning Fee is deducted on deposit
 The fee is deducted **on deposit**, not on withdrawal. The `value` emitted in the `Deposited` event is the post-fee `committedValue`, which may be less than the `amount` sent. Always use this post-fee value when reconstructing commitments or computing withdrawal amounts.
 :::
@@ -151,7 +121,7 @@ Do not expose raw deposit secrets (nullifier, secret) in copy/paste or clipboard
 
 ### Account and Recovery
 
-Frontends should use mnemonic-backed pool accounts. The recommended browser onboarding flow derives the mnemonic from a wallet signature (EIP-712), with manual mnemonic entry as a fallback for wallets that cannot reproduce a deterministic signature. See [UX Patterns: Account and Recovery](/build/ux-patterns#account-and-recovery) for the full onboarding guidance and the [Integration Guide](/build/integration) for account setup details.
+Frontends should use mnemonic-backed pool accounts. See [UX Patterns: Account and Recovery](/build/ux-patterns#account-and-recovery) for onboarding guidance and the [Integration Guide](/build/integration) for setup details.
 
 ### Precommitment Uniqueness
 
