@@ -48,15 +48,17 @@ interface IPrivacyPool {
 
 | Function | Parameter | Description |
 |---|---|---|
-| `deposit` | `depositor` | Address credited as the original depositor (controls ragequit eligibility) |
-| | `value` | Deposit amount after vetting fee deduction (the Entrypoint deducts the fee before calling the pool) |
-| | `precommitment` | `Poseidon(nullifier, secret)`. Uniqueness is enforced by the Entrypoint (`PrecommitmentAlreadyUsed`), not by the pool. |
-| | Returns `commitment` | The commitment hash: `Poseidon(value, label, precommitmentHash)`. The label is a separate value emitted in the `Deposited` event. |
-| `withdraw` | `w` | `Withdrawal` struct: `processooor` must equal `msg.sender` for direct calls |
-| | `p` | ZK proof with 8 public signals (see [ProofLib](#prooflib)) |
-| `ragequit` | `p` | Commitment proof with 4 public signals. Only callable by the original depositor of the label. |
-| `SCOPE()` | - | Unique pool identifier: `uint256(keccak256(abi.encodePacked(poolAddress, chainId, asset))) % SNARK_SCALAR_FIELD` |
-| `currentRoot()` | - | Current state Merkle tree root (used in withdrawal proofs) |
+| `deposit` | `depositor` | Original depositor address (controls ragequit) |
+| | `value` | Post-fee deposit amount |
+| | `precommitment` | `Poseidon(nullifier, secret)` |
+| | Returns `commitment` | `Poseidon(value, label, precommitmentHash)` |
+| `withdraw` | `w` | `Withdrawal` struct |
+| | `p` | ZK proof with 8 public signals ([ProofLib](#prooflib)) |
+| `ragequit` | `p` | Commitment proof with 4 public signals |
+| `SCOPE()` | - | Pool identifier: `uint256(keccak256(abi.encodePacked(poolAddress, chainId, asset))) % SNARK_SCALAR_FIELD` |
+| `currentRoot()` | - | Current state Merkle tree root |
+
+Precommitment uniqueness is enforced by the Entrypoint (`PrecommitmentAlreadyUsed`), not by the pool. The `value` parameter is the post-fee amount — the Entrypoint deducts the vetting fee before calling the pool. The `label` is emitted in the `Deposited` event. For direct withdrawals, `Withdrawal.processooor` must equal `msg.sender`; for relayed withdrawals it must be the Entrypoint address.
 
 ## IEntrypoint
 
@@ -142,7 +144,9 @@ interface IEntrypoint {
 `IPrivacyPool.currentRoot()` is the state-tree root used in withdrawal proofs. `IEntrypoint.latestRoot()` is separate: the latest ASP-approved root that must match ASP `onchainMtRoot`.
 :::
 
-`IPrivacyPool.withdraw()` is the direct pool path: caller must equal `Withdrawal.processooor`, so funds go to that signer. `IEntrypoint.relay()` is the relayed path: `Withdrawal.processooor` must be the Entrypoint, and recipient plus fee routing comes from `RelayData`.
+`IPrivacyPool.withdraw()` is the direct pool path: the caller must equal `Withdrawal.processooor`, and funds go to that signer.
+
+`IEntrypoint.relay()` is the relayed path: `Withdrawal.processooor` must be the Entrypoint, and recipient plus fee routing comes from `RelayData`.
 
 ## Events
 

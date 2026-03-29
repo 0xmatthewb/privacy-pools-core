@@ -16,26 +16,19 @@ keywords:
 
 The Privacy Pools protocol is built on three core contracts:
 
-1. **[Entrypoint](/layers/contracts/entrypoint)**
-   - Central access point for deposits
-   - Manages pool registry and ASP root updates
-   - Handles relay routing and fee distribution
-   - Controls protocol-wide settings
-2. **[Privacy Pools](/layers/contracts/privacy-pools)**
-   - `PrivacyPoolSimple`: Handles native asset (ETH)
-   - `PrivacyPoolComplex`: Handles ERC20 tokens
-   - Both inherit from base `PrivacyPool` and `State` contracts
-3. **Verifiers**
-   - `CommitmentVerifier`: Validates [ragequit](/protocol/ragequit) proofs
-   - `WithdrawalVerifier`: Validates [withdrawal](/protocol/withdrawal) proofs
-   - Both implement Groth16 verification
+1. **[Entrypoint](/layers/contracts/entrypoint)** — Upgradeable coordinator for deposits, relay, ASP roots, and fees.
+2. **[Privacy Pools](/layers/contracts/privacy-pools)** — Per-asset pool contracts (`PrivacyPoolSimple` for ETH, `PrivacyPoolComplex` for ERC-20) inheriting from `PrivacyPool` and `State`.
+3. **Verifiers** — `CommitmentVerifier` ([ragequit](/protocol/ragequit)) and `WithdrawalVerifier` ([withdrawal](/protocol/withdrawal)), both Groth16.
 
 ## Component interaction
 
-- **Deposits** route through the Entrypoint, which deducts fees and forwards funds to the appropriate pool
-- **Relayed withdrawals** route through the Entrypoint, which verifies the relay fee and distributes funds
-- **Direct withdrawals** and **[ragequit](/protocol/ragequit)** are called directly on the pool contract
-- **ASP root updates** are posted to the Entrypoint by the authorized postman role
+| Operation | Path | Notes |
+|---|---|---|
+| Deposit | User → Entrypoint → Pool | Entrypoint deducts fee, forwards to pool |
+| Relayed withdrawal | Relayer → Entrypoint → Pool → Recipient | Entrypoint verifies fee, distributes funds |
+| Direct withdrawal | User → Pool | Caller must equal `processooor` |
+| [Ragequit](/protocol/ragequit) | User → Pool | Original depositor only |
+| ASP root update | Postman → Entrypoint | Authorized role posts new root |
 
 ## State management basics
 
