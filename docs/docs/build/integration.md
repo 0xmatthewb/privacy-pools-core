@@ -13,16 +13,16 @@ import TabItem from '@theme/TabItem';
 This page covers the full integration: deposit, withdrawal, and ragequit. If you haven't read [Using Privacy Pools](/protocol) yet, start there.
 
 :::info Prerequisites
-Node 18+, viem 2.x, a browser or Node.js environment, and the target chain's addresses and `startBlock` from [Deployments](/deployments).
+- Node 18+, viem 2.x
+- Browser or Node.js environment
+- Target chain addresses and `startBlock` from [Deployments](/deployments)
 :::
 
 ## Circuit artifacts and SDK setup
 
 **Install:** `npm install @0xbow/privacy-pools-core-sdk viem`
 
-**Serve circuit artifacts:** the SDK's `Circuits` class fetches six files at runtime from a URL you set via `baseUrl`: `commitment.wasm`, `commitment.zkey`, `commitment.vkey`, `withdraw.wasm`, `withdraw.zkey`, `withdraw.vkey`. Place them in your app's public directory under `/artifacts/`.
-
-These files come from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits). To build them yourself, clone the monorepo and run `yarn workspace @privacy-pool-core/circuits compile`. The output lands in `packages/circuits/build/{commitment,withdraw}/`. Copy the `.wasm`, `.zkey`, and `.vkey` files from each subdirectory into your public artifacts folder. The SDK verifies each file's SHA-256 hash at load time and rejects mismatches.
+**Serve circuit artifacts:** the SDK's `Circuits` class fetches six files at runtime (`commitment.wasm/zkey/vkey`, `withdraw.wasm/zkey/vkey`) from a URL you set via `baseUrl`. Place them in your app's public directory under `/artifacts/`. These files come from the [circuits package](https://github.com/0xbow-io/privacy-pools-core/tree/main/packages/circuits); to build locally, run `yarn workspace @privacy-pool-core/circuits compile` and copy the outputs from `packages/circuits/build/`. The SDK verifies each file's SHA-256 hash at load time.
 
 Fill the chain-specific values from [Deployments](/deployments) for the network you are integrating.
 
@@ -71,9 +71,9 @@ Create `DataService` with `startBlock` so event scans begin at the deployment bl
 
 ## Account bootstrapping
 
-The `AccountService` accepts either a BIP-39 mnemonic or a pre-built `{ account: PrivacyPoolAccount }` object. For browser wallets, prefer deriving the mnemonic from a wallet signature (sign the same EIP-712 payload twice; if both signatures match, derive the mnemonic via HKDF). Fall back to manual mnemonic entry if the wallet produces non-deterministic signatures. See [UX Patterns: Account and Recovery](/build/ux-patterns#account-and-recovery) for the full flow.
+The `AccountService` accepts either a BIP-39 mnemonic or a pre-built `{ account: PrivacyPoolAccount }` object. For browser wallets, prefer deriving the mnemonic from a wallet signature (EIP-712 + HKDF). Fall back to manual entry if the wallet produces non-deterministic signatures. See [UX Patterns](/build/ux-patterns#account-and-recovery) for the full onboarding flow.
 
-Returning users should restore from on-chain events.
+For returning users, restore from on-chain events:
 
 :::warning
 Never log, hardcode, or store mnemonics, nullifiers, or secrets in plaintext. Source the mnemonic from secure user input and keep derived secrets in memory only. Do not include any of these values in error messages, analytics, or browser storage.

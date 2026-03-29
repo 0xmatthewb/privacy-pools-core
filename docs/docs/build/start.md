@@ -20,10 +20,13 @@ Privacy Pools has three user-facing flows: public deposits, private withdrawals 
 
 1. Pick your target chain and asset. Get the `Entrypoint`, `PrivacyPool`, and `startBlock` from [Deployments](/deployments).
 2. Host the six circuit artifacts (`commitment.wasm/zkey/vkey`, `withdraw.wasm/zkey/vkey`) so the SDK can load them at runtime.
-3. The default onboarding path derives a recovery phrase from a wallet signature (EIP-712). Fall back to manual mnemonic entry if the wallet cannot produce a deterministic signature. Either way, users must save their recovery phrase before the first deposit.
+3. Set up account onboarding:
+   - **Default:** derive the recovery phrase from a wallet signature (EIP-712).
+   - **Fallback:** manual mnemonic entry if the wallet cannot produce a deterministic signature.
+   - Either way, users must save their recovery phrase before the first deposit.
 4. Read [Using Privacy Pools](/protocol) so the product lifecycle is clear before you write code.
 
-## Build path
+## Integration path
 
 1. Follow [Frontend Integration](/build/integration) for the complete deposit, withdrawal, and ragequit recipe.
 2. Layer in approval states, quote refresh, and recovery handling from [UX Patterns](/build/ux-patterns).
@@ -38,7 +41,7 @@ Privacy Pools has three user-facing flows: public deposits, private withdrawals 
 | **Recovery phrase** | BIP-39 mnemonic that derives all deposit secrets. Loss means no private withdrawal. |
 | **Deposit wallet** | The address that made the original deposit. Required for ragequit even if the recovery phrase is available. |
 
-## Other paths
+## Alternative entry points
 
 - Using an AI coding agent? See [Agent Setup](/build/agents) and [Skill Library](/build/skills).
 - Contributing to the codebase? See [Contributing](/build/contributing).

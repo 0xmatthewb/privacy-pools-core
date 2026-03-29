@@ -51,11 +51,9 @@ Withdrawal proofs require inclusion in two Merkle trees:
 - **State tree** (per pool): Contains commitment hashes (one leaf per deposit and one per change commitment created during withdrawal). Managed on-chain by each pool contract. Root read via `pool.currentRoot()`.
 - **ASP tree** (global): Contains approved labels across all pools. Managed off-chain by the ASP and periodically committed to the Entrypoint. Root read via `Entrypoint.latestRoot()` or the ASP API's `onchainMtRoot`.
 
-Withdrawal proofs must show membership in **both** trees: the state tree (the commitment exists) and the ASP tree (the deposit was approved).
-
 ### ASP
 
-An Association Set Provider (ASP) is an off-chain service that reviews deposits and maintains a Merkle tree of approved labels. ASP approval unlocks the private withdrawal path; without it, the depositor can still [ragequit](/protocol/ragequit). See [ASP Layer](/layers/asp) for how it works on-chain.
+An Association Set Provider (ASP) is an off-chain service that reviews deposits and maintains the ASP tree of approved labels. ASP approval unlocks private withdrawal; without it, the depositor can still [ragequit](/protocol/ragequit). See [ASP Layer](/layers/asp) for details.
 
 ### Relayer
 
@@ -95,8 +93,6 @@ The protocol is designed so that no single participant has enough information to
 | **Relayer** | Proof validity, recipient address, fee amount | Deposit source, nullifier, which deposit funded it |
 | **ASP** | All deposit labels, which labels are approved | Nullifiers, secrets, withdrawal recipients |
 | **On-chain observer** | Deposit amounts, withdrawal amounts, nullifier hashes | Link between any deposit and any withdrawal |
-
-See [Using Privacy Pools](/protocol) for the deposit-to-withdrawal lifecycle.
 
 ## Next steps
 

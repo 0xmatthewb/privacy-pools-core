@@ -1,7 +1,7 @@
 ---
 title: What is Privacy Pools?
 slug: /overview/what-is-privacy-pools
-description: "High-level overview of Privacy Pools, explaining public deposits, private withdrawals, and ASP-based approval across supported networks."
+description: "Privacy Pools protocol overview: zero-knowledge private withdrawals with ASP-based compliance on EVM chains."
 keywords:
   - privacy pools
   - 0xbow
