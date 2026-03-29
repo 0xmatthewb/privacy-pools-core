@@ -172,13 +172,25 @@ context = uint256(keccak256(abi.encode(
 ))) % SNARK_SCALAR_FIELD;
 ```
 
-<details>
-<summary>Contract-Level Direct Withdrawal (advanced)</summary>
+### Direct Withdrawal
 
-`PrivacyPool.withdraw()` still exists at the contract layer, but it is not the recommended frontend path:
+Direct withdrawal calls `PrivacyPool.withdraw()` without a relayer. The caller interacts with the pool contract directly and receives funds to their own address.
 
-- `withdrawal.processooor` must equal `msg.sender`
-- the pool pays the signer directly
-- recipient privacy is lost compared with the relayed flow
+:::warning Relayed withdrawal is strongly preferred
+Direct withdrawal reveals the on-chain link between the caller and the withdrawal, eliminating the privacy benefit that relayed withdrawal provides. Use direct withdrawal only when relayer infrastructure is unavailable or when recipient privacy is not a concern (e.g., in testing or contract-to-contract integrations).
+:::
 
-</details>
+| Aspect | Direct | Relayed |
+|---|---|---|
+| **Privacy** | Caller address visible on-chain | Recipient hidden behind relayer |
+| **Gas** | Caller pays directly | Relayer pays, takes fee |
+| **Fee** | No relay fee | Configurable relay fee (BPS) |
+| **`processooor`** | `msg.sender` (the caller) | Entrypoint address |
+| **`withdrawal.data`** | Empty (`0x`) | ABI-encoded `RelayData` |
+
+**Steps:**
+
+1. Build a `Withdrawal` struct with `processooor` set to the caller's address and `data` set to `0x`.
+2. Generate the withdrawal proof the same way as for relayed withdrawal (state + ASP Merkle proofs, context, etc.). The `context` is still `keccak256(abi.encode(withdrawal, scope)) % SNARK_SCALAR_FIELD`, using the direct `Withdrawal` struct.
+3. Call `pool.withdraw(withdrawal, proof)` directly on the pool contract.
+4. The pool runs the same `validWithdrawal` modifier checks (processooor, context, tree depths, state root, ASP root) and transfers funds to `processooor`.
