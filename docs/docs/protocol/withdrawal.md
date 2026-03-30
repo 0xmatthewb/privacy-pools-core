@@ -10,9 +10,11 @@ keywords:
   - fees
 ---
 
-A withdrawal moves funds out of the pool to any recipient address. A zero-knowledge proof demonstrates ownership of a valid, ASP-approved commitment without revealing which one. Frontend integrations should use relayed withdrawal: a relayer submits `Entrypoint.relay()` for the user, preserving recipient privacy.
+Privacy Pools supports two withdrawal paths: relayed and direct. Both require a zero-knowledge proof demonstrating ownership of a valid, ASP-approved commitment without revealing which one.
 
-## Recommended Frontend Flow
+## Relayed Withdrawal
+
+Relayed withdrawal is the recommended frontend path. A relayer submits `Entrypoint.relay()` on behalf of the user, so the recipient address never appears as the on-chain caller — preserving the privacy that the protocol is designed to provide.
 
 ```mermaid
 sequenceDiagram
@@ -82,7 +84,7 @@ struct RelayData {
 The three-o spelling of `processooor` is intentional and matches the field name in the deployed smart contracts.
 :::
 
-## Withdrawal Steps
+### Steps
 
 :::tip Quick reference
 1. Verify ASP root convergence (`mtRoot === onchainMtRoot`)
@@ -91,8 +93,6 @@ The three-o spelling of `processooor` is intentional and matches the field name 
 4. Generate ZK proof with state + ASP Merkle proofs
 5. Submit to relayer before quote expires
 :::
-
-### Relayed Withdrawal
 
 1. **User Steps**
    - Construct withdrawal with Entrypoint as processooor
@@ -172,7 +172,7 @@ context = uint256(keccak256(abi.encode(
 ))) % SNARK_SCALAR_FIELD;
 ```
 
-### Direct Withdrawal
+## Direct Withdrawal
 
 Direct withdrawal calls `PrivacyPool.withdraw()` without a relayer. The caller interacts with the pool contract directly and receives funds to their own address.
 
