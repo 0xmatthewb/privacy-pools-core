@@ -188,9 +188,41 @@ Direct withdrawal reveals the on-chain link between the caller and the withdrawa
 | **`processooor`** | `msg.sender` (the caller) | Entrypoint address |
 | **`withdrawal.data`** | Empty (`0x`) | ABI-encoded `RelayData` |
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant SDK
+    participant Pool
+    participant Entrypoint
+
+    Note over User: Has: nullifier, secret,<br/>label, value
+
+    User->>SDK: Prepare withdrawal(amount)
+
+    activate SDK
+    Note over SDK: Generate:<br/>newNullifier, newSecret
+    SDK->>SDK: Compute remaining value
+    SDK->>SDK: Generate withdrawal proof
+    SDK-->>User: withdrawalProof
+    deactivate SDK
+
+    User->>Pool: withdraw(withdrawal, proof)
+
+    activate Pool
+    Pool->>Pool: Verify processooor == msg.sender
+    Pool->>Entrypoint: Check ASP root matches latestRoot()
+    Pool->>Pool: Verify Groth16 proof
+    Pool->>Pool: Spend nullifier, insert new commitment
+    Pool->>User: Transfer withdrawn amount
+    Pool-->>User: Emit Withdrawn
+    deactivate Pool
+
+    Note over User: Store new secrets<br/>for remaining balance
+```
+
 **Steps:**
 
 1. Build a `Withdrawal` struct with `processooor` set to the caller's address and `data` set to `0x`.
-2. Generate the withdrawal proof the same way as for relayed withdrawal (state + ASP Merkle proofs, context, etc.). The `context` is still `keccak256(abi.encode(withdrawal, scope)) % SNARK_SCALAR_FIELD`, using the direct `Withdrawal` struct.
+2. Generate the withdrawal proof the same way as for relayed withdrawal (state + ASP Merkle proofs, context, etc.). The `context` is still `uint256(keccak256(abi.encode(withdrawal, scope))) % SNARK_SCALAR_FIELD`, using the direct `Withdrawal` struct.
 3. Call `pool.withdraw(withdrawal, proof)` directly on the pool contract.
-4. The pool runs the same `validWithdrawal` modifier checks (processooor, context, tree depths, state root, ASP root) and transfers funds to `processooor`.
+4. The pool runs the `validWithdrawal` modifier checks (processooor, context, tree depths, state root, ASP root), then verifies the proof and transfers funds to `processooor`.
